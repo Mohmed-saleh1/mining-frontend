@@ -140,8 +140,8 @@ const ContactPageContent = () => {
   return (
     <div className="pt-24 pb-20 relative overflow-hidden">
       {/* Decorative orbs */}
-      <div className="absolute top-20 right-10 w-96 h-96 bg-gradient-to-br from-gold/10 to-transparent rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-40 left-0 w-80 h-80 bg-gradient-to-tr from-gold/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-20 right-10 w-96 h-96 bg-linear-to-br from-gold/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-40 left-0 w-80 h-80 bg-linear-to-tr from-gold/5 to-transparent rounded-full blur-3xl pointer-events-none" />
       
       {/* Hero Section */}
       <section className="relative py-16">
@@ -149,7 +149,7 @@ const ContactPageContent = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center animate-fade-in-up">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-gold/10 to-gold/5 border border-gold/20 mb-8">
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-linear-to-r from-gold/10 to-gold/5 border border-gold/20 mb-8">
               <span className="w-2 h-2 rounded-full bg-green animate-pulse" />
               <span className="text-gold text-sm font-medium tracking-wide">24/7 Support Available</span>
             </div>
@@ -171,7 +171,7 @@ const ContactPageContent = () => {
                 className="relative group"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-gold/20 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-linear-to-br from-gold/20 to-transparent rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative glass rounded-2xl p-5 text-center border border-gold/10 hover:border-gold/30 transition-all duration-300">
                   <span className="text-2xl mb-2 block">{stat.icon}</span>
                   <div className="text-xl sm:text-2xl font-bold text-gold mb-1">{stat.value}</div>
@@ -195,11 +195,11 @@ const ContactPageContent = () => {
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 {/* Hover glow effect */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${method.gradient} rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500`} />
+                <div className={`absolute inset-0 bg-linear-to-br ${method.gradient} rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500`} />
                 
                 <div className="relative h-full glass rounded-2xl p-6 border border-gold/10 hover:border-gold/30 transition-all duration-300 hover:-translate-y-1">
                   {/* Icon container */}
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-gold/20 to-gold/5 border border-gold/30 flex items-center justify-center text-gold mb-5 group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-14 h-14 rounded-xl bg-linear-to-br from-gold/20 to-gold/5 border border-gold/30 flex items-center justify-center text-gold mb-5 group-hover:scale-110 transition-transform duration-300">
                     {method.icon}
                   </div>
                   
@@ -229,7 +229,7 @@ const ContactPageContent = () => {
             {/* Contact Form - Takes 3 columns */}
             <div className="lg:col-span-3 animate-fade-in-up">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-gold/10 to-transparent rounded-3xl blur-2xl opacity-50" />
+                <div className="absolute inset-0 bg-linear-to-br from-gold/10 to-transparent rounded-3xl blur-2xl opacity-50" />
                 <div className="relative glass rounded-3xl p-8 lg:p-10 border border-gold/10">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-10 h-10 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center">
@@ -413,9 +413,9 @@ const ContactPageContent = () => {
             <div className="lg:col-span-2 space-y-6 animate-fade-in-up stagger-2">
               {/* Map Card */}
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-br from-gold/10 to-transparent rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-linear-to-br from-gold/10 to-transparent rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative glass rounded-3xl overflow-hidden border border-gold/10">
-                  <div className="h-56 bg-gradient-to-br from-background-secondary to-background relative">
+                  <div className="h-56 bg-linear-to-br from-background-secondary to-background relative">
                     {/* Grid overlay */}
                     <div className="absolute inset-0 grid-pattern opacity-50" />
                     
@@ -427,7 +427,7 @@ const ContactPageContent = () => {
                         <div className="absolute inset-0 w-32 h-32 rounded-full border border-gold/30 animate-ping" style={{ animationDuration: '3s', animationDelay: '1s' }} />
                         
                         {/* Center marker */}
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold/30 to-gold/10 border-2 border-gold flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-full bg-linear-to-br from-gold/30 to-gold/10 border-2 border-gold flex items-center justify-center">
                           <svg className="w-7 h-7 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -456,7 +456,7 @@ const ContactPageContent = () => {
 
               {/* Business Hours */}
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-br from-gold/10 to-transparent rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-linear-to-br from-gold/10 to-transparent rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative glass rounded-3xl p-6 border border-gold/10">
                   <div className="flex items-center gap-3 mb-5">
                     <div className="w-10 h-10 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center">
@@ -493,7 +493,7 @@ const ContactPageContent = () => {
 
               {/* Social Links */}
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-br from-gold/10 to-transparent rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-linear-to-br from-gold/10 to-transparent rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative glass rounded-3xl p-6 border border-gold/10">
                   <h3 className="text-lg font-semibold text-foreground mb-5">
                     Connect With Us
@@ -622,14 +622,14 @@ const ContactPageContent = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative animate-fade-in-up">
             {/* Glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-gold/20 via-gold/10 to-gold/20 rounded-3xl blur-2xl" />
+            <div className="absolute inset-0 bg-linear-to-r from-gold/20 via-gold/10 to-gold/20 rounded-3xl blur-2xl" />
             
             <div className="relative glass rounded-3xl p-8 sm:p-12 text-center border border-gold/20 overflow-hidden">
               {/* Decorative pattern */}
               <div className="absolute inset-0 grid-pattern opacity-30" />
               
               <div className="relative">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gold/20 to-gold/5 border border-gold/30 flex items-center justify-center mx-auto mb-6">
+                <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-gold/20 to-gold/5 border border-gold/30 flex items-center justify-center mx-auto mb-6">
                   <svg className="w-8 h-8 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                   </svg>

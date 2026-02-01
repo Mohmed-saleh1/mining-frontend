@@ -207,7 +207,7 @@ export default function ProfilePage() {
               {profileError && (
                 <div className="p-4 rounded-lg bg-red/10 border border-red/30 text-red text-sm">
                   <div className="flex items-center gap-2">
-                    <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span>{profileError}</span>
@@ -218,7 +218,7 @@ export default function ProfilePage() {
               {profileSuccess && (
                 <div className="p-4 rounded-lg bg-green/10 border border-green/30 text-green text-sm">
                   <div className="flex items-center gap-2">
-                    <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                     <span>Profile updated successfully!</span>
@@ -318,7 +318,7 @@ export default function ProfilePage() {
                 {passwordError && (
                   <div className="p-4 rounded-lg bg-red/10 border border-red/30 text-red text-sm">
                     <div className="flex items-center gap-2">
-                      <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       <span>{passwordError}</span>
@@ -329,7 +329,7 @@ export default function ProfilePage() {
                 {passwordSuccess && (
                   <div className="p-4 rounded-lg bg-green/10 border border-green/30 text-green text-sm">
                     <div className="flex items-center gap-2">
-                      <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                       <span>Password changed successfully!</span>
