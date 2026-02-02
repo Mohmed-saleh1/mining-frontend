@@ -35,6 +35,15 @@ export interface RegisterData {
   phone?: string;
 }
 
+export interface CreateVerifiedUserData {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  role?: 'admin' | 'user' | 'manager';
+}
+
 export interface LoginData {
   email: string;
   password: string;
@@ -141,6 +150,12 @@ export const authApi = {
     request<null>('/auth/reset-password', {
       method: 'POST',
       body: JSON.stringify({ token, newPassword }),
+    }),
+
+  createVerifiedUser: (data: CreateVerifiedUserData) =>
+    request<AuthResponse>('/auth/create-verified-user', {
+      method: 'POST',
+      body: JSON.stringify(data),
     }),
 };
 
@@ -449,6 +464,58 @@ export const contactAdminApi = {
   delete: (id: string) =>
     request<void>(`/contact-us/admin/${id}`, {
       method: 'DELETE',
+    }),
+};
+
+// Wallet Types
+export type CryptoType = 'BTC' | 'ETH' | 'USDT' | 'LTC' | 'XRP' | 'DOGE' | 'BNB' | 'SOL';
+
+export interface CryptoInfo {
+  type: CryptoType;
+  name: string;
+  symbol: string;
+  icon: string;
+  color: string;
+  decimals: number;
+}
+
+export interface Wallet {
+  id: string;
+  cryptoType: CryptoType;
+  name: string;
+  symbol: string;
+  icon: string;
+  color: string;
+  balance: number;
+  pendingBalance: number;
+  walletAddress: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AllWalletsResponse {
+  wallets: Wallet[];
+  totalBalanceUsd: number;
+}
+
+export interface UpdateWalletAddressData {
+  cryptoType: CryptoType;
+  walletAddress: string;
+}
+
+// Wallets API (auth required)
+export const walletsApi = {
+  getAll: () => request<AllWalletsResponse>('/wallets'),
+  
+  getCryptoTypes: () => request<CryptoInfo[]>('/wallets/crypto-types'),
+  
+  getOne: (cryptoType: CryptoType) => request<Wallet>(`/wallets/${cryptoType}`),
+  
+  updateAddress: (data: UpdateWalletAddressData) =>
+    request<Wallet>('/wallets/address', {
+      method: 'PUT',
+      body: JSON.stringify(data),
     }),
 };
 
