@@ -259,9 +259,6 @@ const CryptoPricing = () => {
                   <th className="text-right py-4 px-6 text-foreground-muted font-medium text-sm">
                     Volume (24h)
                   </th>
-                  <th className="text-center py-4 px-6 text-foreground-muted font-medium text-sm">
-                    Trade
-                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -321,11 +318,6 @@ const CryptoPricing = () => {
                     <td className="py-4 px-6 text-right text-foreground-muted">
                       {formatMarketCap(coin.volume24h)}
                     </td>
-                    <td className="py-4 px-6 text-center">
-                      <button className="btn-gold px-4 py-2 rounded-lg text-xs font-semibold">
-                        Buy Now
-                      </button>
-                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -379,18 +371,13 @@ const CryptoPricing = () => {
                     {formatChange(coin.change24h)}
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-semibold text-foreground">
-                      {formatPrice(coin.price)}
-                    </div>
-                    <div className="text-foreground-muted text-xs">
-                      MCap: {formatMarketCap(coin.marketCap)}
-                    </div>
+                <div>
+                  <div className="font-semibold text-foreground">
+                    {formatPrice(coin.price)}
                   </div>
-                  <button className="btn-gold px-4 py-2 rounded-lg text-xs font-semibold">
-                    Buy Now
-                  </button>
+                  <div className="text-foreground-muted text-xs">
+                    MCap: {formatMarketCap(coin.marketCap)}
+                  </div>
                 </div>
               </div>
             ))}

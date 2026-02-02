@@ -1,7 +1,12 @@
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
+import Benefits from "./components/Benefits";
 import FeaturedMachines from "./components/FeaturedMachines";
+import HowItWorks from "./components/HowItWorks";
 import CryptoPricing from "./components/CryptoPricing";
+import SecurityTrust from "./components/SecurityTrust";
+import Testimonials from "./components/Testimonials";
+import FAQ from "./components/FAQ";
 import ContactForm from "./components/ContactForm";
 import Footer from "./components/Footer";
 
@@ -19,8 +24,13 @@ export default function Home() {
         <Navbar />
         <main>
           <Hero />
+          <Benefits />
           <FeaturedMachines />
+          <HowItWorks />
           <CryptoPricing />
+          <SecurityTrust />
+          <Testimonials />
+          <FAQ />
           <ContactForm />
         </main>
         <Footer />

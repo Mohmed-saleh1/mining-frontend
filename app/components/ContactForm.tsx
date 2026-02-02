@@ -79,7 +79,7 @@ const ContactForm = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-foreground">Email Us</h4>
-                  <p className="text-foreground-muted text-sm">support@logim.io</p>
+                  <p className="text-foreground-muted text-sm">support@x-bin.com</p>
                 </div>
               </div>
 

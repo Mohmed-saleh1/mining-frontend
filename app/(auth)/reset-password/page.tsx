@@ -118,7 +118,7 @@ function ResetPasswordContent() {
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                   </svg>
                 </div>
-                <span className="text-3xl font-bold gradient-text tracking-wider">LOGIM</span>
+                <span className="text-3xl font-bold gradient-text tracking-wider">X-BIN</span>
               </Link>
             </div>
             <div className="glass rounded-2xl p-8 animate-fade-in-up">
@@ -159,7 +159,7 @@ function ResetPasswordContent() {
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                 </svg>
               </div>
-              <span className="text-3xl font-bold gradient-text tracking-wider">LOGIM</span>
+              <span className="text-3xl font-bold gradient-text tracking-wider">X-BIN</span>
             </Link>
           </div>
 

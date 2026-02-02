@@ -114,7 +114,7 @@ export default function RegisterPage() {
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                 </svg>
               </div>
-              <span className="text-3xl font-bold gradient-text tracking-wider">LOGIM</span>
+              <span className="text-3xl font-bold gradient-text tracking-wider">X-BIN</span>
             </Link>
           </div>
 
@@ -123,7 +123,7 @@ export default function RegisterPage() {
             <div className="text-center mb-8">
               <h1 className="text-2xl font-bold text-foreground mb-2">Create Your Account</h1>
               <p className="text-foreground-muted text-sm">
-                Join LOGIM and start earning crypto profits today
+                Join X-BIN and start earning crypto profits today
               </p>
             </div>
 

@@ -58,10 +58,11 @@ const ContactPageContent = () => {
         message: "Thank you for your message! We'll get back to you within 24 hours.",
       });
       setFormData({ firstName: "", lastName: "", email: "", phone: "", subject: "", message: "" });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as Error;
       setSubmitStatus({
         type: "error",
-        message: err?.message || "Something went wrong. Please try again later.",
+        message: error?.message || "Something went wrong. Please try again later.",
       });
     } finally {
       setIsSubmitting(false);
@@ -83,8 +84,8 @@ const ContactPageContent = () => {
       ),
       title: "Email Support",
       description: "Get a response within 2 hours",
-      value: "support@logim.io",
-      action: "mailto:support@logim.io",
+      value: "support@x-bin.com",
+      action: "mailto:support@x-bin.com",
       gradient: "from-amber-500/20 to-yellow-600/20",
     },
     {
