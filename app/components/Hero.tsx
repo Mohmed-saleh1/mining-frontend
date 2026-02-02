@@ -11,14 +11,14 @@ const Hero = () => {
     totalPayouts: 0,
   });
 
-  const targetStats = {
-    totalUsers: 5820,
-    totalDeposits: 1685200,
-    dailyPayouts: 15320,
-    totalPayouts: 820150,
-  };
-
   useEffect(() => {
+    const targetStats = {
+      totalUsers: 5820,
+      totalDeposits: 1685200,
+      dailyPayouts: 15320,
+      totalPayouts: 820150,
+    };
+
     const duration = 2000;
     const steps = 60;
     const stepDuration = duration / steps;
@@ -89,82 +89,145 @@ const Hero = () => {
       <div className="absolute inset-0 hero-pattern" />
       <div className="absolute inset-0 grid-pattern opacity-50" />
       
-      {/* Floating Elements */}
-      <div className="absolute top-40 right-20 w-64 h-64 opacity-20 animate-float hidden lg:block">
+      {/* Animated Gradient Orbs */}
+      <div className="absolute top-1/4 left-10 w-96 h-96 bg-gold/10 rounded-full blur-3xl animate-pulse-slow hidden lg:block" />
+      <div className="absolute bottom-1/4 right-10 w-96 h-96 bg-gold/5 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: "1s" }} />
+      
+      {/* Floating Geometric Elements */}
+      <div className="absolute top-32 right-20 w-20 h-20 opacity-10 animate-float hidden lg:block">
         <svg viewBox="0 0 64 64" fill="none" className="w-full h-full">
-          <circle cx="32" cy="32" r="30" stroke="var(--gold)" strokeWidth="1" />
-          <circle cx="32" cy="32" r="20" stroke="var(--gold)" strokeWidth="0.5" />
-          <path d="M32 12V52M12 32H52" stroke="var(--gold)" strokeWidth="0.5" />
+          <rect x="16" y="16" width="32" height="32" stroke="var(--gold)" strokeWidth="2" transform="rotate(45 32 32)" />
+        </svg>
+      </div>
+      <div className="absolute bottom-32 left-20 w-16 h-16 opacity-10 animate-float hidden lg:block" style={{ animationDelay: "0.5s" }}>
+        <svg viewBox="0 0 64 64" fill="none" className="w-full h-full">
+          <circle cx="32" cy="32" r="24" stroke="var(--gold)" strokeWidth="2" />
+          <circle cx="32" cy="32" r="16" stroke="var(--gold)" strokeWidth="1" />
         </svg>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Content */}
           <div className="space-y-8 animate-fade-in-up">
-            <div className="space-y-4">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-                Rent Mining Machines{" "}
-                <span className="gradient-text">Earn Daily</span>
+            {/* Trust Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-gold/20 animate-fade-in-up">
+              <div className="w-2 h-2 rounded-full bg-green animate-pulse" />
+              <span className="text-sm text-foreground-muted">
+                Trusted by <span className="text-gold font-semibold">5,800+</span> miners worldwide
+              </span>
+            </div>
+
+            <div className="space-y-6">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight tracking-tight">
+                Mine Crypto
+                <br />
+                <span className="gradient-text">Without the Hardware</span>
               </h1>
-              <p className="text-lg text-foreground-muted max-w-lg">
-                Access enterprise-grade mining hardware without the hassle. Rent professional ASIC miners and GPU rigs to earn passive crypto income.
+              <p className="text-xl text-foreground-muted max-w-xl leading-relaxed">
+                Rent enterprise-grade ASIC miners and GPU rigs. Start earning passive crypto income today with zero setup, maintenance, or electricity costs.
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-4">
+            {/* Feature Pills */}
+            <div className="flex flex-wrap gap-3">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/20">
+                <svg className="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-sm font-medium text-gold">24/7 Mining</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/20">
+                <svg className="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-sm font-medium text-gold">Daily Payouts</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/20">
+                <svg className="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-sm font-medium text-gold">No Setup Required</span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-4 pt-4">
               <Link
                 href="/register"
-                className="btn-gold px-8 py-4 rounded-xl text-base font-semibold tracking-wide inline-flex items-center gap-2"
+                className="btn-gold px-8 py-4 rounded-xl text-base font-semibold tracking-wide inline-flex items-center gap-2 group"
               >
-                Start Mining
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                Start Mining Now
+                <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </Link>
               <Link
                 href="/about"
-                className="btn-outline px-8 py-4 rounded-xl text-base font-semibold tracking-wide inline-flex items-center gap-2"
+                className="btn-outline px-8 py-4 rounded-xl text-base font-semibold tracking-wide inline-flex items-center gap-2 group"
               >
-                Learn More
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                How It Works
+                <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </Link>
             </div>
           </div>
 
-          {/* Right Content - Bitcoin/Mining Visual */}
+          {/* Right Content - 3D Mining Visual */}
           <div className="relative hidden lg:block animate-fade-in-up stagger-2">
-            <div className="relative w-full h-96">
-              {/* Server Rack Visual */}
+            <div className="relative w-full h-[500px]">
+              {/* Main Center Piece - Mining Rig */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="relative">
-                  {/* Main Bitcoin Icon */}
-                  <div className="w-48 h-48 rounded-full bg-linear-to-br from-gold/30 to-gold/10 flex items-center justify-center animate-pulse-gold">
-                    <div className="w-36 h-36 rounded-full bg-linear-to-br from-gold to-gold-dark flex items-center justify-center">
-                      <svg className="w-20 h-20 text-background" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M11.5 11.5V7.5H12.75C13.4375 7.5 14 8.0625 14 8.75V10.25C14 10.9375 13.4375 11.5 12.75 11.5H11.5ZM11.5 12.5H12.75C13.4375 12.5 14 13.0625 14 13.75V15.25C14 15.9375 13.4375 16.5 12.75 16.5H11.5V12.5ZM9 12C9 7.03125 13.0312 3 18 3V5C14.1328 5 11 8.13281 11 12H13L9.5 16L6 12H9ZM15 12C15 16.9688 10.9688 21 6 21V19C9.86719 19 13 15.8672 13 12H11L14.5 8L18 12H15Z"/>
-                      </svg>
+                  {/* Large Glowing Circle */}
+                  <div className="w-72 h-72 rounded-full bg-linear-to-br from-gold/20 via-gold/10 to-transparent flex items-center justify-center animate-pulse-gold">
+                    {/* Inner Circle */}
+                    <div className="w-56 h-56 rounded-full bg-linear-to-br from-gold/30 via-gold/20 to-gold/10 flex items-center justify-center relative">
+                      {/* Core Mining Icon */}
+                      <div className="w-40 h-40 rounded-2xl bg-linear-to-br from-gold to-gold-dark flex items-center justify-center rotate-12 shadow-2xl glow-gold">
+                        <svg className="w-24 h-24 text-background" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                          <circle cx="12" cy="12" r="2" fill="currentColor" opacity="0.6"/>
+                          <path d="M8 10l4 2 4-2M8 14l4 2 4-2" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4"/>
+                        </svg>
+                      </div>
+                      {/* Orbital Lines */}
+                      <div className="absolute inset-0 rounded-full border border-gold/30 animate-spin-slow" />
+                      <div className="absolute inset-4 rounded-full border border-gold/20 animate-spin-slower" />
                     </div>
                   </div>
                   
-                  {/* Floating coins */}
-                  <div className="absolute -top-4 -right-4 w-12 h-12 rounded-full bg-gold flex items-center justify-center text-background font-bold animate-float" style={{ animationDelay: "0.5s" }}>
+                  {/* Floating Crypto Coins */}
+                  <div className="absolute -top-8 -right-8 w-16 h-16 rounded-full bg-linear-to-br from-gold to-gold-dark flex items-center justify-center text-background font-bold text-2xl shadow-lg animate-float" style={{ animationDelay: "0s" }}>
                     ₿
                   </div>
-                  <div className="absolute bottom-0 -left-8 w-10 h-10 rounded-full bg-gold/80 flex items-center justify-center text-background font-bold animate-float" style={{ animationDelay: "1s" }}>
+                  <div className="absolute top-1/4 -left-12 w-14 h-14 rounded-full bg-linear-to-br from-gold-light to-gold flex items-center justify-center text-background font-bold text-xl shadow-lg animate-float" style={{ animationDelay: "0.7s" }}>
+                    Ξ
+                  </div>
+                  <div className="absolute bottom-8 -right-6 w-12 h-12 rounded-full bg-linear-to-br from-gold to-gold-dark/80 flex items-center justify-center text-background font-bold text-lg shadow-lg animate-float" style={{ animationDelay: "1.4s" }}>
                     $
                   </div>
-                  <div className="absolute top-1/2 -right-12 w-8 h-8 rounded-full bg-gold/60 flex items-center justify-center text-background text-sm font-bold animate-float" style={{ animationDelay: "1.5s" }}>
-                    Ξ
+                  <div className="absolute -bottom-6 left-1/4 w-10 h-10 rounded-full bg-linear-to-br from-gold-light/80 to-gold/80 flex items-center justify-center text-background font-bold shadow-lg animate-float" style={{ animationDelay: "2.1s" }}>
+                    ᐊ
+                  </div>
+
+                  {/* Data Streams */}
+                  <div className="absolute top-0 right-20 flex flex-col gap-1 animate-pulse">
+                    <div className="w-24 h-1 bg-linear-to-r from-gold via-gold-light to-transparent rounded-full" />
+                    <div className="w-20 h-1 bg-linear-to-r from-gold via-gold-light to-transparent rounded-full" />
+                    <div className="w-16 h-1 bg-linear-to-r from-gold via-gold-light to-transparent rounded-full" />
+                  </div>
+                  <div className="absolute bottom-12 left-16 flex flex-col gap-1 animate-pulse" style={{ animationDelay: "0.5s" }}>
+                    <div className="w-24 h-1 bg-linear-to-l from-gold via-gold-light to-transparent rounded-full" />
+                    <div className="w-20 h-1 bg-linear-to-l from-gold via-gold-light to-transparent rounded-full" />
+                    <div className="w-16 h-1 bg-linear-to-l from-gold via-gold-light to-transparent rounded-full" />
                   </div>
                 </div>
               </div>
 
-              {/* Decorative lines */}
-              <div className="absolute top-10 left-10 w-32 h-0.5 bg-gradient-to-r from-gold/50 to-transparent" />
-              <div className="absolute bottom-10 right-10 w-32 h-0.5 bg-gradient-to-l from-gold/50 to-transparent" />
+              {/* Corner Accent Lines */}
+              <div className="absolute top-0 left-0 w-24 h-24 border-l-2 border-t-2 border-gold/30 rounded-tl-lg" />
+              <div className="absolute bottom-0 right-0 w-24 h-24 border-r-2 border-b-2 border-gold/30 rounded-br-lg" />
             </div>
           </div>
         </div>

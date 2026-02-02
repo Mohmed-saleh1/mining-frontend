@@ -1,5 +1,6 @@
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
+import FeaturedMachines from "./components/FeaturedMachines";
 import CryptoPricing from "./components/CryptoPricing";
 import ContactForm from "./components/ContactForm";
 import Footer from "./components/Footer";
@@ -18,6 +19,7 @@ export default function Home() {
         <Navbar />
         <main>
           <Hero />
+          <FeaturedMachines />
           <CryptoPricing />
           <ContactForm />
         </main>

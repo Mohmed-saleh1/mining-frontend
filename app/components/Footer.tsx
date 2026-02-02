@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -37,19 +38,14 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-4 lg:col-span-1">
-            <Link href="/" className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-full bg-linear-to-br from-gold-light to-gold flex items-center justify-center">
-                <svg
-                  className="w-6 h-6 text-background"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                </svg>
-              </div>
-              <span className="text-xl font-bold gradient-text tracking-wider">
-                X-BIN
-              </span>
+            <Link href="/" className="flex items-center mb-6">
+              <Image
+                src="/logo.png"
+                alt="X-BIN Logo"
+                width={150}
+                height={50}
+                className="object-contain h-12 w-auto"
+              />
             </Link>
             <p className="text-foreground-muted text-sm mb-6 max-w-xs">
               Your trusted platform for renting professional mining machines. Start earning passive income with enterprise-grade hardware.

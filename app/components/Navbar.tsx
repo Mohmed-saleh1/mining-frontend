@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/app/lib/auth-context";
 
 const Navbar = () => {
@@ -24,6 +25,7 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Home", href: "/" },
+    { name: "Machines", href: "/machines" },
     { name: "About Us", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];
@@ -38,22 +40,17 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group">
+          <Link href="/" className="flex items-center group">
             <div className="relative">
-              <div className="w-10 h-10 rounded-full bg-linear-to-br from-gold-light to-gold flex items-center justify-center glow-gold">
-                <svg
-                  className="w-6 h-6 text-background"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                </svg>
-              </div>
-              <div className="absolute -inset-1 bg-gold/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+              <Image
+                src="/logo.png"
+                alt="X-BIN Logo"
+                width={180}
+                height={60}
+                className="object-contain h-16 w-auto glow-gold"
+              />
+              <div className="absolute -inset-2 bg-gold/20 rounded-lg blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
-            <span className="text-2xl font-bold gradient-text tracking-wider">
-              X-BIN
-            </span>
           </Link>
 
           {/* Desktop Navigation */}

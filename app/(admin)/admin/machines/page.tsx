@@ -60,10 +60,11 @@ export default function MachinesPage() {
     try {
       setIsLoading(true);
       const response = await miningMachinesApi.getAll();
-      setMachines(response.data);
+      setMachines(response.data || []);
     } catch (err) {
       console.error("Failed to fetch machines:", err);
       setError("Failed to load machines");
+      setMachines([]); // Set empty array on error
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +79,7 @@ export default function MachinesPage() {
       setEditingMachine(null);
       setFormData(initialFormData);
       setShowModal(true);
-    } else if (editId) {
+    } else if (editId && machines) {
       const machine = machines.find((m) => m.id === editId);
       if (machine) {
         setEditingMachine(machine);
@@ -266,7 +267,7 @@ export default function MachinesPage() {
                     </td>
                   </tr>
                 ))
-              ) : machines.length === 0 ? (
+              ) : (machines?.length || 0) === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-background-secondary flex items-center justify-center">
@@ -284,7 +285,7 @@ export default function MachinesPage() {
                   </td>
                 </tr>
               ) : (
-                machines.map((machine) => (
+                (machines || []).map((machine) => (
                   <tr key={machine.id} className="hover:bg-gold/5 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">

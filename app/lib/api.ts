@@ -160,6 +160,58 @@ export const usersApi = {
     }),
 };
 
+// Admin Users API
+export interface CreateUserData {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  role?: 'admin' | 'user' | 'manager';
+}
+
+export interface UpdateUserData {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  role?: 'admin' | 'user' | 'manager';
+  isActive?: boolean;
+  emailVerified?: boolean;
+}
+
+export const adminUsersApi = {
+  getAll: () => request<User[]>('/users'),
+  
+  getOne: (id: string) => request<User>(`/users/${id}`),
+  
+  create: (data: CreateUserData) =>
+    request<User>('/users', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  
+  update: (id: string, data: UpdateUserData) =>
+    request<User>(`/users/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+  
+  delete: (id: string) =>
+    request<void>(`/users/${id}`, {
+      method: 'DELETE',
+    }),
+  
+  activate: (id: string) =>
+    request<User>(`/users/${id}/activate`, {
+      method: 'POST',
+    }),
+  
+  deactivate: (id: string) =>
+    request<User>(`/users/${id}/deactivate`, {
+      method: 'POST',
+    }),
+};
+
 // Mining Machine Types
 export type MachineType = 'asic' | 'gpu';
 export type MachineStatus = 'available' | 'rented' | 'maintenance' | 'inactive';
@@ -286,6 +338,117 @@ export const miningMachinesApi = {
     request<MiningMachine>(`/mining-machines/${id}/status`, {
       method: 'PATCH',
       body: JSON.stringify({ status }),
+    }),
+};
+
+// Contact Submissions Types
+export type ContactStatus = 'new' | 'in_progress' | 'resolved' | 'closed';
+export type ContactSubject = 'general' | 'booking' | 'complaint' | 'feedback' | 'partnership' | 'other';
+
+export interface ContactSubmission {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  subject: ContactSubject;
+  message: string;
+  status: ContactStatus;
+  adminNotes?: string;
+  assignedToId?: string;
+  isRead: boolean;
+  ipAddress?: string;
+  userAgent?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ContactSubmissionsResponse {
+  data: ContactSubmission[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface ContactStatistics {
+  total: number;
+  new: number;
+  inProgress: number;
+  resolved: number;
+  closed: number;
+  unread: number;
+  today: number;
+  thisWeek: number;
+  thisMonth: number;
+}
+
+// Contact Public API
+export interface CreateContactSubmissionData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  subject: ContactSubject;
+  message: string;
+}
+
+export const contactPublicApi = {
+  submit: (data: CreateContactSubmissionData) =>
+    request<ContactSubmission>('/contact-us', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+};
+
+// Contact Admin API
+export const contactAdminApi = {
+  getAll: (options?: {
+    page?: number;
+    limit?: number;
+    status?: ContactStatus;
+    subject?: ContactSubject;
+    search?: string;
+  }) => {
+    const params = new URLSearchParams();
+    if (options?.page) params.append('page', String(options.page));
+    if (options?.limit) params.append('limit', String(options.limit));
+    if (options?.status) params.append('status', options.status);
+    if (options?.subject) params.append('subject', options.subject);
+    if (options?.search) params.append('search', options.search);
+    
+    const query = params.toString();
+    return request<ContactSubmissionsResponse>(`/contact-us/admin${query ? `?${query}` : ''}`);
+  },
+  
+  getOne: (id: string) => request<ContactSubmission>(`/contact-us/admin/${id}`),
+  
+  getStatistics: () => request<ContactStatistics>('/contact-us/admin/statistics'),
+  
+  getRecent: (limit?: number) => {
+    const query = limit ? `?limit=${limit}` : '';
+    return request<ContactSubmission[]>(`/contact-us/admin/recent${query}`);
+  },
+  
+  update: (id: string, data: { status?: ContactStatus; adminNotes?: string }) =>
+    request<ContactSubmission>(`/contact-us/admin/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  
+  markAsRead: (id: string) =>
+    request<ContactSubmission>(`/contact-us/admin/${id}/mark-read`, {
+      method: 'PUT',
+    }),
+  
+  markAsUnread: (id: string) =>
+    request<ContactSubmission>(`/contact-us/admin/${id}/mark-unread`, {
+      method: 'PUT',
+    }),
+  
+  delete: (id: string) =>
+    request<void>(`/contact-us/admin/${id}`, {
+      method: 'DELETE',
     }),
 };
 

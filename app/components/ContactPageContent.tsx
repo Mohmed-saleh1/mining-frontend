@@ -1,18 +1,21 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import { contactPublicApi, ContactSubject } from "@/app/lib/api";
 
 interface FormData {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
-  subject: string;
+  subject: ContactSubject | "";
   message: string;
 }
 
 const ContactPageContent = () => {
   const [formData, setFormData] = useState<FormData>({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
     subject: "",
@@ -37,17 +40,28 @@ const ContactPageContent = () => {
     setSubmitStatus({ type: null, message: "" });
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      if (!formData.firstName || !formData.email || !formData.subject || !formData.message) {
+        throw new Error("Please fill in all required fields");
+      }
+
+      await contactPublicApi.submit({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone || undefined,
+        subject: formData.subject as ContactSubject,
+        message: formData.message,
+      });
       
       setSubmitStatus({
         type: "success",
         message: "Thank you for your message! We'll get back to you within 24 hours.",
       });
-      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
-    } catch {
+      setFormData({ firstName: "", lastName: "", email: "", phone: "", subject: "", message: "" });
+    } catch (err: any) {
       setSubmitStatus({
         type: "error",
-        message: "Something went wrong. Please try again later.",
+        message: err?.message || "Something went wrong. Please try again later.",
       });
     } finally {
       setIsSubmitting(false);
@@ -249,20 +263,37 @@ const ContactPageContent = () => {
                     <div className="grid sm:grid-cols-2 gap-5">
                       <div className="space-y-2">
                         <label
-                          htmlFor="name"
+                          htmlFor="firstName"
                           className="block text-sm font-medium text-foreground-muted"
                         >
-                          Full Name <span className="text-gold">*</span>
+                          First Name <span className="text-gold">*</span>
                         </label>
                         <input
                           type="text"
-                          id="name"
-                          name="name"
-                          value={formData.name}
+                          id="firstName"
+                          name="firstName"
+                          value={formData.firstName}
                           onChange={handleChange}
                           required
                           className="input-gold w-full px-4 py-3.5 rounded-xl bg-background-secondary/50"
-                          placeholder="Ahmed Hassan"
+                          placeholder="Ahmed"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="lastName"
+                          className="block text-sm font-medium text-foreground-muted"
+                        >
+                          Last Name
+                        </label>
+                        <input
+                          type="text"
+                          id="lastName"
+                          name="lastName"
+                          value={formData.lastName}
+                          onChange={handleChange}
+                          className="input-gold w-full px-4 py-3.5 rounded-xl bg-background-secondary/50"
+                          placeholder="Hassan"
                         />
                       </div>
                       <div className="space-y-2">
@@ -321,10 +352,9 @@ const ContactPageContent = () => {
                           >
                             <option value="">Select a topic</option>
                             <option value="general">General Inquiry</option>
-                            <option value="support">Technical Support</option>
-                            <option value="billing">Billing & Payments</option>
-                            <option value="account">Account Issues</option>
-                            <option value="withdrawal">Withdrawal Help</option>
+                            <option value="booking">Booking</option>
+                            <option value="complaint">Complaint</option>
+                            <option value="feedback">Feedback</option>
                             <option value="partnership">Partnership</option>
                             <option value="other">Other</option>
                           </select>
