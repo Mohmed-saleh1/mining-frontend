@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { miningMachinesPublicApi, MiningMachine } from "@/app/lib/api";
 
 export default function FeaturedMachines() {
+  const t = useTranslations('featuredMachines');
   const [machines, setMachines] = useState<MiningMachine[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,10 +32,10 @@ export default function FeaturedMachines() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-              Featured Mining <span className="gradient-text">Machines</span>
+              {t('title')} <span className="gradient-text">{t('titleHighlight')}</span>
             </h2>
             <p className="text-foreground-muted text-lg">
-              Our most popular and profitable mining machines
+              {t('loadingDescription')}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -60,10 +62,10 @@ export default function FeaturedMachines() {
         {/* Section Header */}
         <div className="text-center mb-12 animate-fade-in-up">
           <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-            Featured Mining <span className="gradient-text">Machines</span>
+            {t('title')} <span className="gradient-text">{t('titleHighlight')}</span>
           </h2>
           <p className="text-foreground-muted text-lg max-w-2xl mx-auto">
-            Our most popular and profitable mining machines, ready to start earning for you 24/7
+            {t('description')}
           </p>
         </div>
 
@@ -92,7 +94,7 @@ export default function FeaturedMachines() {
                   <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
-                  Featured
+                  {t('featured')}
                 </div>
                 <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full glass border border-gold/20 text-gold text-xs font-semibold uppercase">
                   {machine.type}
@@ -139,11 +141,11 @@ export default function FeaturedMachines() {
                 {/* Pricing */}
                 <div className="border-t border-border pt-4 mb-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-foreground-muted">Daily Rate</span>
+                    <span className="text-xs text-foreground-muted">{t('dailyRate')}</span>
                     <span className="text-lg font-bold text-gold">${machine.pricePerDay}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-foreground-muted">Est. Daily Profit</span>
+                    <span className="text-xs text-foreground-muted">{t('estDailyProfit')}</span>
                     <span className="text-sm font-semibold text-green">${machine.profitPerDay}</span>
                   </div>
                 </div>
@@ -153,7 +155,7 @@ export default function FeaturedMachines() {
                   href="/register"
                   className="block w-full btn-gold px-4 py-3 rounded-xl text-sm font-semibold text-center"
                 >
-                  Rent Now
+                  {t('rentNow')}
                 </Link>
               </div>
             </div>
@@ -166,7 +168,7 @@ export default function FeaturedMachines() {
             href="/machines"
             className="inline-flex items-center gap-2 text-gold hover:text-gold-light transition-colors font-semibold"
           >
-            View All Machines
+            {t('viewAllMachines')}
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>

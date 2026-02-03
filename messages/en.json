@@ -439,5 +439,203 @@
     },
     "copyright": "© {year} X-BIN. All rights reserved.",
     "allSystemsOperational": "All systems operational"
+  },
+  "featuredMachines": {
+    "title": "Featured Mining",
+    "titleHighlight": "Machines",
+    "description": "Our most popular and profitable mining machines, ready to start earning for you 24/7",
+    "loadingDescription": "Our most popular and profitable mining machines",
+    "featured": "Featured",
+    "dailyRate": "Daily Rate",
+    "estDailyProfit": "Est. Daily Profit",
+    "rentNow": "Rent Now",
+    "viewAllMachines": "View All Machines"
+  },
+  "howItWorks": {
+    "title": "How It",
+    "titleHighlight": "Works",
+    "description": "Start earning passive income in just 4 simple steps. No technical expertise required.",
+    "steps": {
+      "signUp": {
+        "number": "01",
+        "title": "Sign Up & Verify",
+        "description": "Create your account in seconds. Verify your email to activate your account and access the platform."
+      },
+      "browse": {
+        "number": "02",
+        "title": "Browse Machines",
+        "description": "Explore our catalog of enterprise-grade ASIC miners and GPU rigs. Compare specs, prices, and profitability."
+      },
+      "select": {
+        "number": "03",
+        "title": "Select & Rent",
+        "description": "Choose your preferred machine and rental period. Make a secure payment and your machine starts mining immediately."
+      },
+      "monitor": {
+        "number": "04",
+        "title": "Monitor & Earn",
+        "description": "Track your mining performance in real-time through our dashboard. Receive daily payouts directly to your wallet."
+      }
+    },
+    "getStarted": "Get Started Now"
+  },
+  "cryptoPricing": {
+    "title": "Live",
+    "titleHighlight": "Crypto Prices",
+    "description": "Track real-time cryptocurrency prices from CoinMarketCap",
+    "fetching": "Fetching live prices...",
+    "coinMarketCap": "CoinMarketCap",
+    "cachedData": "Cached Data",
+    "updated": "Updated",
+    "justNow": "Just now",
+    "minuteAgo": "1 minute ago",
+    "minutesAgo": "{count} minutes ago",
+    "nextRefresh": "Next refresh in",
+    "refreshing": "Refreshing...",
+    "refresh": "Refresh",
+    "coin": "Coin",
+    "price": "Price",
+    "change24h": "24h Change",
+    "marketCap": "Market Cap",
+    "volume24h": "Volume (24h)",
+    "livePrices": "Live prices from",
+    "cache": "cache",
+    "autoRefreshes": "Auto-refreshes every 5 minutes"
+  },
+  "securityTrust": {
+    "title": "Security &",
+    "titleHighlight": "Trust",
+    "description": "Your security is our top priority. We employ industry-leading security measures to protect your assets and data.",
+    "features": {
+      "sslEncryption": {
+        "title": "SSL Encryption",
+        "description": "All data is encrypted with 256-bit SSL/TLS encryption to ensure your information stays secure."
+      },
+      "coldStorage": {
+        "title": "Cold Storage",
+        "description": "Your funds are stored in cold wallets, completely isolated from internet-connected systems."
+      },
+      "twoFA": {
+        "title": "2FA Authentication",
+        "description": "Two-factor authentication adds an extra layer of security to protect your account from unauthorized access."
+      },
+      "regularAudits": {
+        "title": "Regular Audits",
+        "description": "Our systems undergo regular security audits by independent third-party firms to ensure compliance."
+      },
+      "insurance": {
+        "title": "Insurance Coverage",
+        "description": "All assets are fully insured against theft, loss, and damage to give you complete peace of mind."
+      },
+      "compliance": {
+        "title": "Compliance Certified",
+        "description": "Fully compliant with international regulations including GDPR, KYC, and AML requirements."
+      }
+    },
+    "certifications": {
+      "title": "Certifications & Compliance",
+      "iso27001": {
+        "name": "ISO 27001",
+        "description": "Information Security"
+      },
+      "soc2": {
+        "name": "SOC 2",
+        "description": "Security & Availability"
+      },
+      "gdpr": {
+        "name": "GDPR",
+        "description": "Data Protection"
+      },
+      "pciDss": {
+        "name": "PCI DSS",
+        "description": "Payment Security"
+      }
+    }
+  },
+  "testimonials": {
+    "title": "What Our",
+    "titleHighlight": "Users Say",
+    "description": "Join thousands of satisfied miners who are earning passive income with our platform"
+  },
+  "contactForm": {
+    "title": "Get In",
+    "titleHighlight": "Touch",
+    "description": "Have questions about our platform or need assistance? Our support team is here to help you 24/7. Reach out and we'll get back to you as soon as possible.",
+    "emailUs": "Email Us",
+    "location": "Location",
+    "supportHours": "Support Hours",
+    "available247": "24/7 Available",
+    "followUs": "Follow Us",
+    "sendMessage": "Send Us a Message",
+    "yourName": "Your Name",
+    "emailAddress": "Email Address",
+    "subject": "Subject",
+    "selectTopic": "Select a topic",
+    "generalInquiry": "General Inquiry",
+    "technicalSupport": "Technical Support",
+    "billingQuestion": "Billing Question",
+    "partnership": "Partnership",
+    "other": "Other",
+    "message": "Message",
+    "howCanWeHelp": "How can we help you?",
+    "sending": "Sending...",
+    "sendMessageButton": "Send Message",
+    "success": "Thank you for your message! We'll get back to you shortly.",
+    "error": "Something went wrong. Please try again later."
+  },
+  "contactPage": {
+    "title": "Get In",
+    "titleHighlight": "Touch",
+    "description": "Have questions about our platform? Need assistance with your account? Our dedicated support team is here to help you every step of the way.",
+    "supportAvailable": "24/7 Support Available",
+    "stats": {
+      "activeUsers": "Active Users",
+      "totalDeposits": "Total Deposits",
+      "totalPayouts": "Total Payouts"
+    },
+    "contactMethods": {
+      "emailSupport": {
+        "title": "Email Support",
+        "description": "Get a response within 2 hours",
+        "value": "support@x-bin.com"
+      },
+      "liveChat": {
+        "title": "Live Chat",
+        "description": "Available 24/7 for instant help",
+        "value": "Start Chat Now"
+      },
+      "phoneSupport": {
+        "title": "Phone Support",
+        "description": "Mon-Fri from 8am to 6pm UTC",
+        "value": "+1 (555) 123-4567"
+      },
+      "officeLocation": {
+        "title": "Office Location",
+        "description": "Visit our headquarters",
+        "value": "123 Crypto Street, Digital City"
+      }
+    },
+    "form": {
+      "title": "Send Us a Message",
+      "description": "Fill out the form and we'll respond within 24 hours.",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "subject": "Subject",
+      "selectSubject": "Select a subject",
+      "message": "Your Message",
+      "messagePlaceholder": "Tell us how we can help you...",
+      "submit": "Send Message",
+      "submitting": "Sending...",
+      "success": "Thank you for your message! We'll get back to you within 24 hours.",
+      "error": "Something went wrong. Please try again later.",
+      "required": "*"
+    },
+    "faq": {
+      "title": "Frequently Asked",
+      "titleHighlight": "Questions",
+      "description": "Quick answers to common questions about our platform and services."
+    }
   }
 }

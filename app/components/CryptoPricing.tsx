@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 interface CoinData {
   id: string;
@@ -24,6 +25,7 @@ interface ApiResponse {
 const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 const CryptoPricing = () => {
+  const t = useTranslations('cryptoPricing');
   const [coins, setCoins] = useState<CoinData[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -122,10 +124,10 @@ const CryptoPricing = () => {
 
   const formatTimeAgo = (date: Date) => {
     const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-    if (seconds < 60) return "Just now";
+    if (seconds < 60) return t('justNow');
     const minutes = Math.floor(seconds / 60);
-    if (minutes === 1) return "1 minute ago";
-    return `${minutes} minutes ago`;
+    if (minutes === 1) return t('minuteAgo');
+    return t('minutesAgo', { count: minutes });
   };
 
   const formatCountdown = (ms: number) => {
@@ -141,17 +143,17 @@ const CryptoPricing = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              Live <span className="gradient-text">Crypto Prices</span>
+              {t('title')} <span className="gradient-text">{t('titleHighlight')}</span>
             </h2>
             <p className="text-foreground-muted max-w-2xl mx-auto">
-              Track real-time cryptocurrency prices from CoinMarketCap
+              {t('description')}
             </p>
           </div>
           <div className="glass rounded-2xl p-8">
             <div className="flex items-center justify-center h-64">
               <div className="flex flex-col items-center gap-4">
                 <div className="w-12 h-12 border-4 border-gold border-t-transparent rounded-full animate-spin" />
-                <p className="text-foreground-muted">Fetching live prices...</p>
+                <p className="text-foreground-muted">{t('fetching')}</p>
               </div>
             </div>
           </div>
@@ -167,10 +169,10 @@ const CryptoPricing = () => {
         {/* Section Header */}
         <div className="text-center mb-12 animate-fade-in-up">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            Live <span className="gradient-text">Crypto Prices</span>
+            {t('title')} <span className="gradient-text">{t('titleHighlight')}</span>
           </h2>
           <p className="text-foreground-muted max-w-2xl mx-auto">
-            Track real-time cryptocurrency prices from CoinMarketCap
+            {t('description')}
           </p>
         </div>
 
@@ -182,18 +184,18 @@ const CryptoPricing = () => {
               {dataSource === "coinmarketcap" ? (
                 <>
                   <span className="w-2 h-2 rounded-full bg-green animate-pulse" />
-                  <span className="text-xs font-medium text-foreground-muted">CoinMarketCap</span>
+                  <span className="text-xs font-medium text-foreground-muted">{t('coinMarketCap')}</span>
                 </>
               ) : (
                 <>
                   <span className="w-2 h-2 rounded-full bg-yellow-500" />
-                  <span className="text-xs font-medium text-foreground-muted">Cached Data</span>
+                  <span className="text-xs font-medium text-foreground-muted">{t('cachedData')}</span>
                 </>
               )}
             </div>
             {lastUpdated && (
               <span className="text-xs text-foreground-muted">
-                Updated {formatTimeAgo(lastUpdated)}
+                {t('updated')} {formatTimeAgo(lastUpdated)}
               </span>
             )}
           </div>
@@ -205,7 +207,7 @@ const CryptoPricing = () => {
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span>Next refresh in {formatCountdown(nextRefresh)}</span>
+              <span>{t('nextRefresh')} {formatCountdown(nextRefresh)}</span>
             </div>
 
             {/* Manual Refresh Button */}
@@ -228,7 +230,7 @@ const CryptoPricing = () => {
                 />
               </svg>
               <span className="text-sm font-medium">
-                {refreshing ? "Refreshing..." : "Refresh"}
+                {refreshing ? t('refreshing') : t('refresh')}
               </span>
             </button>
           </div>
@@ -245,19 +247,19 @@ const CryptoPricing = () => {
                     #
                   </th>
                   <th className="text-left py-4 px-6 text-foreground-muted font-medium text-sm">
-                    Coin
+                    {t('coin')}
                   </th>
                   <th className="text-right py-4 px-6 text-foreground-muted font-medium text-sm">
-                    Price
+                    {t('price')}
                   </th>
                   <th className="text-right py-4 px-6 text-foreground-muted font-medium text-sm">
-                    24h Change
+                    {t('change24h')}
                   </th>
                   <th className="text-right py-4 px-6 text-foreground-muted font-medium text-sm">
-                    Market Cap
+                    {t('marketCap')}
                   </th>
                   <th className="text-right py-4 px-6 text-foreground-muted font-medium text-sm">
-                    Volume (24h)
+                    {t('volume24h')}
                   </th>
                 </tr>
               </thead>
@@ -376,7 +378,7 @@ const CryptoPricing = () => {
                     {formatPrice(coin.price)}
                   </div>
                   <div className="text-foreground-muted text-xs">
-                    MCap: {formatMarketCap(coin.marketCap)}
+                    {t('marketCap')}: {formatMarketCap(coin.marketCap)}
                   </div>
                 </div>
               </div>
@@ -388,10 +390,10 @@ const CryptoPricing = () => {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6 text-foreground-muted text-sm">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green animate-pulse" />
-            <span>Live prices from {dataSource === "coinmarketcap" ? "CoinMarketCap" : "cache"}</span>
+            <span>{t('livePrices')} {dataSource === "coinmarketcap" ? t('coinMarketCap') : t('cache')}</span>
           </div>
           <span className="hidden sm:inline">•</span>
-          <span>Auto-refreshes every 5 minutes</span>
+          <span>{t('autoRefreshes')}</span>
         </div>
       </div>
     </section>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import { useTranslations } from "next-intl";
 
 interface FormData {
   name: string;
@@ -10,6 +11,7 @@ interface FormData {
 }
 
 const ContactForm = () => {
+  const t = useTranslations('contactForm');
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -40,13 +42,13 @@ const ContactForm = () => {
       
       setSubmitStatus({
         type: "success",
-        message: "Thank you for your message! We'll get back to you shortly.",
+        message: t('success'),
       });
       setFormData({ name: "", email: "", subject: "", message: "" });
     } catch {
       setSubmitStatus({
         type: "error",
-        message: "Something went wrong. Please try again later.",
+        message: t('error'),
       });
     } finally {
       setIsSubmitting(false);
@@ -62,10 +64,10 @@ const ContactForm = () => {
           <div className="space-y-8 animate-fade-in-up">
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-                Get In <span className="gradient-text">Touch</span>
+                {t('title')} <span className="gradient-text">{t('titleHighlight')}</span>
               </h2>
               <p className="text-foreground-muted max-w-lg">
-                Have questions about our platform or need assistance? Our support team is here to help you 24/7. Reach out and we&apos;ll get back to you as soon as possible.
+                {t('description')}
               </p>
             </div>
 
@@ -78,7 +80,7 @@ const ContactForm = () => {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-foreground">Email Us</h4>
+                  <h4 className="font-semibold text-foreground">{t('emailUs')}</h4>
                   <p className="text-foreground-muted text-sm">support@x-bin.com</p>
                 </div>
               </div>
@@ -91,7 +93,7 @@ const ContactForm = () => {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-foreground">Location</h4>
+                  <h4 className="font-semibold text-foreground">{t('location')}</h4>
                   <p className="text-foreground-muted text-sm">123 Crypto Street, Digital City</p>
                 </div>
               </div>
@@ -103,15 +105,15 @@ const ContactForm = () => {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-foreground">Support Hours</h4>
-                  <p className="text-foreground-muted text-sm">24/7 Available</p>
+                  <h4 className="font-semibold text-foreground">{t('supportHours')}</h4>
+                  <p className="text-foreground-muted text-sm">{t('available247')}</p>
                 </div>
               </div>
             </div>
 
             {/* Social Links */}
             <div>
-              <h4 className="font-semibold text-foreground mb-4">Follow Us</h4>
+              <h4 className="font-semibold text-foreground mb-4">{t('followUs')}</h4>
               <div className="flex gap-4">
                 {[
                   {
@@ -163,7 +165,7 @@ const ContactForm = () => {
           {/* Right Side - Form */}
           <div className="glass rounded-2xl p-8 animate-fade-in-up stagger-2">
             <h3 className="text-xl font-semibold text-foreground mb-6">
-              Send Us a Message
+              {t('sendMessage')}
             </h3>
             
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -173,7 +175,7 @@ const ContactForm = () => {
                     htmlFor="name"
                     className="block text-sm font-medium text-foreground-muted mb-2"
                   >
-                    Your Name
+                    {t('yourName')}
                   </label>
                   <input
                     type="text"
@@ -191,7 +193,7 @@ const ContactForm = () => {
                     htmlFor="email"
                     className="block text-sm font-medium text-foreground-muted mb-2"
                   >
-                    Email Address
+                    {t('emailAddress')}
                   </label>
                   <input
                     type="email"
@@ -211,7 +213,7 @@ const ContactForm = () => {
                   htmlFor="subject"
                   className="block text-sm font-medium text-foreground-muted mb-2"
                 >
-                  Subject
+                  {t('subject')}
                 </label>
                 <select
                   id="subject"
@@ -221,12 +223,12 @@ const ContactForm = () => {
                   required
                   className="input-gold w-full px-4 py-3 rounded-xl appearance-none cursor-pointer"
                 >
-                  <option value="">Select a topic</option>
-                  <option value="general">General Inquiry</option>
-                  <option value="support">Technical Support</option>
-                  <option value="billing">Billing Question</option>
-                  <option value="partnership">Partnership</option>
-                  <option value="other">Other</option>
+                  <option value="">{t('selectTopic')}</option>
+                  <option value="general">{t('generalInquiry')}</option>
+                  <option value="support">{t('technicalSupport')}</option>
+                  <option value="billing">{t('billingQuestion')}</option>
+                  <option value="partnership">{t('partnership')}</option>
+                  <option value="other">{t('other')}</option>
                 </select>
               </div>
 
@@ -235,7 +237,7 @@ const ContactForm = () => {
                   htmlFor="message"
                   className="block text-sm font-medium text-foreground-muted mb-2"
                 >
-                  Message
+                  {t('message')}
                 </label>
                 <textarea
                   id="message"
@@ -245,7 +247,7 @@ const ContactForm = () => {
                   required
                   rows={5}
                   className="input-gold w-full px-4 py-3 rounded-xl resize-none"
-                  placeholder="How can we help you?"
+                  placeholder={t('howCanWeHelp')}
                 />
               </div>
 
@@ -270,11 +272,11 @@ const ContactForm = () => {
                 {isSubmitting ? (
                   <>
                     <div className="w-5 h-5 border-2 border-background border-t-transparent rounded-full animate-spin" />
-                    Sending...
+                    {t('sending')}
                   </>
                 ) : (
                   <>
-                    Send Message
+                    {t('sendMessageButton')}
                     <svg
                       className="w-5 h-5"
                       fill="none"

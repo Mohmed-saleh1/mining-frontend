@@ -1,6 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 const Testimonials = () => {
+  const t = useTranslations('testimonials');
   const testimonials = [
     {
       name: "Sarah Chen",
@@ -59,10 +62,10 @@ const Testimonials = () => {
         {/* Section Header */}
         <div className="text-center mb-16 animate-fade-in-up">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-            What Our <span className="gradient-text">Users Say</span>
+            {t('title')} <span className="gradient-text">{t('titleHighlight')}</span>
           </h2>
           <p className="text-foreground-muted text-lg max-w-2xl mx-auto">
-            Join thousands of satisfied miners who are earning passive income with our platform
+            {t('description')}
           </p>
         </div>
 

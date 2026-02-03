@@ -1,9 +1,12 @@
 "use client";
 
-import Navbar from "@/app/components/Navbar";
-import Footer from "@/app/components/Footer";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 export default function AboutPage() {
+  const t = useTranslations('about');
   const features = [
     {
       icon: (
@@ -11,8 +14,8 @@ export default function AboutPage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
         </svg>
       ),
-      title: "Enterprise-Grade Hardware",
-      description: "Access to the latest ASIC miners and GPU rigs from leading manufacturers like Bitmain, MicroBT, and Canaan.",
+      title: t('features.items.enterpriseHardware.title'),
+      description: t('features.items.enterpriseHardware.description'),
     },
     {
       icon: (
@@ -20,8 +23,8 @@ export default function AboutPage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
       ),
-      title: "Optimized Performance",
-      description: "Our machines run 24/7 in climate-controlled facilities with 99.9% uptime guarantee and optimal hash rates.",
+      title: t('features.items.optimizedPerformance.title'),
+      description: t('features.items.optimizedPerformance.description'),
     },
     {
       icon: (
@@ -29,8 +32,8 @@ export default function AboutPage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
-      title: "Flexible Rental Plans",
-      description: "Choose from hourly, daily, weekly, or monthly rental plans that fit your investment strategy and budget.",
+      title: t('features.items.flexibleRentalPlans.title'),
+      description: t('features.items.flexibleRentalPlans.description'),
     },
     {
       icon: (
@@ -38,8 +41,8 @@ export default function AboutPage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
         </svg>
       ),
-      title: "Secure & Transparent",
-      description: "Real-time monitoring dashboard, transparent earnings reports, and bank-grade security for your investments.",
+      title: t('features.items.secureTransparent.title'),
+      description: t('features.items.secureTransparent.description'),
     },
     {
       icon: (
@@ -47,8 +50,8 @@ export default function AboutPage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
       ),
-      title: "Expert Support",
-      description: "Dedicated 24/7 customer support team to help you maximize your mining profits and resolve any issues.",
+      title: t('features.items.expertSupport.title'),
+      description: t('features.items.expertSupport.description'),
     },
     {
       icon: (
@@ -56,16 +59,16 @@ export default function AboutPage() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
-      title: "Global Infrastructure",
-      description: "Mining facilities strategically located worldwide for optimal electricity costs and network connectivity.",
+      title: t('features.items.globalInfrastructure.title'),
+      description: t('features.items.globalInfrastructure.description'),
     },
   ];
 
   const stats = [
-    { value: "50K+", label: "Active Miners" },
-    { value: "99.9%", label: "Uptime" },
-    { value: "15+", label: "Countries" },
-    { value: "$100M+", label: "Paid Out" },
+    { value: "50K+", label: t('stats.activeMiners') },
+    { value: "99.9%", label: t('stats.uptime') },
+    { value: "15+", label: t('stats.countries') },
+    { value: "$100M+", label: t('stats.paidOut') },
   ];
 
   const team = [
@@ -101,14 +104,11 @@ export default function AboutPage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight animate-fade-in-up">
-              About{" "}
-              <span className="gradient-text">X-BIN</span>
+              {t('title')}{" "}
+              <span className="gradient-text">{t('titleHighlight')}</span>
             </h1>
             <p className="mt-6 text-lg text-foreground-muted max-w-3xl mx-auto animate-fade-in-up stagger-1">
-              X-BIN is a leading cryptocurrency mining platform that makes professional 
-              mining accessible to everyone. We provide enterprise-grade mining machines 
-              for rent, allowing you to earn passive income without the hassle of hardware 
-              management.
+              {t('description')}
             </p>
           </div>
         </div>
@@ -121,18 +121,13 @@ export default function AboutPage() {
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
                 <h2 className="text-3xl font-bold text-foreground mb-6">
-                  Our <span className="gradient-text">Mission</span>
+                  {t('mission.title')} <span className="gradient-text">{t('mission.titleHighlight')}</span>
                 </h2>
                 <p className="text-foreground-muted leading-relaxed mb-6">
-                  At X-BIN, we believe that cryptocurrency mining should be accessible to everyone, 
-                  not just those with technical expertise or large capital. Our mission is to 
-                  democratize crypto mining by providing a simple, secure, and profitable way 
-                  for anyone to participate in the blockchain economy.
+                  {t('mission.description1')}
                 </p>
                 <p className="text-foreground-muted leading-relaxed">
-                  We handle all the complexity – from hardware procurement and maintenance to 
-                  electricity costs and cooling solutions – so you can focus on what matters 
-                  most: growing your crypto portfolio.
+                  {t('mission.description2')}
                 </p>
               </div>
               <div className="relative">
@@ -185,11 +180,10 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 animate-fade-in-up">
-              Why Choose <span className="gradient-text">X-BIN</span>?
+              {t('features.title')} <span className="gradient-text">{t('features.titleHighlight')}</span>?
             </h2>
             <p className="text-foreground-muted max-w-2xl mx-auto animate-fade-in-up stagger-1">
-              We combine cutting-edge technology with years of mining expertise to deliver 
-              the best possible returns for our clients.
+              {t('features.description')}
             </p>
           </div>
 
@@ -220,19 +214,19 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 animate-fade-in-up">
-              How It <span className="gradient-text">Works</span>
+              {t('howItWorks.title')} <span className="gradient-text">{t('howItWorks.titleHighlight')}</span>
             </h2>
             <p className="text-foreground-muted max-w-2xl mx-auto animate-fade-in-up stagger-1">
-              Start earning from cryptocurrency mining in just a few simple steps.
+              {t('howItWorks.description')}
             </p>
           </div>
 
           <div className="grid md:grid-cols-4 gap-8">
             {[
-              { step: "01", title: "Create Account", description: "Sign up for free and verify your email to get started." },
-              { step: "02", title: "Choose Machine", description: "Browse our catalog of mining machines and select one that fits your budget." },
-              { step: "03", title: "Select Duration", description: "Pick your rental period - hourly, daily, weekly, or monthly options available." },
-              { step: "04", title: "Start Earning", description: "Your machine starts mining immediately and you receive earnings to your wallet." },
+              { step: t('howItWorks.steps.step1.step'), title: t('howItWorks.steps.step1.title'), description: t('howItWorks.steps.step1.description') },
+              { step: t('howItWorks.steps.step2.step'), title: t('howItWorks.steps.step2.title'), description: t('howItWorks.steps.step2.description') },
+              { step: t('howItWorks.steps.step3.step'), title: t('howItWorks.steps.step3.title'), description: t('howItWorks.steps.step3.description') },
+              { step: t('howItWorks.steps.step4.step'), title: t('howItWorks.steps.step4.title'), description: t('howItWorks.steps.step4.description') },
             ].map((item, index) => (
               <div
                 key={item.step}
@@ -260,10 +254,10 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4 animate-fade-in-up">
-              Meet Our <span className="gradient-text">Team</span>
+              {t('team.title')} <span className="gradient-text">{t('team.titleHighlight')}</span>
             </h2>
             <p className="text-foreground-muted max-w-2xl mx-auto animate-fade-in-up stagger-1">
-              Led by industry veterans with decades of combined experience in blockchain and cryptocurrency.
+              {t('team.description')}
             </p>
           </div>
 
@@ -293,28 +287,27 @@ export default function AboutPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="glass rounded-3xl p-8 lg:p-12 text-center animate-fade-in-up">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-              Ready to Start <span className="gradient-text">Mining</span>?
+              {t('cta.title')} <span className="gradient-text">{t('cta.titleHighlight')}</span>?
             </h2>
             <p className="text-foreground-muted mb-8 max-w-2xl mx-auto">
-              Join thousands of users who are already earning passive income through 
-              cryptocurrency mining with X-BIN.
+              {t('cta.description')}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <a
+              <Link
                 href="/register"
                 className="btn-gold px-8 py-4 rounded-xl text-base font-semibold tracking-wide inline-flex items-center gap-2"
               >
-                Get Started Now
+                {t('cta.getStarted')}
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/contact"
                 className="btn-outline px-8 py-4 rounded-xl text-base font-semibold tracking-wide"
               >
-                Contact Us
-              </a>
+                {t('cta.contactUs')}
+              </Link>
             </div>
           </div>
         </div>

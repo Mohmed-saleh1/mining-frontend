@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import { useTranslations } from "next-intl";
 import { contactPublicApi, ContactSubject } from "@/app/lib/api";
 
 interface FormData {
@@ -13,6 +14,7 @@ interface FormData {
 }
 
 const ContactPageContent = () => {
+  const t = useTranslations('contactPage');
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -55,14 +57,14 @@ const ContactPageContent = () => {
       
       setSubmitStatus({
         type: "success",
-        message: "Thank you for your message! We'll get back to you within 24 hours.",
+        message: t('form.success'),
       });
       setFormData({ firstName: "", lastName: "", email: "", phone: "", subject: "", message: "" });
     } catch (err: unknown) {
       const error = err as Error;
       setSubmitStatus({
         type: "error",
-        message: error?.message || "Something went wrong. Please try again later.",
+        message: error?.message || t('form.error'),
       });
     } finally {
       setIsSubmitting(false);
@@ -70,9 +72,9 @@ const ContactPageContent = () => {
   };
 
   const stats = [
-    { label: "Active Users", value: "8,750", icon: "👥" },
-    { label: "Total Deposits", value: "$2,865,500", icon: "💰" },
-    { label: "Total Payouts", value: "$363,530", icon: "📊" },
+    { label: t('stats.activeUsers'), value: "8,750", icon: "👥" },
+    { label: t('stats.totalDeposits'), value: "$2,865,500", icon: "💰" },
+    { label: t('stats.totalPayouts'), value: "$363,530", icon: "📊" },
   ];
 
   const contactMethods = [
@@ -82,9 +84,9 @@ const ContactPageContent = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
         </svg>
       ),
-      title: "Email Support",
-      description: "Get a response within 2 hours",
-      value: "support@x-bin.com",
+      title: t('contactMethods.emailSupport.title'),
+      description: t('contactMethods.emailSupport.description'),
+      value: t('contactMethods.emailSupport.value'),
       action: "mailto:support@x-bin.com",
       gradient: "from-amber-500/20 to-yellow-600/20",
     },
@@ -94,9 +96,9 @@ const ContactPageContent = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
         </svg>
       ),
-      title: "Live Chat",
-      description: "Available 24/7 for instant help",
-      value: "Start Chat Now",
+      title: t('contactMethods.liveChat.title'),
+      description: t('contactMethods.liveChat.description'),
+      value: t('contactMethods.liveChat.value'),
       action: "#",
       gradient: "from-emerald-500/20 to-green-600/20",
     },
@@ -106,9 +108,9 @@ const ContactPageContent = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
         </svg>
       ),
-      title: "Phone Support",
-      description: "Mon-Fri from 8am to 6pm UTC",
-      value: "+1 (555) 123-4567",
+      title: t('contactMethods.phoneSupport.title'),
+      description: t('contactMethods.phoneSupport.description'),
+      value: t('contactMethods.phoneSupport.value'),
       action: "tel:+15551234567",
       gradient: "from-blue-500/20 to-indigo-600/20",
     },
@@ -119,9 +121,9 @@ const ContactPageContent = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
       ),
-      title: "Office Location",
-      description: "Visit our headquarters",
-      value: "123 Crypto Street, Digital City",
+      title: t('contactMethods.officeLocation.title'),
+      description: t('contactMethods.officeLocation.description'),
+      value: t('contactMethods.officeLocation.value'),
       action: "#",
       gradient: "from-purple-500/20 to-pink-600/20",
     },
@@ -166,15 +168,14 @@ const ContactPageContent = () => {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-linear-to-r from-gold/10 to-gold/5 border border-gold/20 mb-8">
               <span className="w-2 h-2 rounded-full bg-green animate-pulse" />
-              <span className="text-gold text-sm font-medium tracking-wide">24/7 Support Available</span>
+              <span className="text-gold text-sm font-medium tracking-wide">{t('supportAvailable')}</span>
             </div>
             
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
-              Get In <span className="gradient-text">Touch</span>
+              {t('title')} <span className="gradient-text">{t('titleHighlight')}</span>
             </h1>
             <p className="text-foreground-muted text-lg max-w-2xl mx-auto leading-relaxed">
-              Have questions about our platform? Need assistance with your account? 
-              Our dedicated support team is here to help you every step of the way.
+              {t('description')}
             </p>
           </div>
 
@@ -253,11 +254,11 @@ const ContactPageContent = () => {
                       </svg>
                     </div>
                     <h2 className="text-2xl font-bold text-foreground">
-                      Send Us a Message
+                      {t('form.title')}
                     </h2>
                   </div>
                   <p className="text-foreground-muted mb-8 ml-13">
-                    Fill out the form and we&apos;ll respond within 24 hours.
+                    {t('form.description')}
                   </p>
 
                   <form onSubmit={handleSubmit} className="space-y-6">
@@ -267,7 +268,7 @@ const ContactPageContent = () => {
                           htmlFor="firstName"
                           className="block text-sm font-medium text-foreground-muted"
                         >
-                          First Name <span className="text-gold">*</span>
+                          {t('form.firstName')} <span className="text-gold">{t('form.required')}</span>
                         </label>
                         <input
                           type="text"
@@ -285,7 +286,7 @@ const ContactPageContent = () => {
                           htmlFor="lastName"
                           className="block text-sm font-medium text-foreground-muted"
                         >
-                          Last Name
+                          {t('form.lastName')}
                         </label>
                         <input
                           type="text"
@@ -302,7 +303,7 @@ const ContactPageContent = () => {
                           htmlFor="email"
                           className="block text-sm font-medium text-foreground-muted"
                         >
-                          Email Address <span className="text-gold">*</span>
+                          {t('form.email')} <span className="text-gold">{t('form.required')}</span>
                         </label>
                         <input
                           type="email"
@@ -323,7 +324,7 @@ const ContactPageContent = () => {
                           htmlFor="phone"
                           className="block text-sm font-medium text-foreground-muted"
                         >
-                          Phone Number
+                          {t('form.phone')}
                         </label>
                         <input
                           type="tel"
@@ -340,7 +341,7 @@ const ContactPageContent = () => {
                           htmlFor="subject"
                           className="block text-sm font-medium text-foreground-muted"
                         >
-                          Subject <span className="text-gold">*</span>
+                          {t('form.subject')} <span className="text-gold">{t('form.required')}</span>
                         </label>
                         <div className="relative">
                           <select
@@ -351,13 +352,13 @@ const ContactPageContent = () => {
                             required
                             className="input-gold w-full px-4 py-3.5 rounded-xl bg-background-secondary/50 appearance-none cursor-pointer"
                           >
-                            <option value="">Select a topic</option>
-                            <option value="general">General Inquiry</option>
+                            <option value="">{t('form.selectSubject')}</option>
+                            <option value="general">{t('contactForm.generalInquiry')}</option>
                             <option value="booking">Booking</option>
                             <option value="complaint">Complaint</option>
                             <option value="feedback">Feedback</option>
-                            <option value="partnership">Partnership</option>
-                            <option value="other">Other</option>
+                            <option value="partnership">{t('contactForm.partnership')}</option>
+                            <option value="other">{t('contactForm.other')}</option>
                           </select>
                           <svg className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-muted pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -371,7 +372,7 @@ const ContactPageContent = () => {
                         htmlFor="message"
                         className="block text-sm font-medium text-foreground-muted"
                       >
-                        Message <span className="text-gold">*</span>
+                        {t('form.message')} <span className="text-gold">{t('form.required')}</span>
                       </label>
                       <textarea
                         id="message"
@@ -381,7 +382,7 @@ const ContactPageContent = () => {
                         required
                         rows={5}
                         className="input-gold w-full px-4 py-3.5 rounded-xl bg-background-secondary/50 resize-none"
-                        placeholder="Please describe your inquiry in detail..."
+                        placeholder={t('form.messagePlaceholder')}
                       />
                     </div>
 
@@ -414,11 +415,11 @@ const ContactPageContent = () => {
                       {isSubmitting ? (
                         <>
                           <div className="w-5 h-5 border-2 border-background border-t-transparent rounded-full animate-spin" />
-                          Sending...
+                          {t('form.submitting')}
                         </>
                       ) : (
                         <>
-                          Send Message
+                          {t('form.submit')}
                           <svg
                             className="w-5 h-5 group-hover:translate-x-1 transition-transform"
                             fill="none"
@@ -601,7 +602,7 @@ const ContactPageContent = () => {
               <span className="text-gold text-sm font-medium">FAQ</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              Frequently Asked <span className="gradient-text">Questions</span>
+              {t('faq.title')} <span className="gradient-text">{t('faq.titleHighlight')}</span>
             </h2>
             <p className="text-foreground-muted max-w-2xl mx-auto">
               Find quick answers to common questions. Can&apos;t find what you&apos;re looking for? Contact our support team.

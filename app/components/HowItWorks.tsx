@@ -1,11 +1,15 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+
 const HowItWorks = () => {
+  const t = useTranslations('howItWorks');
   const steps = [
     {
-      number: "01",
-      title: "Sign Up & Verify",
-      description: "Create your account in seconds. Verify your email to activate your account and access the platform.",
+      number: t('steps.signUp.number'),
+      title: t('steps.signUp.title'),
+      description: t('steps.signUp.description'),
       icon: (
         <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -13,9 +17,9 @@ const HowItWorks = () => {
       ),
     },
     {
-      number: "02",
-      title: "Browse Machines",
-      description: "Explore our catalog of enterprise-grade ASIC miners and GPU rigs. Compare specs, prices, and profitability.",
+      number: t('steps.browse.number'),
+      title: t('steps.browse.title'),
+      description: t('steps.browse.description'),
       icon: (
         <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -23,9 +27,9 @@ const HowItWorks = () => {
       ),
     },
     {
-      number: "03",
-      title: "Select & Rent",
-      description: "Choose your preferred machine and rental period. Make a secure payment and your machine starts mining immediately.",
+      number: t('steps.select.number'),
+      title: t('steps.select.title'),
+      description: t('steps.select.description'),
       icon: (
         <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
@@ -33,9 +37,9 @@ const HowItWorks = () => {
       ),
     },
     {
-      number: "04",
-      title: "Monitor & Earn",
-      description: "Track your mining performance in real-time through our dashboard. Receive daily payouts directly to your wallet.",
+      number: t('steps.monitor.number'),
+      title: t('steps.monitor.title'),
+      description: t('steps.monitor.description'),
       icon: (
         <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -51,10 +55,10 @@ const HowItWorks = () => {
         {/* Section Header */}
         <div className="text-center mb-16 animate-fade-in-up">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-            How It <span className="gradient-text">Works</span>
+            {t('title')} <span className="gradient-text">{t('titleHighlight')}</span>
           </h2>
           <p className="text-foreground-muted text-lg max-w-2xl mx-auto">
-            Start earning passive income in just 4 simple steps. No technical expertise required.
+            {t('description')}
           </p>
         </div>
 
@@ -118,15 +122,15 @@ const HowItWorks = () => {
 
         {/* CTA */}
         <div className="text-center mt-12 animate-fade-in-up" style={{ animationDelay: "0.6s" }}>
-          <a
+          <Link
             href="/register"
             className="btn-gold px-8 py-4 rounded-xl text-base font-semibold tracking-wide inline-flex items-center gap-2 group"
           >
-            Get Started Now
+            {t('getStarted')}
             <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
-          </a>
+          </Link>
         </div>
       </div>
     </section>
