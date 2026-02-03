@@ -1,17 +1,37 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { miningMachinesPublicApi, MiningMachine, ApiError } from "@/app/lib/api";
+import { miningMachinesPublicApi, bookingsApi, MiningMachine, ApiError, RentalDuration } from "@/app/lib/api";
+import { useAuth } from "@/app/lib/auth-context";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 
+const durationLabels: Record<RentalDuration, string> = {
+  hour: "Per Hour",
+  day: "Per Day",
+  week: "Per Week",
+  month: "Per Month",
+};
+
 export default function MachineDetailsPage() {
   const params = useParams();
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const [machine, setMachine] = useState<MiningMachine | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Booking modal state
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [bookingForm, setBookingForm] = useState({
+    rentalDuration: "day" as RentalDuration,
+    quantity: 1,
+    userNotes: "",
+  });
+  const [isCreatingBooking, setIsCreatingBooking] = useState(false);
+  const [bookingSuccess, setBookingSuccess] = useState(false);
 
   useEffect(() => {
     const fetchMachine = async () => {
@@ -34,6 +54,54 @@ export default function MachineDetailsPage() {
       fetchMachine();
     }
   }, [params.id]);
+
+  const handleStartMining = () => {
+    if (!isAuthenticated) {
+      router.push("/register");
+      return;
+    }
+    setShowBookingModal(true);
+  };
+
+  const handleCreateBooking = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!machine) return;
+
+    setIsCreatingBooking(true);
+    try {
+      await bookingsApi.create({
+        machineId: machine.id,
+        rentalDuration: bookingForm.rentalDuration,
+        quantity: bookingForm.quantity,
+        userNotes: bookingForm.userNotes || undefined,
+      });
+      setBookingSuccess(true);
+      setTimeout(() => {
+        setShowBookingModal(false);
+        router.push("/dashboard/bookings");
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to create booking:", err);
+      alert("Failed to create booking. Please try again.");
+    } finally {
+      setIsCreatingBooking(false);
+    }
+  };
+
+  const calculatedPrice = machine
+    ? (() => {
+        switch (bookingForm.rentalDuration) {
+          case "hour":
+            return machine.pricePerHour * bookingForm.quantity;
+          case "day":
+            return machine.pricePerDay * bookingForm.quantity;
+          case "week":
+            return machine.pricePerWeek * bookingForm.quantity;
+          case "month":
+            return machine.pricePerMonth * bookingForm.quantity;
+        }
+      })()
+    : 0;
 
   return (
     <div className="min-h-screen main-bg relative">
@@ -226,12 +294,12 @@ export default function MachineDetailsPage() {
                   </div>
 
                   {/* CTA */}
-                  <Link
-                    href="/register"
+                  <button
+                    onClick={handleStartMining}
                     className="block w-full btn-gold px-6 py-4 rounded-xl text-lg font-semibold text-center"
                   >
-                    Start Mining Now
-                  </Link>
+                    {isAuthenticated ? "Book This Machine" : "Start Mining Now"}
+                  </button>
                 </div>
               </div>
             ) : null}
@@ -239,6 +307,137 @@ export default function MachineDetailsPage() {
         </main>
         
         <Footer />
+
+        {/* Booking Modal */}
+        {showBookingModal && machine && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+            <div className="glass rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+              {bookingSuccess ? (
+                <div className="p-12 text-center">
+                  <div className="w-20 h-20 rounded-full bg-green/20 flex items-center justify-center mx-auto mb-6">
+                    <svg className="w-10 h-10 text-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-bold text-foreground mb-2">Booking Created!</h2>
+                  <p className="text-foreground-muted">Redirecting to your bookings...</p>
+                </div>
+              ) : (
+                <>
+                  <div className="p-6 border-b border-border">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h2 className="text-xl font-bold text-foreground">Book {machine.name}</h2>
+                        <p className="text-sm text-foreground-muted">Create a rental request</p>
+                      </div>
+                      <button
+                        onClick={() => setShowBookingModal(false)}
+                        className="p-2 hover:bg-gold/10 rounded-lg transition-colors"
+                      >
+                        <svg className="w-5 h-5 text-foreground-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <form onSubmit={handleCreateBooking} className="p-6 space-y-5">
+                    {/* Duration Selection */}
+                    <div>
+                      <label className="block text-sm font-medium text-foreground-muted mb-2">
+                        Rental Duration <span className="text-gold">*</span>
+                      </label>
+                      <div className="grid grid-cols-2 gap-3">
+                        {(["hour", "day", "week", "month"] as RentalDuration[]).map((duration) => (
+                          <button
+                            key={duration}
+                            type="button"
+                            onClick={() => setBookingForm({ ...bookingForm, rentalDuration: duration })}
+                            className={`p-3 rounded-xl border text-sm font-medium transition-all ${
+                              bookingForm.rentalDuration === duration
+                                ? "border-gold bg-gold/10 text-gold"
+                                : "border-border hover:border-gold/30 text-foreground-muted"
+                            }`}
+                          >
+                            {durationLabels[duration]}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Quantity */}
+                    <div>
+                      <label className="block text-sm font-medium text-foreground-muted mb-2">
+                        Quantity <span className="text-gold">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max={machine.totalUnits - machine.rentedUnits}
+                        value={bookingForm.quantity}
+                        onChange={(e) => setBookingForm({ ...bookingForm, quantity: parseInt(e.target.value) || 1 })}
+                        className="input-gold w-full px-4 py-3 rounded-xl bg-background-secondary/50"
+                        required
+                      />
+                      <p className="text-xs text-foreground-muted mt-1">
+                        {machine.totalUnits - machine.rentedUnits} units available
+                      </p>
+                    </div>
+
+                    {/* Notes */}
+                    <div>
+                      <label className="block text-sm font-medium text-foreground-muted mb-2">
+                        Notes (Optional)
+                      </label>
+                      <textarea
+                        value={bookingForm.userNotes}
+                        onChange={(e) => setBookingForm({ ...bookingForm, userNotes: e.target.value })}
+                        className="input-gold w-full px-4 py-3 rounded-xl bg-background-secondary/50 resize-none"
+                        rows={3}
+                        placeholder="Any special requests or notes..."
+                      />
+                    </div>
+
+                    {/* Price Summary */}
+                    <div className="p-4 rounded-xl bg-gold/5 border border-gold/20">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-foreground-muted">Price ({durationLabels[bookingForm.rentalDuration]})</span>
+                        <span className="text-foreground">
+                          ${bookingForm.rentalDuration === "hour" ? machine.pricePerHour :
+                            bookingForm.rentalDuration === "day" ? machine.pricePerDay :
+                            bookingForm.rentalDuration === "week" ? machine.pricePerWeek :
+                            machine.pricePerMonth} × {bookingForm.quantity}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center pt-2 border-t border-gold/20">
+                        <span className="font-semibold text-foreground">Total</span>
+                        <span className="text-2xl font-bold text-gold">${calculatedPrice.toFixed(2)}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isCreatingBooking}
+                      className="btn-gold w-full py-4 rounded-xl font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {isCreatingBooking ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-background border-t-transparent rounded-full animate-spin" />
+                          Creating...
+                        </>
+                      ) : (
+                        "Create Booking Request"
+                      )}
+                    </button>
+
+                    <p className="text-xs text-foreground-muted text-center">
+                      After creating a request, an admin will send you the payment address.
+                    </p>
+                  </form>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

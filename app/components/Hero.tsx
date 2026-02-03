@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/app/lib/auth-context";
 
 const Hero = () => {
   const t = useTranslations('hero');
+  const { isAuthenticated } = useAuth();
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalDeposits: 0,
@@ -155,7 +157,7 @@ const Hero = () => {
 
             <div className="flex flex-wrap gap-4 pt-4">
               <Link
-                href="/register"
+                href={isAuthenticated ? "/machines" : "/register"}
                 className="btn-gold px-8 py-4 rounded-xl text-base font-semibold tracking-wide inline-flex items-center gap-2 group"
               >
                 {t('cta.startMining')}

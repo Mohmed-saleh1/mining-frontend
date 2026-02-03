@@ -519,5 +519,180 @@ export const walletsApi = {
     }),
 };
 
+// Booking Types
+export type BookingStatus = 'pending' | 'awaiting_payment' | 'payment_sent' | 'approved' | 'rejected' | 'cancelled';
+export type RentalDuration = 'hour' | 'day' | 'week' | 'month';
+export type MessageType = 'text' | 'payment_address' | 'system';
+
+export interface BookingUser {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface BookingMachine {
+  id: string;
+  name: string;
+  image?: string;
+  miningCoin: string;
+}
+
+export interface BookingMessage {
+  id: string;
+  bookingId: string;
+  senderId: string;
+  sender: BookingUser;
+  content: string;
+  messageType: MessageType;
+  isRead: boolean;
+  isFromAdmin: boolean;
+  createdAt: string;
+}
+
+export interface Booking {
+  id: string;
+  userId: string;
+  user: BookingUser;
+  machineId: string;
+  machine: BookingMachine;
+  rentalDuration: RentalDuration;
+  quantity: number;
+  totalPrice: number;
+  status: BookingStatus;
+  paymentAddress?: string;
+  transactionHash?: string;
+  userNotes?: string;
+  adminNotes?: string;
+  paymentSentAt?: string;
+  approvedAt?: string;
+  rejectedAt?: string;
+  approvedById?: string;
+  approvedBy?: BookingUser;
+  messages: BookingMessage[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BookingsResponse {
+  data: Booking[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface BookingStatistics {
+  total: number;
+  pending: number;
+  awaitingPayment: number;
+  paymentSent: number;
+  approved: number;
+  rejected: number;
+  cancelled: number;
+}
+
+export interface CreateBookingData {
+  machineId: string;
+  rentalDuration: RentalDuration;
+  quantity: number;
+  userNotes?: string;
+}
+
+// User Bookings API
+export const bookingsApi = {
+  create: (data: CreateBookingData) =>
+    request<Booking>('/bookings', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  getMyBookings: () => request<Booking[]>('/bookings/my-bookings'),
+
+  getMyBooking: (id: string) => request<Booking>(`/bookings/my-bookings/${id}`),
+
+  markPaymentSent: (id: string, transactionHash?: string) =>
+    request<Booking>(`/bookings/my-bookings/${id}/mark-payment-sent`, {
+      method: 'PUT',
+      body: JSON.stringify({ transactionHash }),
+    }),
+
+  cancelBooking: (id: string) =>
+    request<Booking>(`/bookings/my-bookings/${id}/cancel`, {
+      method: 'PUT',
+    }),
+
+  sendMessage: (bookingId: string, content: string) =>
+    request<BookingMessage>(`/bookings/my-bookings/${bookingId}/messages`, {
+      method: 'POST',
+      body: JSON.stringify({ content }),
+    }),
+
+  getMessages: (bookingId: string) =>
+    request<BookingMessage[]>(`/bookings/my-bookings/${bookingId}/messages`),
+
+  markMessagesRead: (bookingId: string) =>
+    request<null>(`/bookings/my-bookings/${bookingId}/messages/mark-read`, {
+      method: 'PUT',
+    }),
+
+  getUnreadCount: () => request<{ count: number }>('/bookings/unread-count'),
+};
+
+// Admin Bookings API
+export const bookingsAdminApi = {
+  getAll: (options?: {
+    page?: number;
+    limit?: number;
+    status?: BookingStatus;
+  }) => {
+    const params = new URLSearchParams();
+    if (options?.page) params.append('page', String(options.page));
+    if (options?.limit) params.append('limit', String(options.limit));
+    if (options?.status) params.append('status', options.status);
+    
+    const query = params.toString();
+    return request<BookingsResponse>(`/bookings/admin${query ? `?${query}` : ''}`);
+  },
+
+  getOne: (id: string) => request<Booking>(`/bookings/admin/${id}`),
+
+  getStatistics: () => request<BookingStatistics>('/bookings/admin/statistics'),
+
+  sendPaymentAddress: (id: string, paymentAddress: string) =>
+    request<Booking>(`/bookings/admin/${id}/send-payment-address`, {
+      method: 'PUT',
+      body: JSON.stringify({ paymentAddress }),
+    }),
+
+  approve: (id: string, adminNotes?: string) =>
+    request<Booking>(`/bookings/admin/${id}/approve`, {
+      method: 'PUT',
+      body: JSON.stringify({ adminNotes }),
+    }),
+
+  reject: (id: string, adminNotes?: string) =>
+    request<Booking>(`/bookings/admin/${id}/reject`, {
+      method: 'PUT',
+      body: JSON.stringify({ adminNotes }),
+    }),
+
+  sendMessage: (bookingId: string, content: string) =>
+    request<BookingMessage>(`/bookings/admin/${bookingId}/messages`, {
+      method: 'POST',
+      body: JSON.stringify({ content }),
+    }),
+
+  getMessages: (bookingId: string) =>
+    request<BookingMessage[]>(`/bookings/admin/${bookingId}/messages`),
+
+  markMessagesRead: (bookingId: string) =>
+    request<null>(`/bookings/admin/${bookingId}/messages/mark-read`, {
+      method: 'PUT',
+    }),
+
+  getUnreadCount: () => request<{ count: number }>('/bookings/admin/unread-count'),
+};
+
 export { ApiError };
 
