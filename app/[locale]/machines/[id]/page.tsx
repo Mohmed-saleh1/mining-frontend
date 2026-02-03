@@ -1,27 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
+import { useParams } from "next/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { miningMachinesPublicApi, bookingsApi, MiningMachine, ApiError, RentalDuration } from "@/app/lib/api";
 import { useAuth } from "@/app/lib/auth-context";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 
-const durationLabels: Record<RentalDuration, string> = {
-  hour: "Per Hour",
-  day: "Per Day",
-  week: "Per Week",
-  month: "Per Month",
-};
-
 export default function MachineDetailsPage() {
+  const t = useTranslations('machines.details');
   const params = useParams();
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const [machine, setMachine] = useState<MiningMachine | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  const durationLabels: Record<RentalDuration, string> = {
+    hour: t('bookingModal.durations.hour'),
+    day: t('bookingModal.durations.day'),
+    week: t('bookingModal.durations.week'),
+    month: t('bookingModal.durations.month'),
+  };
   
   // Booking modal state
   const [showBookingModal, setShowBookingModal] = useState(false);
@@ -43,7 +45,7 @@ export default function MachineDetailsPage() {
         if (err instanceof ApiError) {
           setError(err.message);
         } else {
-          setError("Failed to load machine details");
+          setError(t('failedToLoad'));
         }
       } finally {
         setIsLoading(false);
@@ -82,7 +84,7 @@ export default function MachineDetailsPage() {
       }, 2000);
     } catch (err) {
       console.error("Failed to create booking:", err);
-      alert("Failed to create booking. Please try again.");
+      alert(t('bookingModal.createBooking')); // TODO: Use proper error handling
     } finally {
       setIsCreatingBooking(false);
     }
@@ -121,7 +123,7 @@ export default function MachineDetailsPage() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-              Back to Machines
+              {t('back')}
             </Link>
 
             {error ? (
@@ -129,10 +131,10 @@ export default function MachineDetailsPage() {
                 <svg className="w-16 h-16 mx-auto mb-4 text-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <h2 className="text-xl font-bold text-foreground mb-2">Error</h2>
+                <h2 className="text-xl font-bold text-foreground mb-2">{t('error')}</h2>
                 <p className="text-foreground-muted mb-6">{error}</p>
                 <Link href="/machines" className="btn-gold px-6 py-3 rounded-xl text-sm font-semibold">
-                  Browse Machines
+                  {t('browseMachines')}
                 </Link>
               </div>
             ) : isLoading ? (
@@ -165,7 +167,7 @@ export default function MachineDetailsPage() {
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                         </svg>
-                        Featured
+                        {t('featured')}
                       </div>
                     )}
                     <div className="absolute top-4 left-4 px-4 py-2 rounded-full glass border border-gold/20 text-gold text-sm font-semibold uppercase">
@@ -192,28 +194,28 @@ export default function MachineDetailsPage() {
                       <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
                       </svg>
-                      Specifications
+                      {t('specifications')}
                     </h2>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="p-4 rounded-xl bg-background-secondary/50">
-                        <p className="text-xs text-foreground-muted mb-1">Hash Rate</p>
+                        <p className="text-xs text-foreground-muted mb-1">{t('hashRate')}</p>
                         <p className="text-lg font-bold text-gold">{machine.hashRate} {machine.hashRateUnit}</p>
                       </div>
                       <div className="p-4 rounded-xl bg-background-secondary/50">
-                        <p className="text-xs text-foreground-muted mb-1">Power Consumption</p>
+                        <p className="text-xs text-foreground-muted mb-1">{t('powerConsumption')}</p>
                         <p className="text-lg font-bold text-foreground">{machine.powerConsumption}W</p>
                       </div>
                       <div className="p-4 rounded-xl bg-background-secondary/50">
-                        <p className="text-xs text-foreground-muted mb-1">Algorithm</p>
+                        <p className="text-xs text-foreground-muted mb-1">{t('algorithm')}</p>
                         <p className="text-lg font-bold text-foreground">{machine.algorithm || "N/A"}</p>
                       </div>
                       <div className="p-4 rounded-xl bg-background-secondary/50">
-                        <p className="text-xs text-foreground-muted mb-1">Mining Coin</p>
+                        <p className="text-xs text-foreground-muted mb-1">{t('miningCoin')}</p>
                         <p className="text-lg font-bold text-foreground">{machine.miningCoin || "N/A"}</p>
                       </div>
                       {machine.efficiency && (
                         <div className="p-4 rounded-xl bg-background-secondary/50 col-span-2">
-                          <p className="text-xs text-foreground-muted mb-1">Efficiency</p>
+                          <p className="text-xs text-foreground-muted mb-1">{t('efficiency')}</p>
                           <p className="text-lg font-bold text-foreground">{machine.efficiency} J/TH</p>
                         </div>
                       )}
@@ -226,23 +228,23 @@ export default function MachineDetailsPage() {
                       <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      Pricing
+                      {t('pricing')}
                     </h2>
                     <div className="grid grid-cols-2 gap-4 mb-6">
                       <div className="p-4 rounded-xl bg-gold/10 border border-gold/20">
-                        <p className="text-xs text-foreground-muted mb-1">Per Hour</p>
+                        <p className="text-xs text-foreground-muted mb-1">{t('perHour')}</p>
                         <p className="text-xl font-bold text-gold">${machine.pricePerHour}</p>
                       </div>
                       <div className="p-4 rounded-xl bg-gold/10 border border-gold/20">
-                        <p className="text-xs text-foreground-muted mb-1">Per Day</p>
+                        <p className="text-xs text-foreground-muted mb-1">{t('perDay')}</p>
                         <p className="text-xl font-bold text-gold">${machine.pricePerDay}</p>
                       </div>
                       <div className="p-4 rounded-xl bg-gold/10 border border-gold/20">
-                        <p className="text-xs text-foreground-muted mb-1">Per Week</p>
+                        <p className="text-xs text-foreground-muted mb-1">{t('perWeek')}</p>
                         <p className="text-xl font-bold text-gold">${machine.pricePerWeek}</p>
                       </div>
                       <div className="p-4 rounded-xl bg-gold/10 border border-gold/20">
-                        <p className="text-xs text-foreground-muted mb-1">Per Month</p>
+                        <p className="text-xs text-foreground-muted mb-1">{t('perMonth')}</p>
                         <p className="text-xl font-bold text-gold">${machine.pricePerMonth}</p>
                       </div>
                     </div>
@@ -251,15 +253,15 @@ export default function MachineDetailsPage() {
                       <svg className="w-4 h-4 text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                       </svg>
-                      Estimated Profits
+                      {t('estimatedProfits')}
                     </h3>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="p-3 rounded-lg bg-green/10">
-                        <p className="text-xs text-foreground-muted">Daily Profit</p>
+                        <p className="text-xs text-foreground-muted">{t('dailyProfit')}</p>
                         <p className="text-lg font-bold text-green">${machine.profitPerDay}</p>
                       </div>
                       <div className="p-3 rounded-lg bg-green/10">
-                        <p className="text-xs text-foreground-muted">Monthly Profit</p>
+                        <p className="text-xs text-foreground-muted">{t('monthlyProfit')}</p>
                         <p className="text-lg font-bold text-green">${machine.profitPerMonth}</p>
                       </div>
                     </div>
@@ -268,7 +270,7 @@ export default function MachineDetailsPage() {
                   {/* Availability */}
                   <div className="glass rounded-2xl p-8">
                     <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-lg font-bold text-foreground">Availability</h2>
+                      <h2 className="text-lg font-bold text-foreground">{t('availability')}</h2>
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                         machine.status === "available" 
                           ? "bg-green/20 text-green" 
@@ -276,11 +278,13 @@ export default function MachineDetailsPage() {
                           ? "bg-gold/20 text-gold"
                           : "bg-red/20 text-red"
                       }`}>
-                        {machine.status?.toUpperCase()}
+                        {machine.status === "available" ? t('status.available') :
+                         machine.status === "rented" ? t('status.rented') :
+                         t('status.unavailable')}
                       </span>
                     </div>
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-sm text-foreground-muted">Available Units</span>
+                      <span className="text-sm text-foreground-muted">{t('availableUnits')}</span>
                       <span className="text-lg font-bold text-foreground">
                         {machine.totalUnits - machine.rentedUnits} / {machine.totalUnits}
                       </span>
@@ -298,7 +302,7 @@ export default function MachineDetailsPage() {
                     onClick={handleStartMining}
                     className="block w-full btn-gold px-6 py-4 rounded-xl text-lg font-semibold text-center"
                   >
-                    {isAuthenticated ? "Book This Machine" : "Start Mining Now"}
+                    {isAuthenticated ? t('cta.bookMachine') : t('cta.startMining')}
                   </button>
                 </div>
               </div>
@@ -319,16 +323,16 @@ export default function MachineDetailsPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <h2 className="text-2xl font-bold text-foreground mb-2">Booking Created!</h2>
-                  <p className="text-foreground-muted">Redirecting to your bookings...</p>
+                  <h2 className="text-2xl font-bold text-foreground mb-2">{t('bookingModal.success.title')}</h2>
+                  <p className="text-foreground-muted">{t('bookingModal.success.message')}</p>
                 </div>
               ) : (
                 <>
                   <div className="p-6 border-b border-border">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h2 className="text-xl font-bold text-foreground">Book {machine.name}</h2>
-                        <p className="text-sm text-foreground-muted">Create a rental request</p>
+                        <h2 className="text-xl font-bold text-foreground">{t('bookingModal.title', { name: machine.name })}</h2>
+                        <p className="text-sm text-foreground-muted">{t('bookingModal.subtitle')}</p>
                       </div>
                       <button
                         onClick={() => setShowBookingModal(false)}
@@ -344,7 +348,7 @@ export default function MachineDetailsPage() {
                     {/* Duration Selection */}
                     <div>
                       <label className="block text-sm font-medium text-foreground-muted mb-2">
-                        Rental Duration <span className="text-gold">*</span>
+                        {t('bookingModal.rentalDuration')} <span className="text-gold">*</span>
                       </label>
                       <div className="grid grid-cols-2 gap-3">
                         {(["hour", "day", "week", "month"] as RentalDuration[]).map((duration) => (
@@ -367,7 +371,7 @@ export default function MachineDetailsPage() {
                     {/* Quantity */}
                     <div>
                       <label className="block text-sm font-medium text-foreground-muted mb-2">
-                        Quantity <span className="text-gold">*</span>
+                        {t('bookingModal.quantity')} <span className="text-gold">*</span>
                       </label>
                       <input
                         type="number"
@@ -379,28 +383,28 @@ export default function MachineDetailsPage() {
                         required
                       />
                       <p className="text-xs text-foreground-muted mt-1">
-                        {machine.totalUnits - machine.rentedUnits} units available
+                        {t('bookingModal.unitsAvailable', { count: machine.totalUnits - machine.rentedUnits })}
                       </p>
                     </div>
 
                     {/* Notes */}
                     <div>
                       <label className="block text-sm font-medium text-foreground-muted mb-2">
-                        Notes (Optional)
+                        {t('bookingModal.notes')}
                       </label>
                       <textarea
                         value={bookingForm.userNotes}
                         onChange={(e) => setBookingForm({ ...bookingForm, userNotes: e.target.value })}
                         className="input-gold w-full px-4 py-3 rounded-xl bg-background-secondary/50 resize-none"
                         rows={3}
-                        placeholder="Any special requests or notes..."
+                        placeholder={t('bookingModal.notesPlaceholder')}
                       />
                     </div>
 
                     {/* Price Summary */}
                     <div className="p-4 rounded-xl bg-gold/5 border border-gold/20">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-foreground-muted">Price ({durationLabels[bookingForm.rentalDuration]})</span>
+                        <span className="text-foreground-muted">{t('bookingModal.priceSummary', { duration: durationLabels[bookingForm.rentalDuration] })}</span>
                         <span className="text-foreground">
                           ${bookingForm.rentalDuration === "hour" ? machine.pricePerHour :
                             bookingForm.rentalDuration === "day" ? machine.pricePerDay :
@@ -409,7 +413,7 @@ export default function MachineDetailsPage() {
                         </span>
                       </div>
                       <div className="flex justify-between items-center pt-2 border-t border-gold/20">
-                        <span className="font-semibold text-foreground">Total</span>
+                        <span className="font-semibold text-foreground">{t('bookingModal.total')}</span>
                         <span className="text-2xl font-bold text-gold">${calculatedPrice.toFixed(2)}</span>
                       </div>
                     </div>
@@ -422,15 +426,15 @@ export default function MachineDetailsPage() {
                       {isCreatingBooking ? (
                         <>
                           <div className="w-5 h-5 border-2 border-background border-t-transparent rounded-full animate-spin" />
-                          Creating...
+                          {t('bookingModal.creating')}
                         </>
                       ) : (
-                        "Create Booking Request"
+                        t('bookingModal.createBooking')
                       )}
                     </button>
 
                     <p className="text-xs text-foreground-muted text-center">
-                      After creating a request, an admin will send you the payment address.
+                      {t('bookingModal.paymentNote')}
                     </p>
                   </form>
                 </>

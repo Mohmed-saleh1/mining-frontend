@@ -684,5 +684,85 @@
       "startLiveChat": "ابدأ الدردشة المباشرة",
       "scheduleCall": "حدد موعدًا لمكالمة"
     }
+  },
+  "machines": {
+    "listing": {
+      "title": "تصفح أجهزة",
+      "titleHighlight": "الاستخراج",
+      "description": "اختر من مجموعتنا من أجهزة الاستخراج الاحترافية. استأجر بالساعة أو اليوم أو الأسبوع أو الشهر.",
+      "filters": {
+        "all": "جميع الأجهزة",
+        "asic": "أجهزة ASIC",
+        "gpu": "أجهزة GPU"
+      },
+      "error": "فشل تحميل الأجهزة",
+      "empty": {
+        "title": "لم يتم العثور على أجهزة",
+        "all": "تحقق مرة أخرى قريبًا للحصول على أجهزة متاحة.",
+        "filtered": "لا توجد أجهزة {type} متاحة في الوقت الحالي."
+      },
+      "card": {
+        "featured": "مميز",
+        "dailyRate": "السعر اليومي",
+        "estDailyProfit": "الربح اليومي المتوقع",
+        "viewDetails": "عرض التفاصيل"
+      }
+    },
+    "details": {
+      "back": "العودة إلى الأجهزة",
+      "error": "خطأ",
+      "browseMachines": "تصفح الأجهزة",
+      "failedToLoad": "فشل تحميل تفاصيل الجهاز",
+      "featured": "مميز",
+      "specifications": "المواصفات",
+      "hashRate": "معدل الهاش",
+      "powerConsumption": "استهلاك الطاقة",
+      "algorithm": "الخوارزمية",
+      "miningCoin": "عملة الاستخراج",
+      "efficiency": "الكفاءة",
+      "pricing": "التسعير",
+      "perHour": "في الساعة",
+      "perDay": "في اليوم",
+      "perWeek": "في الأسبوع",
+      "perMonth": "في الشهر",
+      "estimatedProfits": "الأرباح المتوقعة",
+      "dailyProfit": "الربح اليومي",
+      "monthlyProfit": "الربح الشهري",
+      "availability": "التوفر",
+      "availableUnits": "الوحدات المتاحة",
+      "status": {
+        "available": "متاح",
+        "rented": "مستأجر",
+        "unavailable": "غير متاح"
+      },
+      "cta": {
+        "bookMachine": "احجز هذا الجهاز",
+        "startMining": "ابدأ الاستخراج الآن"
+      },
+      "bookingModal": {
+        "success": {
+          "title": "تم إنشاء الحجز!",
+          "message": "جاري إعادة التوجيه إلى حجوزاتك..."
+        },
+        "title": "احجز {name}",
+        "subtitle": "إنشاء طلب إيجار",
+        "rentalDuration": "مدة الإيجار",
+        "quantity": "الكمية",
+        "unitsAvailable": "{count} وحدة متاحة",
+        "notes": "ملاحظات (اختياري)",
+        "notesPlaceholder": "أي طلبات خاصة أو ملاحظات...",
+        "priceSummary": "السعر ({duration})",
+        "total": "الإجمالي",
+        "createBooking": "إنشاء طلب حجز",
+        "creating": "جاري الإنشاء...",
+        "paymentNote": "بعد إنشاء الطلب، سيرسل لك المسؤول عنوان الدفع.",
+        "durations": {
+          "hour": "في الساعة",
+          "day": "في اليوم",
+          "week": "في الأسبوع",
+          "month": "في الشهر"
+        }
+      }
+    }
   }
 }

@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { miningMachinesPublicApi, MiningMachine, ApiError } from "@/app/lib/api";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 
 export default function MachinesPage() {
+  const t = useTranslations('machines.listing');
   const [machines, setMachines] = useState<MiningMachine[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +24,7 @@ export default function MachinesPage() {
         if (err instanceof ApiError) {
           setError(err.message);
         } else {
-          setError("Failed to load machines");
+          setError(t('error'));
         }
       } finally {
         setIsLoading(false);
@@ -49,10 +51,10 @@ export default function MachinesPage() {
         <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-              Browse Mining <span className="gradient-text">Machines</span>
+              {t('title')} <span className="gradient-text">{t('titleHighlight')}</span>
             </h1>
             <p className="text-xl text-foreground-muted max-w-2xl mx-auto">
-              Choose from our selection of professional-grade mining machines. Rent by the hour, day, week, or month.
+              {t('description')}
             </p>
           </div>
         </section>
@@ -61,9 +63,9 @@ export default function MachinesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
           <div className="flex justify-center gap-3">
             {[
-              { value: "all", label: "All Machines" },
-              { value: "asic", label: "ASIC Miners" },
-              { value: "gpu", label: "GPU Rigs" },
+              { value: "all", label: t('filters.all') },
+              { value: "asic", label: t('filters.asic') },
+              { value: "gpu", label: t('filters.gpu') },
             ].map((tab) => (
               <button
                 key={tab.value}
@@ -106,11 +108,11 @@ export default function MachinesPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-foreground mb-2">No machines found</h3>
+              <h3 className="text-xl font-bold text-foreground mb-2">{t('empty.title')}</h3>
               <p className="text-foreground-muted">
                 {filterType === "all" 
-                  ? "Check back soon for available machines."
-                  : `No ${filterType.toUpperCase()} machines available at the moment.`}
+                  ? t('empty.all')
+                  : t('empty.filtered', { type: filterType.toUpperCase() })}
               </p>
             </div>
           ) : (
@@ -139,7 +141,7 @@ export default function MachinesPage() {
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                         </svg>
-                        Featured
+                        {t('card.featured')}
                       </div>
                     )}
                     <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full glass border border-gold/20 text-gold text-xs font-semibold uppercase">
@@ -187,11 +189,11 @@ export default function MachinesPage() {
                     {/* Pricing */}
                     <div className="border-t border-border pt-4 mb-4">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs text-foreground-muted">Daily Rate</span>
+                        <span className="text-xs text-foreground-muted">{t('card.dailyRate')}</span>
                         <span className="text-lg font-bold text-gold">${machine.pricePerDay}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-foreground-muted">Est. Daily Profit</span>
+                        <span className="text-xs text-foreground-muted">{t('card.estDailyProfit')}</span>
                         <span className="text-sm font-semibold text-green">${machine.profitPerDay}</span>
                       </div>
                     </div>
@@ -201,7 +203,7 @@ export default function MachinesPage() {
                       href={`/machines/${machine.id}`}
                       className="block w-full btn-gold px-4 py-3 rounded-xl text-sm font-semibold text-center"
                     >
-                      View Details
+                      {t('card.viewDetails')}
                     </Link>
                   </div>
                 </div>

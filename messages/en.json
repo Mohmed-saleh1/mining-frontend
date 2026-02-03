@@ -684,5 +684,85 @@
       "startLiveChat": "Start Live Chat",
       "scheduleCall": "Schedule a Call"
     }
+  },
+  "machines": {
+    "listing": {
+      "title": "Browse Mining",
+      "titleHighlight": "Machines",
+      "description": "Choose from our selection of professional-grade mining machines. Rent by the hour, day, week, or month.",
+      "filters": {
+        "all": "All Machines",
+        "asic": "ASIC Miners",
+        "gpu": "GPU Rigs"
+      },
+      "error": "Failed to load machines",
+      "empty": {
+        "title": "No machines found",
+        "all": "Check back soon for available machines.",
+        "filtered": "No {type} machines available at the moment."
+      },
+      "card": {
+        "featured": "Featured",
+        "dailyRate": "Daily Rate",
+        "estDailyProfit": "Est. Daily Profit",
+        "viewDetails": "View Details"
+      }
+    },
+    "details": {
+      "back": "Back to Machines",
+      "error": "Error",
+      "browseMachines": "Browse Machines",
+      "failedToLoad": "Failed to load machine details",
+      "featured": "Featured",
+      "specifications": "Specifications",
+      "hashRate": "Hash Rate",
+      "powerConsumption": "Power Consumption",
+      "algorithm": "Algorithm",
+      "miningCoin": "Mining Coin",
+      "efficiency": "Efficiency",
+      "pricing": "Pricing",
+      "perHour": "Per Hour",
+      "perDay": "Per Day",
+      "perWeek": "Per Week",
+      "perMonth": "Per Month",
+      "estimatedProfits": "Estimated Profits",
+      "dailyProfit": "Daily Profit",
+      "monthlyProfit": "Monthly Profit",
+      "availability": "Availability",
+      "availableUnits": "Available Units",
+      "status": {
+        "available": "AVAILABLE",
+        "rented": "RENTED",
+        "unavailable": "UNAVAILABLE"
+      },
+      "cta": {
+        "bookMachine": "Book This Machine",
+        "startMining": "Start Mining Now"
+      },
+      "bookingModal": {
+        "success": {
+          "title": "Booking Created!",
+          "message": "Redirecting to your bookings..."
+        },
+        "title": "Book {name}",
+        "subtitle": "Create a rental request",
+        "rentalDuration": "Rental Duration",
+        "quantity": "Quantity",
+        "unitsAvailable": "{count} units available",
+        "notes": "Notes (Optional)",
+        "notesPlaceholder": "Any special requests or notes...",
+        "priceSummary": "Price ({duration})",
+        "total": "Total",
+        "createBooking": "Create Booking Request",
+        "creating": "Creating...",
+        "paymentNote": "After creating a request, an admin will send you the payment address.",
+        "durations": {
+          "hour": "Per Hour",
+          "day": "Per Day",
+          "week": "Per Week",
+          "month": "Per Month"
+        }
+      }
+    }
   }
 }
