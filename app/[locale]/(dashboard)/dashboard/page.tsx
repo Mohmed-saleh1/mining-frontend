@@ -3,6 +3,9 @@
 import { useAuth } from "@/app/lib/auth-context";
 import Link from "next/link";
 
+// Disable static generation for dashboard pages
+export const dynamic = 'force-dynamic';
+
 export default function DashboardPage() {
   const { user } = useAuth();
 

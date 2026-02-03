@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useAuth, ApiError } from "@/app/lib/auth-context";
 import Link from "next/link";
 
+// Disable static generation for dashboard pages
+export const dynamic = 'force-dynamic';
+
 export default function ProfilePage() {
   const { user, updateProfile, changePassword, refreshUser } = useAuth();
   const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");

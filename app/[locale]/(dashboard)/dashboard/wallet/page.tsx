@@ -4,6 +4,9 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/app/lib/auth-context";
 import { walletsApi, Wallet, CryptoType, ApiError } from "@/app/lib/api";
 
+// Disable static generation for dashboard pages
+export const dynamic = 'force-dynamic';
+
 // Crypto icons as SVG components
 const CryptoIcons: Record<CryptoType, React.FC<{ className?: string }>> = {
   BTC: ({ className }) => (

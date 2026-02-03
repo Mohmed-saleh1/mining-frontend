@@ -9,6 +9,9 @@ import { useAuth } from "@/app/lib/auth-context";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 
+// Disable static generation for pages that use useAuth
+export const dynamic = 'force-dynamic';
+
 export default function MachineDetailsPage() {
   const t = useTranslations('machines.details');
   const params = useParams();

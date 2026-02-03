@@ -12,6 +12,9 @@ import {
   BookingMessage,
 } from "@/app/lib/api";
 
+// Disable static generation for dashboard pages
+export const dynamic = 'force-dynamic';
+
 const statusConfig: Record<BookingStatus, { label: string; color: string; bg: string }> = {
   pending: { label: "Pending", color: "text-yellow-400", bg: "bg-yellow-400/10" },
   awaiting_payment: { label: "Awaiting Payment", color: "text-blue-400", bg: "bg-blue-400/10" },

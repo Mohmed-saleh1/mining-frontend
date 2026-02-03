@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useAuth } from "@/app/lib/auth-context";
 import { authApi, ApiError } from "@/app/lib/api";
 
+// Disable static generation for auth pages
+export const dynamic = 'force-dynamic';
+
 export default function VerifyEmailNoticePage() {
   const { user } = useAuth();
   const [isResending, setIsResending] = useState(false);

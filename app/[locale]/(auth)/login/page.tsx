@@ -6,6 +6,9 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useAuth, ApiError } from "@/app/lib/auth-context";
 
+// Disable static generation for auth pages
+export const dynamic = 'force-dynamic';
+
 export default function LoginPage() {
   const t = useTranslations('auth.login');
   const router = useRouter();
