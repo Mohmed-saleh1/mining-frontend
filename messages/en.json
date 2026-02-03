@@ -1,0 +1,443 @@
+{
+  "common": {
+    "home": "Home",
+    "machines": "Machines",
+    "about": "About Us",
+    "contact": "Contact",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Sign Out",
+    "profile": "Profile",
+    "admin": "Admin Dashboard",
+    "dashboard": "Dashboard",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "verified": "Verified",
+    "unverified": "Unverified",
+    "email": "Email",
+    "password": "Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone",
+    "message": "Message",
+    "subject": "Subject",
+    "required": "Required",
+    "optional": "Optional"
+  },
+  "navbar": {
+    "navLinks": {
+      "home": "Home",
+      "machines": "Machines",
+      "about": "About Us",
+      "contact": "Contact"
+    },
+    "userMenu": {
+      "adminDashboard": "Admin Dashboard",
+      "profile": "Profile",
+      "signOut": "Sign Out",
+      "verifyEmail": "Verify email",
+      "verified": "Verified"
+    },
+    "authButtons": {
+      "register": "Register",
+      "login": "Login"
+    }
+  },
+  "hero": {
+    "trustBadge": "Trusted by {count}+ miners worldwide",
+    "title": "Mine Crypto",
+    "titleHighlight": "Without the Hardware",
+    "description": "Rent enterprise-grade ASIC miners and GPU rigs. Start earning passive crypto income today with zero setup, maintenance, or electricity costs.",
+    "features": {
+      "mining247": "24/7 Mining",
+      "dailyPayouts": "Daily Payouts",
+      "noSetup": "No Setup Required"
+    },
+    "cta": {
+      "startMining": "Start Mining Now",
+      "howItWorks": "How It Works"
+    },
+    "steps": {
+      "createAccount": {
+        "title": "Create Account",
+        "description": "Sign up easily. Get started fast. Access professional mining equipment."
+      },
+      "rentMachine": {
+        "title": "Rent a Machine",
+        "description": "Browse our catalog of ASIC miners and GPU rigs. Choose your rental period."
+      },
+      "earnProfits": {
+        "title": "Earn Profits",
+        "description": "Your machine mines 24/7. Receive earnings directly to your wallet."
+      }
+    },
+    "stats": {
+      "totalUsers": "Total Users",
+      "totalDeposits": "Total Deposits",
+      "dailyPayouts": "Daily Payouts",
+      "totalPayouts": "Total Payouts"
+    }
+  },
+  "benefits": {
+    "title": "Why Choose",
+    "titleHighlight": "Our Platform",
+    "description": "Experience the most advanced cloud mining platform with enterprise-grade infrastructure and unmatched reliability",
+    "items": {
+      "enterpriseSecurity": {
+        "title": "Enterprise Security",
+        "description": "Bank-level encryption and multi-layer security protocols protect your assets and data 24/7."
+      },
+      "lightningFastSetup": {
+        "title": "Lightning Fast Setup",
+        "description": "Get started in minutes. No technical knowledge required. Your mining starts immediately after rental."
+      },
+      "transparentPricing": {
+        "title": "Transparent Pricing",
+        "description": "No hidden fees. Clear daily rates with real-time profit calculations. What you see is what you get."
+      },
+      "monitoring247": {
+        "title": "24/7 Monitoring",
+        "description": "Real-time dashboard tracking your mining performance, earnings, and machine status around the clock."
+      },
+      "uptime": {
+        "title": "99.9% Uptime",
+        "description": "Enterprise-grade infrastructure ensures your machines run continuously with minimal downtime."
+      },
+      "expertSupport": {
+        "title": "Expert Support",
+        "description": "Dedicated support team available 24/7 to help you maximize your mining profits and resolve any issues."
+      }
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked",
+    "titleHighlight": "Questions",
+    "description": "Find answers to common questions about our platform and cloud mining",
+    "stillHaveQuestions": "Still have questions? We're here to help!",
+    "contactSupport": "Contact Support",
+    "items": {
+      "howDoesCloudMiningWork": {
+        "question": "How does cloud mining work?",
+        "answer": "Cloud mining allows you to rent mining hardware remotely without purchasing or maintaining physical equipment. You pay a rental fee, and we handle all the technical aspects including setup, maintenance, and electricity costs. Your rented machine mines cryptocurrency 24/7, and you receive daily payouts based on the mining performance."
+      },
+      "whatCryptocurrencies": {
+        "question": "What cryptocurrencies can I mine?",
+        "answer": "We support mining for Bitcoin, Ethereum, Litecoin, and other major cryptocurrencies. The specific coins depend on the machine you rent. ASIC miners are typically optimized for Bitcoin, while GPU rigs can mine various altcoins. Check each machine's specifications to see which coins it supports."
+      },
+      "howArePayoutsCalculated": {
+        "question": "How are payouts calculated?",
+        "answer": "Payouts are calculated based on the actual mining performance of your rented machine, current cryptocurrency prices, and network difficulty. We use real-time data to ensure accurate calculations. Daily payouts are automatically sent to your wallet address, minus the rental fee."
+      },
+      "whatIfMachineBreaks": {
+        "question": "What happens if a machine breaks down?",
+        "answer": "We maintain a 99.9% uptime guarantee. If a machine experiences issues, our technical team immediately switches your rental to a backup machine to ensure continuous mining. You won't lose any mining time, and we handle all maintenance automatically."
+      },
+      "canICancelRental": {
+        "question": "Can I cancel my rental?",
+        "answer": "Yes, you can cancel your rental at any time. However, rental fees are non-refundable for the current period. Once the current rental period ends, your machine will be released and no further charges will apply. You can always rent again in the future."
+      },
+      "minimumRentalPeriod": {
+        "question": "Is there a minimum rental period?",
+        "answer": "Yes, the minimum rental period is 1 day. You can rent machines for daily, weekly, or monthly periods. Longer rental periods often come with discounted rates. Check the pricing details for each machine to see available rental options."
+      },
+      "howToTrackPerformance": {
+        "question": "How do I track my mining performance?",
+        "answer": "Once you rent a machine, you'll have access to a comprehensive dashboard showing real-time mining statistics, including hash rate, earnings, payout history, and machine status. You can monitor everything from your account dashboard 24/7."
+      },
+      "hiddenFees": {
+        "question": "Are there any hidden fees?",
+        "answer": "No, we believe in transparent pricing. The rental fee you see is the only fee you pay. There are no setup fees, maintenance fees, or withdrawal fees. The only exception is network transaction fees for cryptocurrency transfers, which are standard blockchain fees."
+      }
+    }
+  },
+  "about": {
+    "title": "About",
+    "titleHighlight": "X-BIN",
+    "description": "X-BIN is a leading cryptocurrency mining platform that makes professional mining accessible to everyone. We provide enterprise-grade mining machines for rent, allowing you to earn passive income without the hassle of hardware management.",
+    "mission": {
+      "title": "Our",
+      "titleHighlight": "Mission",
+      "description1": "At X-BIN, we believe that cryptocurrency mining should be accessible to everyone, not just those with technical expertise or large capital. Our mission is to democratize crypto mining by providing a simple, secure, and profitable way for anyone to participate in the blockchain economy.",
+      "description2": "We handle all the complexity – from hardware procurement and maintenance to electricity costs and cooling solutions – so you can focus on what matters most: growing your crypto portfolio."
+    },
+    "stats": {
+      "activeMiners": "Active Miners",
+      "uptime": "Uptime",
+      "countries": "Countries",
+      "paidOut": "Paid Out"
+    },
+    "features": {
+      "title": "Why Choose",
+      "titleHighlight": "X-BIN",
+      "description": "We combine cutting-edge technology with years of mining expertise to deliver the best possible returns for our clients.",
+      "items": {
+        "enterpriseHardware": {
+          "title": "Enterprise-Grade Hardware",
+          "description": "Access to the latest ASIC miners and GPU rigs from leading manufacturers like Bitmain, MicroBT, and Canaan."
+        },
+        "optimizedPerformance": {
+          "title": "Optimized Performance",
+          "description": "Our machines run 24/7 in climate-controlled facilities with 99.9% uptime guarantee and optimal hash rates."
+        },
+        "flexibleRentalPlans": {
+          "title": "Flexible Rental Plans",
+          "description": "Choose from hourly, daily, weekly, or monthly rental plans that fit your investment strategy and budget."
+        },
+        "secureTransparent": {
+          "title": "Secure & Transparent",
+          "description": "Real-time monitoring dashboard, transparent earnings reports, and bank-grade security for your investments."
+        },
+        "expertSupport": {
+          "title": "Expert Support",
+          "description": "Dedicated 24/7 customer support team to help you maximize your mining profits and resolve any issues."
+        },
+        "globalInfrastructure": {
+          "title": "Global Infrastructure",
+          "description": "Mining facilities strategically located worldwide for optimal electricity costs and network connectivity."
+        }
+      }
+    },
+    "howItWorks": {
+      "title": "How It",
+      "titleHighlight": "Works",
+      "description": "Start earning from cryptocurrency mining in just a few simple steps.",
+      "steps": {
+        "step1": {
+          "step": "01",
+          "title": "Create Account",
+          "description": "Sign up for free and verify your email to get started."
+        },
+        "step2": {
+          "step": "02",
+          "title": "Choose Machine",
+          "description": "Browse our catalog of mining machines and select one that fits your budget."
+        },
+        "step3": {
+          "step": "03",
+          "title": "Select Duration",
+          "description": "Pick your rental period - hourly, daily, weekly, or monthly options available."
+        },
+        "step4": {
+          "step": "04",
+          "title": "Start Earning",
+          "description": "Your machine starts mining immediately and you receive earnings to your wallet."
+        }
+      }
+    },
+    "team": {
+      "title": "Meet Our",
+      "titleHighlight": "Team",
+      "description": "Led by industry veterans with decades of combined experience in blockchain and cryptocurrency."
+    },
+    "cta": {
+      "title": "Ready to Start",
+      "titleHighlight": "Mining",
+      "description": "Join thousands of users who are already earning passive income through cryptocurrency mining with X-BIN.",
+      "getStarted": "Get Started Now",
+      "contactUs": "Contact Us"
+    }
+  },
+  "contact": {
+    "title": "Get In",
+    "titleHighlight": "Touch",
+    "description": "Have questions about our platform? Need assistance with your account? Our dedicated support team is here to help you every step of the way.",
+    "supportAvailable": "24/7 Support Available",
+    "stats": {
+      "activeUsers": "Active Users",
+      "totalDeposits": "Total Deposits",
+      "totalPayouts": "Total Payouts"
+    },
+    "contactMethods": {
+      "emailSupport": {
+        "title": "Email Support",
+        "description": "Get a response within 2 hours"
+      },
+      "liveChat": {
+        "title": "Live Chat",
+        "description": "Available 24/7 for instant help"
+      },
+      "phoneSupport": {
+        "title": "Phone Support",
+        "description": "Mon-Fri from 8am to 6pm UTC"
+      },
+      "officeLocation": {
+        "title": "Office Location",
+        "description": "Visit our headquarters"
+      }
+    },
+    "form": {
+      "title": "Send Us a Message",
+      "description": "Fill out the form and we'll respond within 24 hours.",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "subject": "Subject",
+      "message": "Message",
+      "selectTopic": "Select a topic",
+      "generalInquiry": "General Inquiry",
+      "booking": "Booking",
+      "complaint": "Complaint",
+      "feedback": "Feedback",
+      "partnership": "Partnership",
+      "other": "Other",
+      "sendMessage": "Send Message",
+      "sending": "Sending...",
+      "success": "Thank you for your message! We'll get back to you within 24 hours.",
+      "error": "Something went wrong. Please try again later.",
+      "fillRequired": "Please fill in all required fields"
+    },
+    "businessHours": {
+      "title": "Business Hours",
+      "liveChat": "Live Chat",
+      "emailSupport": "Email Support",
+      "phoneSupport": "Phone Support",
+      "officeHours": "Office Hours",
+      "available247": "24/7 Available",
+      "response2hr": "24/7 (2hr response)",
+      "monFri": "Mon-Fri 8AM-6PM",
+      "officeMonFri": "Mon-Fri 9AM-5PM"
+    },
+    "connectWithUs": "Connect With Us",
+    "faq": {
+      "title": "Frequently Asked",
+      "titleHighlight": "Questions",
+      "description": "Find quick answers to common questions. Can't find what you're looking for? Contact our support team.",
+      "items": {
+        "withdrawalProcessing": {
+          "question": "How long does it take to process withdrawals?",
+          "answer": "Withdrawals are typically processed within 24-48 hours. For larger amounts, additional verification may be required which can take up to 72 hours."
+        },
+        "paymentMethods": {
+          "question": "What payment methods do you accept?",
+          "answer": "We accept Bitcoin (BTC), Ethereum (ETH), USDT, and other major cryptocurrencies. Bank transfers are available for verified accounts."
+        },
+        "investmentSecure": {
+          "question": "Is my investment secure?",
+          "answer": "Yes, we use industry-leading security measures including cold storage for funds, 2FA authentication, and regular security audits to protect your assets."
+        },
+        "minimumInvestment": {
+          "question": "What is the minimum investment amount?",
+          "answer": "The minimum investment varies by package. Our starter package begins at $100, while premium packages have higher minimums for increased returns."
+        },
+        "trackEarnings": {
+          "question": "How do I track my earnings?",
+          "answer": "You can track all your earnings in real-time through your dashboard. We provide detailed reports on daily profits, withdrawals, and overall portfolio performance."
+        }
+      }
+    },
+    "cta": {
+      "title": "Still Have Questions?",
+      "description": "Our support team is standing by to help. Start a live chat for instant assistance or schedule a call with our experts.",
+      "startLiveChat": "Start Live Chat",
+      "scheduleCall": "Schedule a Call"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "description": "Sign in to access your mining dashboard",
+      "email": "Email Address",
+      "password": "Password",
+      "forgotPassword": "Forgot Password?",
+      "rememberMe": "Remember me for 30 days",
+      "signIn": "Sign In",
+      "signingIn": "Signing In...",
+      "noAccount": "Don't have an account?",
+      "createAccount": "Create Account",
+      "backToHome": "Back to Home",
+      "securityBadge": "256-bit SSL Encrypted • Secure Login",
+      "errors": {
+        "emailRequired": "Email is required",
+        "passwordRequired": "Password is required",
+        "unexpectedError": "An unexpected error occurred. Please try again."
+      }
+    },
+    "register": {
+      "title": "Create Your Account",
+      "description": "Start your mining journey today",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "agreeToTerms": "I agree to the Terms of Service and Privacy Policy",
+      "signUp": "Sign Up",
+      "signingUp": "Signing Up...",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign In"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "description": "Enter your email address and we'll send you a link to reset your password",
+      "email": "Email Address",
+      "sendResetLink": "Send Reset Link",
+      "sending": "Sending...",
+      "backToLogin": "Back to Login"
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "description": "Enter your new password",
+      "password": "New Password",
+      "confirmPassword": "Confirm Password",
+      "resetPassword": "Reset Password",
+      "resetting": "Resetting...",
+      "backToLogin": "Back to Login"
+    },
+    "verifyEmail": {
+      "title": "Verify Your Email",
+      "description": "We've sent a verification link to your email address",
+      "resendEmail": "Resend Verification Email",
+      "resending": "Resending...",
+      "checkEmail": "Please check your email and click the verification link to activate your account.",
+      "backToLogin": "Back to Login"
+    },
+    "verifyEmailNotice": {
+      "title": "Email Verification Required",
+      "description": "Please verify your email address to continue",
+      "checkEmail": "We've sent a verification link to your email. Please check your inbox and click the link to verify your account.",
+      "resendEmail": "Resend Verification Email",
+      "resending": "Resending...",
+      "backToLogin": "Back to Login"
+    }
+  },
+  "footer": {
+    "description": "Your trusted platform for renting professional mining machines. Start earning passive income with enterprise-grade hardware.",
+    "company": "Company",
+    "products": "Products",
+    "support": "Support",
+    "legal": "Legal",
+    "links": {
+      "aboutUs": "About Us",
+      "careers": "Careers",
+      "press": "Press",
+      "blog": "Blog",
+      "miningMachines": "Mining Machines",
+      "rentalPlans": "Rental Plans",
+      "referralProgram": "Referral Program",
+      "api": "API",
+      "helpCenter": "Help Center",
+      "contactUs": "Contact Us",
+      "faq": "FAQ",
+      "status": "Status",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "cookiePolicy": "Cookie Policy",
+      "compliance": "Compliance"
+    },
+    "copyright": "© {year} X-BIN. All rights reserved.",
+    "allSystemsOperational": "All systems operational"
+  }
+}

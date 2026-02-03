@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Orbitron, Inter } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "./lib/auth-context";
+import { locales, defaultLocale } from "@/i18n";
 
 const orbitron = Orbitron({
   variable: "--font-orbitron",
@@ -19,17 +19,15 @@ export const metadata: Metadata = {
   description: "Access enterprise-grade mining hardware without the hassle. Rent professional ASIC miners and GPU rigs to earn passive crypto income with X-BIN.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
+    <html lang={defaultLocale} dir="ltr" suppressHydrationWarning>
       <body className={`${orbitron.variable} ${inter.variable} antialiased`}>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        {children}
       </body>
     </html>
   );

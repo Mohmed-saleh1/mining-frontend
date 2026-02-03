@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 const Hero = () => {
+  const t = useTranslations('hero');
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalDeposits: 0,
@@ -60,8 +62,8 @@ const Hero = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
         </svg>
       ),
-      title: "Create Account",
-      description: "Sign up easily. Get started fast. Access professional mining equipment.",
+      title: t('steps.createAccount.title'),
+      description: t('steps.createAccount.description'),
     },
     {
       icon: (
@@ -69,8 +71,8 @@ const Hero = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
         </svg>
       ),
-      title: "Rent a Machine",
-      description: "Browse our catalog of ASIC miners and GPU rigs. Choose your rental period.",
+      title: t('steps.rentMachine.title'),
+      description: t('steps.rentMachine.description'),
     },
     {
       icon: (
@@ -78,8 +80,8 @@ const Hero = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
-      title: "Earn Profits",
-      description: "Your machine mines 24/7. Receive earnings directly to your wallet.",
+      title: t('steps.earnProfits.title'),
+      description: t('steps.earnProfits.description'),
     },
   ];
 
@@ -114,18 +116,18 @@ const Hero = () => {
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-gold/20 animate-fade-in-up">
               <div className="w-2 h-2 rounded-full bg-green animate-pulse" />
               <span className="text-sm text-foreground-muted">
-                Trusted by <span className="text-gold font-semibold">5,800+</span> miners worldwide
+                {t('trustBadge', { count: '5,800+' })}
               </span>
             </div>
 
             <div className="space-y-6">
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight tracking-tight">
-                Mine Crypto
+                {t('title')}
                 <br />
-                <span className="gradient-text">Without the Hardware</span>
+                <span className="gradient-text">{t('titleHighlight')}</span>
               </h1>
               <p className="text-xl text-foreground-muted max-w-xl leading-relaxed">
-                Rent enterprise-grade ASIC miners and GPU rigs. Start earning passive crypto income today with zero setup, maintenance, or electricity costs.
+                {t('description')}
               </p>
             </div>
 
@@ -135,19 +137,19 @@ const Hero = () => {
                 <svg className="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span className="text-sm font-medium text-gold">24/7 Mining</span>
+                <span className="text-sm font-medium text-gold">{t('features.mining247')}</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/20">
                 <svg className="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span className="text-sm font-medium text-gold">Daily Payouts</span>
+                <span className="text-sm font-medium text-gold">{t('features.dailyPayouts')}</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/20">
                 <svg className="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span className="text-sm font-medium text-gold">No Setup Required</span>
+                <span className="text-sm font-medium text-gold">{t('features.noSetup')}</span>
               </div>
             </div>
 
@@ -156,7 +158,7 @@ const Hero = () => {
                 href="/register"
                 className="btn-gold px-8 py-4 rounded-xl text-base font-semibold tracking-wide inline-flex items-center gap-2 group"
               >
-                Start Mining Now
+                {t('cta.startMining')}
                 <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
@@ -165,7 +167,7 @@ const Hero = () => {
                 href="/about"
                 className="btn-outline px-8 py-4 rounded-xl text-base font-semibold tracking-wide inline-flex items-center gap-2 group"
               >
-                How It Works
+                {t('cta.howItWorks')}
                 <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
@@ -265,7 +267,7 @@ const Hero = () => {
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-                Total Users
+                {t('stats.totalUsers')}
               </div>
               <div className="text-3xl font-bold gradient-text animate-count-up">
                 {formatNumber(stats.totalUsers)}
@@ -277,7 +279,7 @@ const Hero = () => {
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
-                Total Deposits
+                {t('stats.totalDeposits')}
               </div>
               <div className="text-3xl font-bold gradient-text animate-count-up">
                 {formatCurrency(stats.totalDeposits)}
@@ -289,7 +291,7 @@ const Hero = () => {
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Daily Payouts
+                {t('stats.dailyPayouts')}
               </div>
               <div className="text-3xl font-bold gradient-text animate-count-up">
                 {formatCurrency(stats.dailyPayouts)}
@@ -301,7 +303,7 @@ const Hero = () => {
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-                Total Payouts
+                {t('stats.totalPayouts')}
               </div>
               <div className="text-3xl font-bold gradient-text animate-count-up">
                 {formatCurrency(stats.totalPayouts)}

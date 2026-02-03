@@ -1,42 +1,45 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 const FAQ = () => {
+  const t = useTranslations('faq');
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const faqs = [
     {
-      question: "How does cloud mining work?",
-      answer: "Cloud mining allows you to rent mining hardware remotely without purchasing or maintaining physical equipment. You pay a rental fee, and we handle all the technical aspects including setup, maintenance, and electricity costs. Your rented machine mines cryptocurrency 24/7, and you receive daily payouts based on the mining performance.",
+      question: t('items.howDoesCloudMiningWork.question'),
+      answer: t('items.howDoesCloudMiningWork.answer'),
     },
     {
-      question: "What cryptocurrencies can I mine?",
-      answer: "We support mining for Bitcoin, Ethereum, Litecoin, and other major cryptocurrencies. The specific coins depend on the machine you rent. ASIC miners are typically optimized for Bitcoin, while GPU rigs can mine various altcoins. Check each machine's specifications to see which coins it supports.",
+      question: t('items.whatCryptocurrencies.question'),
+      answer: t('items.whatCryptocurrencies.answer'),
     },
     {
-      question: "How are payouts calculated?",
-      answer: "Payouts are calculated based on the actual mining performance of your rented machine, current cryptocurrency prices, and network difficulty. We use real-time data to ensure accurate calculations. Daily payouts are automatically sent to your wallet address, minus the rental fee.",
+      question: t('items.howArePayoutsCalculated.question'),
+      answer: t('items.howArePayoutsCalculated.answer'),
     },
     {
-      question: "What happens if a machine breaks down?",
-      answer: "We maintain a 99.9% uptime guarantee. If a machine experiences issues, our technical team immediately switches your rental to a backup machine to ensure continuous mining. You won't lose any mining time, and we handle all maintenance automatically.",
+      question: t('items.whatIfMachineBreaks.question'),
+      answer: t('items.whatIfMachineBreaks.answer'),
     },
     {
-      question: "Can I cancel my rental?",
-      answer: "Yes, you can cancel your rental at any time. However, rental fees are non-refundable for the current period. Once the current rental period ends, your machine will be released and no further charges will apply. You can always rent again in the future.",
+      question: t('items.canICancelRental.question'),
+      answer: t('items.canICancelRental.answer'),
     },
     {
-      question: "Is there a minimum rental period?",
-      answer: "Yes, the minimum rental period is 1 day. You can rent machines for daily, weekly, or monthly periods. Longer rental periods often come with discounted rates. Check the pricing details for each machine to see available rental options.",
+      question: t('items.minimumRentalPeriod.question'),
+      answer: t('items.minimumRentalPeriod.answer'),
     },
     {
-      question: "How do I track my mining performance?",
-      answer: "Once you rent a machine, you'll have access to a comprehensive dashboard showing real-time mining statistics, including hash rate, earnings, payout history, and machine status. You can monitor everything from your account dashboard 24/7.",
+      question: t('items.howToTrackPerformance.question'),
+      answer: t('items.howToTrackPerformance.answer'),
     },
     {
-      question: "Are there any hidden fees?",
-      answer: "No, we believe in transparent pricing. The rental fee you see is the only fee you pay. There are no setup fees, maintenance fees, or withdrawal fees. The only exception is network transaction fees for cryptocurrency transfers, which are standard blockchain fees.",
+      question: t('items.hiddenFees.question'),
+      answer: t('items.hiddenFees.answer'),
     },
   ];
 
@@ -51,10 +54,10 @@ const FAQ = () => {
         {/* Section Header */}
         <div className="text-center mb-16 animate-fade-in-up">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-            Frequently Asked <span className="gradient-text">Questions</span>
+            {t('title')} <span className="gradient-text">{t('titleHighlight')}</span>
           </h2>
           <p className="text-foreground-muted text-lg max-w-2xl mx-auto">
-            Find answers to common questions about our platform and cloud mining
+            {t('description')}
           </p>
         </div>
 
@@ -107,17 +110,17 @@ const FAQ = () => {
         {/* Still have questions CTA */}
         <div className="text-center mt-12 animate-fade-in-up" style={{ animationDelay: "0.8s" }}>
           <p className="text-foreground-muted mb-4">
-            Still have questions? We're here to help!
+            {t('stillHaveQuestions')}
           </p>
-          <a
+          <Link
             href="/contact"
             className="btn-outline px-8 py-3 rounded-xl text-base font-semibold tracking-wide inline-flex items-center gap-2 group"
           >
-            Contact Support
+            {t('contactSupport')}
             <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
-          </a>
+          </Link>
         </div>
       </div>
     </section>
@@ -125,3 +128,4 @@ const FAQ = () => {
 };
 
 export default FAQ;
+

@@ -1,33 +1,37 @@
-import Link from "next/link";
+"use client";
+
+import { Link } from "@/i18n/navigation";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 const Footer = () => {
+  const t = useTranslations('footer');
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
     company: [
-      { name: "About Us", href: "/about" },
-      { name: "Careers", href: "/careers" },
-      { name: "Press", href: "/press" },
-      { name: "Blog", href: "/blog" },
+      { name: t('links.aboutUs'), href: "/about" },
+      { name: t('links.careers'), href: "/careers" },
+      { name: t('links.press'), href: "/press" },
+      { name: t('links.blog'), href: "/blog" },
     ],
     products: [
-      { name: "Mining Machines", href: "/machines" },
-      { name: "Rental Plans", href: "/about#how-it-works" },
-      { name: "Referral Program", href: "/referral" },
-      { name: "API", href: "/api-docs" },
+      { name: t('links.miningMachines'), href: "/machines" },
+      { name: t('links.rentalPlans'), href: "/about#how-it-works" },
+      { name: t('links.referralProgram'), href: "/referral" },
+      { name: t('links.api'), href: "/api-docs" },
     ],
     support: [
-      { name: "Help Center", href: "/help" },
-      { name: "Contact Us", href: "/contact" },
-      { name: "FAQ", href: "/contact#faq" },
-      { name: "Status", href: "/status" },
+      { name: t('links.helpCenter'), href: "/help" },
+      { name: t('links.contactUs'), href: "/contact" },
+      { name: t('links.faq'), href: "/contact#faq" },
+      { name: t('links.status'), href: "/status" },
     ],
     legal: [
-      { name: "Privacy Policy", href: "/privacy" },
-      { name: "Terms of Service", href: "/terms" },
-      { name: "Cookie Policy", href: "/cookies" },
-      { name: "Compliance", href: "/compliance" },
+      { name: t('links.privacyPolicy'), href: "/privacy" },
+      { name: t('links.termsOfService'), href: "/terms" },
+      { name: t('links.cookiePolicy'), href: "/cookies" },
+      { name: t('links.compliance'), href: "/compliance" },
     ],
   };
 
@@ -48,7 +52,7 @@ const Footer = () => {
               />
             </Link>
             <p className="text-foreground-muted text-sm mb-6 max-w-xs">
-              Your trusted platform for renting professional mining machines. Start earning passive income with enterprise-grade hardware.
+              {t('description')}
             </p>
             {/* Social Links */}
             <div className="flex gap-3">
@@ -92,7 +96,7 @@ const Footer = () => {
 
           {/* Links Columns */}
           <div>
-            <h4 className="font-semibold text-foreground mb-4">Company</h4>
+            <h4 className="font-semibold text-foreground mb-4">{t('company')}</h4>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
@@ -108,7 +112,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="font-semibold text-foreground mb-4">Products</h4>
+            <h4 className="font-semibold text-foreground mb-4">{t('products')}</h4>
             <ul className="space-y-3">
               {footerLinks.products.map((link) => (
                 <li key={link.name}>
@@ -124,7 +128,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="font-semibold text-foreground mb-4">Support</h4>
+            <h4 className="font-semibold text-foreground mb-4">{t('support')}</h4>
             <ul className="space-y-3">
               {footerLinks.support.map((link) => (
                 <li key={link.name}>
@@ -140,7 +144,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="font-semibold text-foreground mb-4">Legal</h4>
+            <h4 className="font-semibold text-foreground mb-4">{t('legal')}</h4>
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.name}>
@@ -159,12 +163,12 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-foreground-muted text-sm">
-            © {currentYear} X-BIN. All rights reserved.
+            {t('copyright', { year: currentYear })}
           </p>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-green animate-pulse" />
-              <span className="text-foreground-muted text-sm">All systems operational</span>
+              <span className="text-foreground-muted text-sm">{t('allSystemsOperational')}</span>
             </div>
           </div>
         </div>
