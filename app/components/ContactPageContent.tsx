@@ -131,24 +131,24 @@ const ContactPageContent = () => {
 
   const faqs = [
     {
-      question: "How long does it take to process withdrawals?",
-      answer: "Withdrawals are typically processed within 24-48 hours. For larger amounts, additional verification may be required which can take up to 72 hours.",
+      question: t('faq.items.withdrawals.question'),
+      answer: t('faq.items.withdrawals.answer'),
     },
     {
-      question: "What payment methods do you accept?",
-      answer: "We accept Bitcoin (BTC), Ethereum (ETH), USDT, and other major cryptocurrencies. Bank transfers are available for verified accounts.",
+      question: t('faq.items.paymentMethods.question'),
+      answer: t('faq.items.paymentMethods.answer'),
     },
     {
-      question: "Is my investment secure?",
-      answer: "Yes, we use industry-leading security measures including cold storage for funds, 2FA authentication, and regular security audits to protect your assets.",
+      question: t('faq.items.security.question'),
+      answer: t('faq.items.security.answer'),
     },
     {
-      question: "What is the minimum investment amount?",
-      answer: "The minimum investment varies by package. Our starter package begins at $100, while premium packages have higher minimums for increased returns.",
+      question: t('faq.items.minimumInvestment.question'),
+      answer: t('faq.items.minimumInvestment.answer'),
     },
     {
-      question: "How do I track my earnings?",
-      answer: "You can track all your earnings in real-time through your dashboard. We provide detailed reports on daily profits, withdrawals, and overall portfolio performance.",
+      question: t('faq.items.trackEarnings.question'),
+      answer: t('faq.items.trackEarnings.answer'),
     },
   ];
 
@@ -477,8 +477,8 @@ const ContactPageContent = () => {
                           </svg>
                         </div>
                         <div>
-                          <p className="text-foreground font-medium text-sm">Our Headquarters</p>
-                          <p className="text-foreground-muted text-xs">123 Crypto Street, Digital City</p>
+                          <p className="text-foreground font-medium text-sm">{t('map.headquarters')}</p>
+                          <p className="text-foreground-muted text-xs">{t('map.address')}</p>
                         </div>
                       </div>
                     </div>
@@ -496,28 +496,28 @@ const ContactPageContent = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
-                    <h3 className="text-lg font-semibold text-foreground">Business Hours</h3>
+                    <h3 className="text-lg font-semibold text-foreground">{t('supportHours.title')}</h3>
                   </div>
                   
                   <div className="space-y-4">
                     <div className="flex justify-between items-center py-3 border-b border-border/30">
-                      <span className="text-foreground-muted">Live Chat</span>
+                      <span className="text-foreground-muted">{t('supportHours.liveChat')}</span>
                       <span className="text-green font-medium flex items-center gap-2 text-sm">
                         <span className="w-2 h-2 rounded-full bg-green animate-pulse" />
-                        24/7 Available
+                        {t('supportHours.available247')}
                       </span>
                     </div>
                     <div className="flex justify-between items-center py-3 border-b border-border/30">
-                      <span className="text-foreground-muted">Email Support</span>
-                      <span className="text-foreground text-sm">24/7 (2hr response)</span>
+                      <span className="text-foreground-muted">{t('supportHours.emailSupport')}</span>
+                      <span className="text-foreground text-sm">{t('supportHours.response2hr')}</span>
                     </div>
                     <div className="flex justify-between items-center py-3 border-b border-border/30">
-                      <span className="text-foreground-muted">Phone Support</span>
-                      <span className="text-foreground text-sm">Mon-Fri 8AM-6PM</span>
+                      <span className="text-foreground-muted">{t('supportHours.phoneSupport')}</span>
+                      <span className="text-foreground text-sm">{t('supportHours.monFri')}</span>
                     </div>
                     <div className="flex justify-between items-center py-3">
-                      <span className="text-foreground-muted">Office Hours</span>
-                      <span className="text-foreground text-sm">Mon-Fri 9AM-5PM</span>
+                      <span className="text-foreground-muted">{t('supportHours.officeHours')}</span>
+                      <span className="text-foreground text-sm">{t('supportHours.officeMonFri')}</span>
                     </div>
                   </div>
                 </div>
@@ -528,7 +528,7 @@ const ContactPageContent = () => {
                 <div className="absolute inset-0 bg-linear-to-br from-gold/10 to-transparent rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative glass rounded-3xl p-6 border border-gold/10">
                   <h3 className="text-lg font-semibold text-foreground mb-5">
-                    Connect With Us
+                    {t('social.title')}
                   </h3>
                   <div className="grid grid-cols-4 gap-3">
                     {[
@@ -605,7 +605,7 @@ const ContactPageContent = () => {
               {t('faq.title')} <span className="gradient-text">{t('faq.titleHighlight')}</span>
             </h2>
             <p className="text-foreground-muted max-w-2xl mx-auto">
-              Find quick answers to common questions. Can&apos;t find what you&apos;re looking for? Contact our support team.
+              {t('faq.findAnswers')}
             </p>
           </div>
 
@@ -668,10 +668,10 @@ const ContactPageContent = () => {
                 </div>
                 
                 <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-                  Still Have Questions?
+                  {t('cta.title')}
                 </h2>
                 <p className="text-foreground-muted mb-8 max-w-xl mx-auto">
-                  Our support team is standing by to help. Start a live chat for instant assistance or schedule a call with our experts.
+                  {t('cta.description')}
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -679,7 +679,7 @@ const ContactPageContent = () => {
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
-                    Start Live Chat
+                    {t('cta.startLiveChat')}
                     <svg className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
@@ -688,7 +688,7 @@ const ContactPageContent = () => {
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    Schedule a Call
+                    {t('cta.scheduleCall')}
                   </button>
                 </div>
               </div>

@@ -635,7 +635,54 @@
     "faq": {
       "title": "Frequently Asked",
       "titleHighlight": "Questions",
-      "description": "Quick answers to common questions about our platform and services."
+      "description": "Quick answers to common questions about our platform and services.",
+      "findAnswers": "Find quick answers to common questions. Can't find what you're looking for? Contact our support team.",
+      "items": {
+        "withdrawals": {
+          "question": "How long does it take to process withdrawals?",
+          "answer": "Withdrawals are typically processed within 24-48 hours. For larger amounts, additional verification may be required which can take up to 72 hours."
+        },
+        "paymentMethods": {
+          "question": "What payment methods do you accept?",
+          "answer": "We accept Bitcoin (BTC), Ethereum (ETH), USDT, and other major cryptocurrencies. Bank transfers are available for verified accounts."
+        },
+        "security": {
+          "question": "Is my investment secure?",
+          "answer": "Yes, we use industry-leading security measures including cold storage for funds, 2FA authentication, and regular security audits to protect your assets."
+        },
+        "minimumInvestment": {
+          "question": "What is the minimum investment amount?",
+          "answer": "The minimum investment varies by package. Our starter package begins at $100, while premium packages have higher minimums for increased returns."
+        },
+        "trackEarnings": {
+          "question": "How do I track my earnings?",
+          "answer": "You can track all your earnings in real-time through your dashboard. We provide detailed reports on daily profits, withdrawals, and overall portfolio performance."
+        }
+      }
+    },
+    "supportHours": {
+      "title": "Business Hours",
+      "liveChat": "Live Chat",
+      "emailSupport": "Email Support",
+      "phoneSupport": "Phone Support",
+      "officeHours": "Office Hours",
+      "available247": "24/7 Available",
+      "response2hr": "24/7 (2hr response)",
+      "monFri": "Mon-Fri 8AM-6PM",
+      "officeMonFri": "Mon-Fri 9AM-5PM"
+    },
+    "map": {
+      "headquarters": "Our Headquarters",
+      "address": "123 Crypto Street, Digital City"
+    },
+    "social": {
+      "title": "Connect With Us"
+    },
+    "cta": {
+      "title": "Still Have Questions?",
+      "description": "Our support team is standing by to help. Start a live chat for instant assistance or schedule a call with our experts.",
+      "startLiveChat": "Start Live Chat",
+      "scheduleCall": "Schedule a Call"
     }
   }
 }
