@@ -1,7 +1,6 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 const Footer = () => {
@@ -42,14 +41,27 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-4 lg:col-span-1">
-            <Link href="/" className="flex items-center mb-6">
-              <Image
-                src="/logo.png"
-                alt="X-BIN Logo"
-                width={150}
-                height={50}
-                className="object-contain h-12 w-auto"
-              />
+            <Link href="/" className="flex items-center mb-6 group">
+              <div className="relative flex items-center gap-2">
+                {/* Icon */}
+                <div className="relative w-9 h-9 rounded-lg bg-gradient-to-br from-gold via-gold-light to-gold flex items-center justify-center shadow-lg shadow-gold/20 group-hover:shadow-gold/40 transition-shadow duration-300">
+                  <svg className="w-5 h-5 text-background" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                    <path d="M2 17l10 5 10-5" />
+                    <path d="M2 12l10 5 10-5" />
+                  </svg>
+                  <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-white/20 to-transparent" />
+                </div>
+                {/* Text */}
+                <div className="flex flex-col leading-none">
+                  <span className="text-xl font-black tracking-tight bg-gradient-to-r from-gold via-gold-light to-gold bg-clip-text text-transparent group-hover:from-gold-light group-hover:via-gold group-hover:to-gold-light transition-all duration-300">
+                    X-BIN
+                  </span>
+                  <span className="text-[9px] font-semibold tracking-[0.2em] text-foreground-muted uppercase">
+                    Mining
+                  </span>
+                </div>
+              </div>
             </Link>
             <p className="text-foreground-muted text-sm mb-6 max-w-xs">
               {t('description')}

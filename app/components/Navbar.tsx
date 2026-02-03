@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Link } from "@/i18n/navigation";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/app/lib/auth-context";
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -44,15 +43,27 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center group">
-            <div className="relative">
-              <Image
-                src="/logo.png"
-                alt="X-BIN Logo"
-                width={180}
-                height={60}
-                className="object-contain h-16 w-auto glow-gold"
-              />
-              <div className="absolute -inset-2 bg-gold/20 rounded-lg blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative flex items-center gap-2">
+              {/* Icon */}
+              <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-gold via-gold-light to-gold flex items-center justify-center shadow-lg shadow-gold/20 group-hover:shadow-gold/40 transition-shadow duration-300">
+                <svg className="w-6 h-6 text-background" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                  <path d="M2 17l10 5 10-5" />
+                  <path d="M2 12l10 5 10-5" />
+                </svg>
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/20 to-transparent" />
+              </div>
+              {/* Text */}
+              <div className="flex flex-col leading-none">
+                <span className="text-2xl font-black tracking-tight bg-gradient-to-r from-gold via-gold-light to-gold bg-clip-text text-transparent group-hover:from-gold-light group-hover:via-gold group-hover:to-gold-light transition-all duration-300">
+                  X-BIN
+                </span>
+                <span className="text-[10px] font-semibold tracking-[0.2em] text-foreground-muted uppercase">
+                  Mining
+                </span>
+              </div>
+              {/* Hover glow */}
+              <div className="absolute -inset-3 bg-gold/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
             </div>
           </Link>
 
