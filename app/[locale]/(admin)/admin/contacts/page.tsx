@@ -8,6 +8,9 @@ import {
   ContactStatistics,
 } from "@/app/lib/api";
 
+// Disable static generation for admin pages
+export const dynamic = 'force-dynamic';
+
 const statusColors: Record<ContactStatus, string> = {
   new: "bg-blue-500/20 text-blue-400",
   in_progress: "bg-gold/20 text-gold",

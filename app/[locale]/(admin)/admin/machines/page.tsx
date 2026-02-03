@@ -10,6 +10,9 @@ import {
   ApiError,
 } from "@/app/lib/api";
 
+// Disable static generation for admin pages
+export const dynamic = 'force-dynamic';
+
 type FormData = CreateMiningMachineData;
 
 const initialFormData: FormData = {

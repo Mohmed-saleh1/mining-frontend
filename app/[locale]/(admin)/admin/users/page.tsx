@@ -6,6 +6,9 @@ import {
   User,
 } from "@/app/lib/api";
 
+// Disable static generation for admin pages
+export const dynamic = 'force-dynamic';
+
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);

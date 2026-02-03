@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/app/lib/auth-context";
+
+// Disable static generation for admin pages
+export const dynamic = 'force-dynamic';
 import {
   bookingsAdminApi,
   Booking,

@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { miningMachinesApi, MiningMachine } from "@/app/lib/api";
 
+// Disable static generation for admin pages
+export const dynamic = 'force-dynamic';
+
 export default function AdminDashboardPage() {
   const [machines, setMachines] = useState<MiningMachine[]>([]);
   const [isLoading, setIsLoading] = useState(true);
