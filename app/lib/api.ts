@@ -107,6 +107,70 @@ async function request<T>(
   return data;
 }
 
+async function requestWithFile<T>(
+  endpoint: string,
+  formData: FormData
+): Promise<ApiResponse<T>> {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+
+  const headers: HeadersInit = {};
+
+  if (token) {
+    (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: 'POST',
+    body: formData,
+    headers,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new ApiError(
+      data.message || 'An error occurred',
+      response.status,
+      data.errorCode,
+      data.errorDescription
+    );
+  }
+
+  return data;
+}
+
+async function requestWithFilePatch<T>(
+  endpoint: string,
+  formData: FormData
+): Promise<ApiResponse<T>> {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+
+  const headers: HeadersInit = {};
+
+  if (token) {
+    (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: 'PATCH',
+    body: formData,
+    headers,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new ApiError(
+      data.message || 'An error occurred',
+      response.status,
+      data.errorCode,
+      data.errorDescription
+    );
+  }
+
+  return data;
+}
+
 export const authApi = {
   register: (data: RegisterData) =>
     request<AuthResponse>('/auth/register', {
@@ -322,17 +386,57 @@ export const miningMachinesApi = {
   
   getOne: (id: string) => request<MiningMachine>(`/mining-machines/${id}`),
   
-  create: (data: CreateMiningMachineData) =>
-    request<MiningMachine>('/mining-machines', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
+  create: (data: CreateMiningMachineData, imageFile?: File) => {
+    if (imageFile) {
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      // Append all other fields
+      Object.keys(data).forEach((key) => {
+        const value = data[key as keyof CreateMiningMachineData];
+        if (value !== undefined && value !== null && key !== 'image') {
+          if (typeof value === 'boolean') {
+            formData.append(key, value ? 'true' : 'false');
+          } else if (typeof value === 'number') {
+            formData.append(key, value.toString());
+          } else {
+            formData.append(key, String(value));
+          }
+        }
+      });
+      return requestWithFile<MiningMachine>('/mining-machines', formData);
+    } else {
+      return request<MiningMachine>('/mining-machines', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    }
+  },
   
-  update: (id: string, data: UpdateMiningMachineData) =>
-    request<MiningMachine>(`/mining-machines/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-    }),
+  update: (id: string, data: UpdateMiningMachineData, imageFile?: File) => {
+    if (imageFile) {
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      // Append all other fields
+      Object.keys(data).forEach((key) => {
+        const value = data[key as keyof UpdateMiningMachineData];
+        if (value !== undefined && value !== null && key !== 'image') {
+          if (typeof value === 'boolean') {
+            formData.append(key, value ? 'true' : 'false');
+          } else if (typeof value === 'number') {
+            formData.append(key, value.toString());
+          } else {
+            formData.append(key, String(value));
+          }
+        }
+      });
+      return requestWithFilePatch<MiningMachine>(`/mining-machines/${id}`, formData);
+    } else {
+      return request<MiningMachine>(`/mining-machines/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      });
+    }
+  },
   
   delete: (id: string) =>
     request<void>(`/mining-machines/${id}`, {
@@ -692,6 +796,58 @@ export const bookingsAdminApi = {
     }),
 
   getUnreadCount: () => request<{ count: number }>('/bookings/admin/unread-count'),
+};
+
+// Legal Documents Types
+export interface LegalDocument {
+  id: string;
+  type: 'privacy_policy' | 'terms_of_service';
+  content: string;
+  contentAr?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateLegalDocumentData {
+  type: 'privacy_policy' | 'terms_of_service';
+  content: string;
+  contentAr?: string;
+}
+
+export interface UpdateLegalDocumentData {
+  content?: string;
+  contentAr?: string;
+}
+
+// Public Legal Documents API
+export const legalDocumentsPublicApi = {
+  getPrivacyPolicy: () => request<LegalDocument>('/legal-documents/public/privacy-policy'),
+  getTermsOfService: () => request<LegalDocument>('/legal-documents/public/terms-of-service'),
+};
+
+// Admin Legal Documents API
+export const legalDocumentsApi = {
+  getAll: () => request<LegalDocument[]>('/legal-documents'),
+  getOne: (id: string) => request<LegalDocument>(`/legal-documents/${id}`),
+  create: (data: CreateLegalDocumentData) =>
+    request<LegalDocument>('/legal-documents', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  update: (id: string, data: UpdateLegalDocumentData) =>
+    request<LegalDocument>(`/legal-documents/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+  updateByType: (type: 'privacy_policy' | 'terms_of_service', data: UpdateLegalDocumentData) =>
+    request<LegalDocument>(`/legal-documents/type/${type}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+  delete: (id: string) =>
+    request<void>(`/legal-documents/${id}`, {
+      method: 'DELETE',
+    }),
 };
 
 export { ApiError };

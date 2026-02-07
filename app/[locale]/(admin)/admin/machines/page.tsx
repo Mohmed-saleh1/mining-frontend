@@ -58,6 +58,8 @@ export default function MachinesPage() {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [editingMachine, setEditingMachine] = useState<MiningMachine | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const fetchMachines = useCallback(async () => {
     try {
@@ -113,6 +115,8 @@ export default function MachinesPage() {
           isFeatured: machine.isFeatured,
           sortOrder: machine.sortOrder,
         });
+        setImageFile(null);
+        setImagePreview(machine.image || null);
         setShowModal(true);
       }
     }
@@ -122,6 +126,8 @@ export default function MachinesPage() {
     setShowModal(false);
     setEditingMachine(null);
     setFormData(initialFormData);
+    setImageFile(null);
+    setImagePreview(null);
     setError(null);
     router.push("/admin/machines");
   };
@@ -141,6 +147,19 @@ export default function MachinesPage() {
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -148,10 +167,10 @@ export default function MachinesPage() {
 
     try {
       if (editingMachine) {
-        await miningMachinesApi.update(editingMachine.id, formData as UpdateMiningMachineData);
+        await miningMachinesApi.update(editingMachine.id, formData as UpdateMiningMachineData, imageFile || undefined);
         setSuccess("Machine updated successfully");
       } else {
-        await miningMachinesApi.create(formData);
+        await miningMachinesApi.create(formData, imageFile || undefined);
         setSuccess("Machine created successfully");
       }
       
@@ -454,15 +473,22 @@ export default function MachinesPage() {
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm text-foreground-muted mb-2">Image URL</label>
+                    <label className="block text-sm text-foreground-muted mb-2">Image</label>
                     <input
-                      type="url"
-                      name="image"
-                      value={formData.image}
-                      onChange={handleInputChange}
-                      className="w-full input-gold px-4 py-3 rounded-xl text-sm"
-                      placeholder="https://example.com/image.jpg"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="w-full input-gold px-4 py-3 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gold/20 file:text-gold hover:file:bg-gold/30"
                     />
+                    {(imagePreview || (editingMachine && editingMachine.image)) && (
+                      <div className="mt-4">
+                        <img
+                          src={imagePreview || editingMachine?.image || ''}
+                          alt="Preview"
+                          className="w-full h-48 object-cover rounded-xl border border-border"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

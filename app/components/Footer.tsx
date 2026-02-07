@@ -10,27 +10,18 @@ const Footer = () => {
   const footerLinks = {
     company: [
       { name: t('links.aboutUs'), href: "/about" },
-      { name: t('links.careers'), href: "/careers" },
-      { name: t('links.press'), href: "/press" },
-      { name: t('links.blog'), href: "/blog" },
     ],
     products: [
       { name: t('links.miningMachines'), href: "/machines" },
       { name: t('links.rentalPlans'), href: "/about#how-it-works" },
-      { name: t('links.referralProgram'), href: "/referral" },
-      { name: t('links.api'), href: "/api-docs" },
     ],
     support: [
-      { name: t('links.helpCenter'), href: "/help" },
       { name: t('links.contactUs'), href: "/contact" },
       { name: t('links.faq'), href: "/contact#faq" },
-      { name: t('links.status'), href: "/status" },
     ],
     legal: [
       { name: t('links.privacyPolicy'), href: "/privacy" },
       { name: t('links.termsOfService'), href: "/terms" },
-      { name: t('links.cookiePolicy'), href: "/cookies" },
-      { name: t('links.compliance'), href: "/compliance" },
     ],
   };
 
