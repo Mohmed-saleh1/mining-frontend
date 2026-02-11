@@ -792,6 +792,7 @@ export default function MachinesPage() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

@@ -75,10 +75,12 @@ export default function AdminBookingsPage() {
         limit: 10,
         status: statusFilter === "all" ? undefined : statusFilter,
       });
-      setBookings(response.data.data);
-      setTotalPages(response.data.totalPages);
+      setBookings(Array.isArray(response.data?.data) ? response.data.data : []);
+      setTotalPages(response.data?.totalPages || 1);
     } catch (error) {
       console.error("Failed to load bookings:", error);
+      setBookings([]);
+      setTotalPages(1);
     } finally {
       setIsLoading(false);
     }

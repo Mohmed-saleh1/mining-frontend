@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/app/lib/auth-context";
-import { subscriptionsApi, Subscription, SubscriptionStatus } from "@/app/lib/api";
+import { subscriptionsApi, Subscription, SubscriptionStatus, PaymentMethod } from "@/app/lib/api";
 import { useRouter } from "@/i18n/navigation";
 
 // Disable static generation for dashboard pages
@@ -120,7 +120,7 @@ export default function UserSubscriptionsPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="text-xl font-bold text-foreground">
-                          {subscription.plan.name}
+                          {subscription.machine?.name || subscription.plan?.name || 'Subscription'}
                         </h3>
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-semibold ${status.color} ${status.bg}`}
@@ -131,10 +131,32 @@ export default function UserSubscriptionsPage() {
                       <p className="text-foreground-muted mb-2">
                         {subscription.machine.name}
                       </p>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
                         <div>
                           <p className="text-foreground-muted">Amount</p>
                           <p className="font-semibold text-foreground">${subscription.amount}</p>
+                        </div>
+                        <div>
+                          <p className="text-foreground-muted">Payment</p>
+                          <p className="font-semibold text-foreground flex items-center gap-1">
+                            {subscription.paymentMethod === 'binance' ? (
+                              <>
+                                <span className="w-4 h-4 inline-flex items-center justify-center">
+                                  <svg className="w-3.5 h-3.5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2L6.5 7.5L8.5 9.5L12 6L15.5 9.5L17.5 7.5L12 2ZM2 12L4 10L6 12L4 14L2 12ZM6.5 16.5L12 22L17.5 16.5L15.5 14.5L12 18L8.5 14.5L6.5 16.5ZM18 12L20 10L22 12L20 14L18 12ZM12 10L10 12L12 14L14 12L12 10Z" />
+                                  </svg>
+                                </span>
+                                Crypto
+                              </>
+                            ) : (
+                              <>
+                                <svg className="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                </svg>
+                                Card
+                              </>
+                            )}
+                          </p>
                         </div>
                         <div>
                           <p className="text-foreground-muted">Start Date</p>
@@ -151,7 +173,7 @@ export default function UserSubscriptionsPage() {
                         <div>
                           <p className="text-foreground-muted">Quantity</p>
                           <p className="font-semibold text-foreground">
-                            {subscription.plan.quantity} unit{subscription.plan.quantity > 1 ? 's' : ''}
+                            {subscription.quantity || subscription.plan?.quantity || 1} unit{(subscription.quantity || subscription.plan?.quantity || 1) > 1 ? 's' : ''}
                           </p>
                         </div>
                       </div>

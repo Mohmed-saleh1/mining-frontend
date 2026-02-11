@@ -47,13 +47,14 @@ export default function AdminContactsPage() {
         contactAdminApi.getStatistics(),
       ]);
       
-      setContacts(contactsRes.data?.data || []);
+      setContacts(Array.isArray(contactsRes.data?.data) ? contactsRes.data.data : []);
       setTotalPages(contactsRes.data?.totalPages || 1);
       setStatistics(statsRes.data);
     } catch (err) {
       console.error("Failed to fetch contacts:", err);
       setError("Failed to load contact requests");
       setContacts([]);
+      setTotalPages(1);
     } finally {
       setIsLoading(false);
     }

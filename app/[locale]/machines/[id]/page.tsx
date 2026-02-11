@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { miningMachinesPublicApi, subscriptionPlansApi, subscriptionsApi, MiningMachine, SubscriptionPlan, ApiError } from "@/app/lib/api";
+import { miningMachinesPublicApi, subscriptionsApi, MiningMachine, PlanDuration, PaymentMethod, ApiError } from "@/app/lib/api";
 import { useAuth } from "@/app/lib/auth-context";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
@@ -18,21 +18,22 @@ export default function MachineDetailsPage() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const [machine, setMachine] = useState<MiningMachine | null>(null);
-  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSubscribing, setIsSubscribing] = useState(false);
+
+  // Subscription form state
+  const [selectedDuration, setSelectedDuration] = useState<PlanDuration>('day');
+  const [durationNumber, setDurationNumber] = useState<number>(1);
+  const [quantity, setQuantity] = useState<number>(1);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const [machineResponse, plansResponse] = await Promise.all([
-          miningMachinesPublicApi.getOne(params.id as string),
-          subscriptionPlansApi.getAll(params.id as string),
-        ]);
+        const machineResponse = await miningMachinesPublicApi.getOne(params.id as string);
         setMachine(machineResponse.data);
-        setPlans(plansResponse.data);
       } catch (err) {
         if (err instanceof ApiError) {
           setError(err.message);
@@ -49,18 +50,51 @@ export default function MachineDetailsPage() {
     }
   }, [params.id]);
 
-  const handleSubscribe = async (planId: string) => {
+  // Calculate total price
+  const getUnitPrice = (): number => {
+    if (!machine) return 0;
+    switch (selectedDuration) {
+      case 'day': return Number(machine.pricePerDay) || 0;
+      case 'week': return Number(machine.pricePerWeek) || 0;
+      case 'month': return Number(machine.pricePerMonth) || 0;
+      default: return 0;
+    }
+  };
+
+  const unitPrice = getUnitPrice();
+  const totalPrice = unitPrice * durationNumber * quantity;
+
+  const availableUnits = machine ? machine.totalUnits - machine.rentedUnits : 0;
+
+  const handleSubscribeClick = () => {
     if (!isAuthenticated) {
       router.push("/register");
       return;
     }
+    setShowPaymentModal(true);
+  };
+
+  const handlePayment = async (paymentMethod: PaymentMethod) => {
+    if (!machine) return;
 
     setIsSubscribing(true);
+    setShowPaymentModal(false);
+
     try {
-      const response = await subscriptionsApi.create({ planId });
-      // Redirect to PayTabs payment page
-      if (response.data.paymentUrl) {
+      const response = await subscriptionsApi.create({
+        machineId: machine.id,
+        duration: selectedDuration,
+        number: durationNumber,
+        quantity,
+        paymentMethod,
+      });
+      // Redirect to payment page
+      // Response is wrapped in { success, message, data: { subscription, paymentUrl }, timestamp }
+      if (response.data?.paymentUrl) {
         window.location.href = response.data.paymentUrl;
+      } else {
+        console.error("No payment URL in response:", response);
+        alert("Failed to get payment URL. Please try again.");
       }
     } catch (err) {
       console.error("Failed to create subscription:", err);
@@ -70,7 +104,7 @@ export default function MachineDetailsPage() {
     }
   };
 
-  const durationLabels: Record<string, string> = {
+  const durationLabels: Record<PlanDuration, string> = {
     day: 'Day',
     week: 'Week',
     month: 'Month',
@@ -233,13 +267,13 @@ export default function MachineDetailsPage() {
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-sm text-foreground-muted">{t('availableUnits')}</span>
                       <span className="text-lg font-bold text-foreground">
-                        {machine.totalUnits - machine.rentedUnits} / {machine.totalUnits}
+                        {availableUnits} / {machine.totalUnits}
                       </span>
                     </div>
                     <div className="w-full bg-background-secondary/50 rounded-full h-2">
                       <div
                         className="bg-gold rounded-full h-2 transition-all"
-                        style={{ width: `${((machine.totalUnits - machine.rentedUnits) / machine.totalUnits) * 100}%` }}
+                        style={{ width: `${(availableUnits / machine.totalUnits) * 100}%` }}
                       />
                     </div>
                   </div>
@@ -247,50 +281,186 @@ export default function MachineDetailsPage() {
               </div>
             ) : null}
 
-            {/* Subscription Plans */}
-            {machine && (
+            {/* Subscribe Section */}
+            {machine && machine.status !== 'maintenance' && availableUnits > 0 && (
               <div className="mt-8">
                 <div className="glass rounded-2xl p-8">
                   <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
                     <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    Subscription Plans
+                    Subscribe to This Machine
                   </h2>
-                  
-                  {plans.length === 0 ? (
-                    <div className="text-center py-12">
-                      <p className="text-foreground-muted">No subscription plans available for this machine.</p>
-                    </div>
-                  ) : (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {plans.map((plan) => (
-                        <div
-                          key={plan.id}
-                          className="glass rounded-xl p-6 border border-gold/20 hover:border-gold/40 transition-all"
-                        >
-                          <h3 className="text-xl font-bold text-foreground mb-2">{plan.name}</h3>
-                          {plan.description && (
-                            <p className="text-sm text-foreground-muted mb-4">{plan.description}</p>
-                          )}
-                          <div className="mb-4">
-                            <span className="text-3xl font-bold text-gold">${plan.price}</span>
-                            <span className="text-foreground-muted text-sm ml-2">/ {durationLabels[plan.duration]}</span>
-                          </div>
-                          <div className="mb-4 text-sm text-foreground-muted">
-                            <p>Quantity: {plan.quantity} unit{plan.quantity > 1 ? 's' : ''}</p>
-                          </div>
+
+                  <div className="grid md:grid-cols-2 gap-8">
+                    {/* Left: Configuration */}
+                    <div className="space-y-6">
+                      {/* Duration Type Selection */}
+                      <div>
+                        <label className="block text-sm font-semibold text-foreground mb-3">
+                          Duration Type
+                        </label>
+                        <div className="grid grid-cols-3 gap-3">
+                          {(['day', 'week', 'month'] as PlanDuration[]).map((dur) => {
+                            const price = dur === 'day' ? machine.pricePerDay : dur === 'week' ? machine.pricePerWeek : machine.pricePerMonth;
+                            return (
+                              <button
+                                key={dur}
+                                onClick={() => { setSelectedDuration(dur); setDurationNumber(1); }}
+                                className={`p-4 rounded-xl border-2 transition-all text-center ${
+                                  selectedDuration === dur
+                                    ? 'border-gold bg-gold/10'
+                                    : 'border-border hover:border-gold/40'
+                                }`}
+                              >
+                                <p className="font-bold text-foreground capitalize">{durationLabels[dur]}</p>
+                                <p className="text-gold font-semibold text-lg">${price}</p>
+                                <p className="text-xs text-foreground-muted">per {dur}</p>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Number of Duration Units */}
+                      <div>
+                        <label className="block text-sm font-semibold text-foreground mb-3">
+                          Number of {durationLabels[selectedDuration]}s
+                        </label>
+                        <div className="flex items-center gap-4">
                           <button
-                            onClick={() => handleSubscribe(plan.id)}
-                            disabled={isSubscribing || !plan.isActive}
-                            className="btn-gold w-full py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                            onClick={() => setDurationNumber(Math.max(1, durationNumber - 1))}
+                            className="w-12 h-12 rounded-xl border-2 border-border hover:border-gold/40 flex items-center justify-center text-foreground text-xl font-bold transition-colors"
                           >
-                            {isSubscribing ? 'Processing...' : 'Subscribe Now'}
+                            −
+                          </button>
+                          <input
+                            type="number"
+                            min={1}
+                            value={durationNumber}
+                            onChange={(e) => setDurationNumber(Math.max(1, parseInt(e.target.value) || 1))}
+                            className="w-24 h-12 text-center text-xl font-bold rounded-xl border-2 border-border bg-background-secondary/50 text-foreground focus:border-gold focus:outline-none"
+                          />
+                          <button
+                            onClick={() => setDurationNumber(durationNumber + 1)}
+                            className="w-12 h-12 rounded-xl border-2 border-border hover:border-gold/40 flex items-center justify-center text-foreground text-xl font-bold transition-colors"
+                          >
+                            +
                           </button>
                         </div>
-                      ))}
+                      </div>
+
+                      {/* Quantity (Units) */}
+                      {availableUnits > 1 && (
+                        <div>
+                          <label className="block text-sm font-semibold text-foreground mb-3">
+                            Number of Units
+                          </label>
+                          <div className="flex items-center gap-4">
+                            <button
+                              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                              className="w-12 h-12 rounded-xl border-2 border-border hover:border-gold/40 flex items-center justify-center text-foreground text-xl font-bold transition-colors"
+                            >
+                              −
+                            </button>
+                            <input
+                              type="number"
+                              min={1}
+                              max={availableUnits}
+                              value={quantity}
+                              onChange={(e) => setQuantity(Math.min(availableUnits, Math.max(1, parseInt(e.target.value) || 1)))}
+                              className="w-24 h-12 text-center text-xl font-bold rounded-xl border-2 border-border bg-background-secondary/50 text-foreground focus:border-gold focus:outline-none"
+                            />
+                            <button
+                              onClick={() => setQuantity(Math.min(availableUnits, quantity + 1))}
+                              className="w-12 h-12 rounded-xl border-2 border-border hover:border-gold/40 flex items-center justify-center text-foreground text-xl font-bold transition-colors"
+                            >
+                              +
+                            </button>
+                          </div>
+                          <p className="text-xs text-foreground-muted mt-2">
+                            {availableUnits} units available
+                          </p>
+                        </div>
+                      )}
                     </div>
-                  )}
+
+                    {/* Right: Price Summary */}
+                    <div className="flex flex-col justify-between">
+                      <div className="glass rounded-xl p-6 border border-gold/20 space-y-4">
+                        <h3 className="text-lg font-bold text-foreground">Order Summary</h3>
+                        
+                        <div className="space-y-3 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-foreground-muted">Machine</span>
+                            <span className="text-foreground font-medium">{machine.name}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-foreground-muted">Duration</span>
+                            <span className="text-foreground font-medium">
+                              {durationNumber} {durationNumber === 1 ? durationLabels[selectedDuration] : durationLabels[selectedDuration] + 's'}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-foreground-muted">Price per {durationLabels[selectedDuration]}</span>
+                            <span className="text-foreground font-medium">${unitPrice.toFixed(2)}</span>
+                          </div>
+                          {quantity > 1 && (
+                            <div className="flex justify-between">
+                              <span className="text-foreground-muted">Units</span>
+                              <span className="text-foreground font-medium">{quantity}</span>
+                            </div>
+                          )}
+                          <div className="border-t border-border pt-3">
+                            <div className="flex justify-between items-center">
+                              <span className="text-foreground font-bold text-lg">Total</span>
+                              <span className="text-gold font-bold text-3xl">${totalPrice.toFixed(2)}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={handleSubscribeClick}
+                        disabled={isSubscribing || totalPrice <= 0}
+                        className="btn-gold w-full py-4 rounded-xl font-bold text-lg mt-6 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      >
+                        {isSubscribing ? (
+                          <>
+                            <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            Subscribe Now — ${totalPrice.toFixed(2)}
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Machine unavailable */}
+            {machine && (machine.status === 'maintenance' || availableUnits <= 0) && (
+              <div className="mt-8">
+                <div className="glass rounded-2xl p-8 text-center">
+                  <svg className="w-12 h-12 mx-auto mb-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                  </svg>
+                  <h3 className="text-xl font-bold text-foreground mb-2">Currently Unavailable</h3>
+                  <p className="text-foreground-muted">
+                    {availableUnits <= 0 
+                      ? 'All units of this machine are currently rented. Please check back later.' 
+                      : 'This machine is currently under maintenance.'}
+                  </p>
                 </div>
               </div>
             )}
@@ -298,6 +468,112 @@ export default function MachineDetailsPage() {
         </main>
         
         <Footer />
+
+        {/* Payment Method Modal */}
+        {showPaymentModal && machine && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="glass rounded-2xl w-full max-w-md border border-gold/20">
+              {/* Modal Header */}
+              <div className="p-6 border-b border-border">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold text-foreground">Choose Payment Method</h2>
+                  <button
+                    onClick={() => setShowPaymentModal(false)}
+                    className="p-2 hover:bg-gold/10 rounded-lg transition-colors"
+                  >
+                    <svg className="w-5 h-5 text-foreground-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Order Summary */}
+              <div className="px-6 pt-4">
+                <div className="bg-background-secondary/50 rounded-xl p-4 mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-foreground-muted">Machine</span>
+                    <span className="font-semibold text-foreground">{machine.name}</span>
+                  </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-foreground-muted">Duration</span>
+                    <span className="font-medium text-foreground">
+                      {durationNumber} {durationNumber === 1 ? durationLabels[selectedDuration] : durationLabels[selectedDuration] + 's'}
+                    </span>
+                  </div>
+                  {quantity > 1 && (
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-foreground-muted">Units</span>
+                      <span className="font-medium text-foreground">{quantity}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between pt-2 border-t border-border">
+                    <span className="text-sm text-foreground-muted">Total Amount</span>
+                    <span className="text-xl font-bold text-gold">${totalPrice.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Payment Options */}
+              <div className="p-6 space-y-3">
+                {/* Card Payment (PayTabs) */}
+                <button
+                  onClick={() => handlePayment('paytabs')}
+                  disabled={isSubscribing}
+                  className="w-full p-4 rounded-xl border-2 border-border hover:border-gold/60 transition-all flex items-center gap-4 group disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className="font-semibold text-foreground group-hover:text-gold transition-colors">
+                      Pay with Card
+                    </p>
+                    <p className="text-xs text-foreground-muted">
+                      Credit / Debit Card via PayTabs
+                    </p>
+                  </div>
+                  <svg className="w-5 h-5 text-foreground-muted group-hover:text-gold transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+
+                {/* Crypto Payment (Binance Pay) */}
+                <button
+                  onClick={() => handlePayment('binance')}
+                  disabled={isSubscribing}
+                  className="w-full p-4 rounded-xl border-2 border-border hover:border-gold/60 transition-all flex items-center gap-4 group disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2L6.5 7.5L8.5 9.5L12 6L15.5 9.5L17.5 7.5L12 2ZM2 12L4 10L6 12L4 14L2 12ZM6.5 16.5L12 22L17.5 16.5L15.5 14.5L12 18L8.5 14.5L6.5 16.5ZM18 12L20 10L22 12L20 14L18 12ZM12 10L10 12L12 14L14 12L12 10Z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className="font-semibold text-foreground group-hover:text-gold transition-colors">
+                      Pay with Crypto
+                    </p>
+                    <p className="text-xs text-foreground-muted">
+                      USDT / BTC / ETH via Binance Pay
+                    </p>
+                  </div>
+                  <svg className="w-5 h-5 text-foreground-muted group-hover:text-gold transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Footer note */}
+              <div className="px-6 pb-6">
+                <p className="text-xs text-foreground-muted text-center">
+                  You will be redirected to a secure payment page to complete your transaction.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

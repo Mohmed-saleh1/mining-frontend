@@ -684,6 +684,15 @@ export interface BookingsResponse {
   totalPages: number;
 }
 
+export interface BookingAnalytics {
+  totalBookings: number;
+  totalInvestment: number;
+  totalRevenue: number;
+  activeBookings: number;
+  bookingsByStatus: Record<BookingStatus, number>;
+  revenueByMonth: Array<{ month: string; revenue: number }>;
+}
+
 export interface BookingStatistics {
   total: number;
   pending: number;
@@ -739,6 +748,8 @@ export const bookingsApi = {
     }),
 
   getUnreadCount: () => request<{ count: number }>('/bookings/unread-count'),
+
+  getAnalytics: () => request<BookingAnalytics>('/bookings/my-bookings/analytics'),
 };
 
 // Admin Bookings API
@@ -851,6 +862,7 @@ export const legalDocumentsApi = {
 // Subscription Types
 export type PlanDuration = 'day' | 'week' | 'month' | 'year';
 export type SubscriptionStatus = 'pending' | 'active' | 'expired' | 'cancelled';
+export type PaymentMethod = 'paytabs' | 'binance';
 
 export interface SubscriptionPlan {
   id: string;
@@ -871,14 +883,20 @@ export interface Subscription {
   id: string;
   userId: string;
   user?: User;
-  planId: string;
-  plan: SubscriptionPlan;
+  planId?: string;
+  plan?: SubscriptionPlan;
   machineId: string;
   machine: MiningMachine;
   status: SubscriptionStatus;
   amount: number;
+  duration?: PlanDuration;
+  durationNumber?: number;
+  quantity?: number;
+  paymentMethod: PaymentMethod;
   paytabsTransactionId?: string;
   paytabsPaymentId?: string;
+  binanceOrderId?: string;
+  binancePrepayId?: string;
   startDate?: string;
   endDate?: string;
   paidAt?: string;
@@ -889,17 +907,22 @@ export interface Subscription {
 
 export interface CreateSubscriptionPlanData {
   machineId: string;
-  name: string;
+  name?: string;
   description?: string;
   duration: PlanDuration;
-  price: number;
+  price?: number; // Optional - will be auto-calculated if not provided
+  number?: number; // Number of duration units (e.g., 2 for 2 weeks)
   quantity?: number;
   isActive?: boolean;
   sortOrder?: number;
 }
 
 export interface CreateSubscriptionData {
-  planId: string;
+  machineId: string;
+  duration: PlanDuration;
+  number: number;
+  quantity?: number;
+  paymentMethod?: PaymentMethod;
 }
 
 // Subscription Plans API (Public)

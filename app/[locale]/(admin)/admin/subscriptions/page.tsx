@@ -201,7 +201,7 @@ export default function AdminSubscriptionsPage() {
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <h3 className="text-xl font-bold text-foreground">
-                            {subscription.plan.name}
+                            {subscription.machine?.name || subscription.plan?.name || 'Subscription'}
                           </h3>
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-semibold ${status.color} ${status.bg}`}
@@ -224,6 +224,26 @@ export default function AdminSubscriptionsPage() {
                           <div>
                             <p className="text-foreground-muted">Amount</p>
                             <p className="font-semibold text-foreground">${subscription.amount}</p>
+                          </div>
+                          <div>
+                            <p className="text-foreground-muted">Payment</p>
+                            <p className="font-semibold text-foreground flex items-center gap-1">
+                              {subscription.paymentMethod === 'binance' ? (
+                                <>
+                                  <svg className="w-3.5 h-3.5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2L6.5 7.5L8.5 9.5L12 6L15.5 9.5L17.5 7.5L12 2ZM2 12L4 10L6 12L4 14L2 12ZM6.5 16.5L12 22L17.5 16.5L15.5 14.5L12 18L8.5 14.5L6.5 16.5ZM18 12L20 10L22 12L20 14L18 12ZM12 10L10 12L12 14L14 12L12 10Z" />
+                                  </svg>
+                                  Crypto
+                                </>
+                              ) : (
+                                <>
+                                  <svg className="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                  </svg>
+                                  Card
+                                </>
+                              )}
+                            </p>
                           </div>
                           <div>
                             <p className="text-foreground-muted">Created</p>
@@ -318,18 +338,28 @@ export default function AdminSubscriptionsPage() {
                   </span>
                 </div>
                 <div>
-                  <p className="text-sm text-foreground-muted mb-1">Plan</p>
-                  <p className="font-semibold text-foreground">{selectedSubscription.plan.name}</p>
-                  {selectedSubscription.plan.description && (
-                    <p className="text-sm text-foreground-muted mt-1">
-                      {selectedSubscription.plan.description}
-                    </p>
-                  )}
-                </div>
-                <div>
                   <p className="text-sm text-foreground-muted mb-1">Machine</p>
-                  <p className="font-semibold text-foreground">{selectedSubscription.machine.name}</p>
+                  <p className="font-semibold text-foreground">{selectedSubscription.machine?.name || 'N/A'}</p>
                 </div>
+                {selectedSubscription.duration && (
+                  <div>
+                    <p className="text-sm text-foreground-muted mb-1">Duration</p>
+                    <p className="font-semibold text-foreground capitalize">
+                      {selectedSubscription.durationNumber || 1} {selectedSubscription.duration}{(selectedSubscription.durationNumber || 1) > 1 ? 's' : ''}
+                    </p>
+                  </div>
+                )}
+                {selectedSubscription.plan && (
+                  <div>
+                    <p className="text-sm text-foreground-muted mb-1">Plan</p>
+                    <p className="font-semibold text-foreground">{selectedSubscription.plan.name}</p>
+                    {selectedSubscription.plan.description && (
+                      <p className="text-sm text-foreground-muted mt-1">
+                        {selectedSubscription.plan.description}
+                      </p>
+                    )}
+                  </div>
+                )}
                 <div>
                   <p className="text-sm text-foreground-muted mb-1">User</p>
                   <p className="font-semibold text-foreground">
@@ -345,8 +375,8 @@ export default function AdminSubscriptionsPage() {
                   <div>
                     <p className="text-sm text-foreground-muted mb-1">Quantity</p>
                     <p className="font-semibold text-foreground">
-                      {selectedSubscription.plan.quantity} unit
-                      {selectedSubscription.plan.quantity > 1 ? "s" : ""}
+                      {selectedSubscription.quantity || selectedSubscription.plan?.quantity || 1} unit
+                      {(selectedSubscription.quantity || selectedSubscription.plan?.quantity || 1) > 1 ? "s" : ""}
                     </p>
                   </div>
                   <div>
@@ -362,11 +392,47 @@ export default function AdminSubscriptionsPage() {
                     </p>
                   </div>
                 </div>
+                <div>
+                  <p className="text-sm text-foreground-muted mb-1">Payment Method</p>
+                  <p className="font-semibold text-foreground flex items-center gap-2">
+                    {selectedSubscription.paymentMethod === 'binance' ? (
+                      <>
+                        <svg className="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2L6.5 7.5L8.5 9.5L12 6L15.5 9.5L17.5 7.5L12 2ZM2 12L4 10L6 12L4 14L2 12ZM6.5 16.5L12 22L17.5 16.5L15.5 14.5L12 18L8.5 14.5L6.5 16.5ZM18 12L20 10L22 12L20 14L18 12ZM12 10L10 12L12 14L14 12L12 10Z" />
+                        </svg>
+                        Binance Pay (Crypto)
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                        PayTabs (Card)
+                      </>
+                    )}
+                  </p>
+                </div>
                 {selectedSubscription.paytabsPaymentId && (
                   <div>
-                    <p className="text-sm text-foreground-muted mb-1">Payment ID</p>
+                    <p className="text-sm text-foreground-muted mb-1">PayTabs Payment ID</p>
                     <p className="font-semibold text-foreground">
                       {selectedSubscription.paytabsPaymentId}
+                    </p>
+                  </div>
+                )}
+                {selectedSubscription.binanceOrderId && (
+                  <div>
+                    <p className="text-sm text-foreground-muted mb-1">Binance Order ID</p>
+                    <p className="font-semibold text-foreground">
+                      {selectedSubscription.binanceOrderId}
+                    </p>
+                  </div>
+                )}
+                {selectedSubscription.binancePrepayId && (
+                  <div>
+                    <p className="text-sm text-foreground-muted mb-1">Binance Prepay ID</p>
+                    <p className="font-semibold text-foreground">
+                      {selectedSubscription.binancePrepayId}
                     </p>
                   </div>
                 )}

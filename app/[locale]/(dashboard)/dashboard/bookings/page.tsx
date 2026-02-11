@@ -74,9 +74,10 @@ export default function UserBookingsPage() {
   const loadBookings = async () => {
     try {
       const response = await bookingsApi.getMyBookings();
-      setBookings(response.data);
+      setBookings(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Failed to load bookings:", error);
+      setBookings([]);
     } finally {
       setIsLoading(false);
     }
@@ -85,9 +86,10 @@ export default function UserBookingsPage() {
   const loadMachines = async () => {
     try {
       const response = await miningMachinesPublicApi.getAll();
-      setMachines(response.data);
+      setMachines(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Failed to load machines:", error);
+      setMachines([]);
     }
   };
 
