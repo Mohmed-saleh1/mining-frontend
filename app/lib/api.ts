@@ -309,7 +309,6 @@ export interface MiningMachine {
   algorithm?: string;
   miningCoin?: string;
   efficiency?: number;
-  pricePerHour: number;
   pricePerDay: number;
   pricePerWeek: number;
   pricePerMonth: number;
@@ -340,7 +339,6 @@ export interface CreateMiningMachineData {
   algorithm?: string;
   miningCoin?: string;
   efficiency?: number;
-  pricePerHour: number;
   pricePerDay: number;
   pricePerWeek: number;
   pricePerMonth: number;
@@ -848,6 +846,138 @@ export const legalDocumentsApi = {
     request<void>(`/legal-documents/${id}`, {
       method: 'DELETE',
     }),
+};
+
+// Subscription Types
+export type PlanDuration = 'day' | 'week' | 'month' | 'year';
+export type SubscriptionStatus = 'pending' | 'active' | 'expired' | 'cancelled';
+
+export interface SubscriptionPlan {
+  id: string;
+  machineId: string;
+  machine?: MiningMachine;
+  name: string;
+  description?: string;
+  duration: PlanDuration;
+  price: number;
+  quantity: number;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Subscription {
+  id: string;
+  userId: string;
+  user?: User;
+  planId: string;
+  plan: SubscriptionPlan;
+  machineId: string;
+  machine: MiningMachine;
+  status: SubscriptionStatus;
+  amount: number;
+  paytabsTransactionId?: string;
+  paytabsPaymentId?: string;
+  startDate?: string;
+  endDate?: string;
+  paidAt?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateSubscriptionPlanData {
+  machineId: string;
+  name: string;
+  description?: string;
+  duration: PlanDuration;
+  price: number;
+  quantity?: number;
+  isActive?: boolean;
+  sortOrder?: number;
+}
+
+export interface CreateSubscriptionData {
+  planId: string;
+}
+
+// Subscription Plans API (Public)
+export const subscriptionPlansApi = {
+  getAll: (machineId?: string) => {
+    const query = machineId ? `?machineId=${machineId}` : '';
+    return request<SubscriptionPlan[]>(`/subscriptions/plans${query}`);
+  },
+  
+  getOne: (id: string) => request<SubscriptionPlan>(`/subscriptions/plans/${id}`),
+};
+
+// User Subscriptions API
+export const subscriptionsApi = {
+  create: (data: CreateSubscriptionData) =>
+    request<{ subscription: Subscription; paymentUrl: string }>('/subscriptions', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  getMySubscriptions: () => request<Subscription[]>('/subscriptions/my-subscriptions'),
+
+  getMySubscription: (id: string) => request<Subscription>(`/subscriptions/my-subscriptions/${id}`),
+
+  cancel: (id: string) =>
+    request<Subscription>(`/subscriptions/my-subscriptions/${id}/cancel`, {
+      method: 'PUT',
+    }),
+};
+
+// Admin Subscriptions API
+export const subscriptionsAdminApi = {
+  createPlan: (data: CreateSubscriptionPlanData) =>
+    request<SubscriptionPlan>('/subscriptions/plans', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  updatePlan: (id: string, data: Partial<CreateSubscriptionPlanData>) =>
+    request<SubscriptionPlan>(`/subscriptions/plans/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  deletePlan: (id: string) =>
+    request<void>(`/subscriptions/plans/${id}`, {
+      method: 'DELETE',
+    }),
+
+  getAll: (options?: {
+    page?: number;
+    limit?: number;
+    status?: SubscriptionStatus;
+  }) => {
+    const params = new URLSearchParams();
+    if (options?.page) params.append('page', String(options.page));
+    if (options?.limit) params.append('limit', String(options.limit));
+    if (options?.status) params.append('status', options.status);
+    
+    const query = params.toString();
+    return request<{
+      data: Subscription[];
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    }>(`/subscriptions/admin${query ? `?${query}` : ''}`);
+  },
+
+  getOne: (id: string) => request<Subscription>(`/subscriptions/admin/${id}`),
+
+  getStatistics: () => request<{
+    total: number;
+    pending: number;
+    active: number;
+    expired: number;
+    cancelled: number;
+  }>('/subscriptions/admin/statistics'),
 };
 
 export { ApiError };

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { miningMachinesPublicApi, bookingsApi, MiningMachine, ApiError, RentalDuration } from "@/app/lib/api";
+import { miningMachinesPublicApi, subscriptionPlansApi, subscriptionsApi, MiningMachine, SubscriptionPlan, ApiError } from "@/app/lib/api";
 import { useAuth } from "@/app/lib/auth-context";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
@@ -18,32 +18,21 @@ export default function MachineDetailsPage() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const [machine, setMachine] = useState<MiningMachine | null>(null);
+  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  const durationLabels: Record<RentalDuration, string> = {
-    hour: t('bookingModal.durations.hour'),
-    day: t('bookingModal.durations.day'),
-    week: t('bookingModal.durations.week'),
-    month: t('bookingModal.durations.month'),
-  };
-  
-  // Booking modal state
-  const [showBookingModal, setShowBookingModal] = useState(false);
-  const [bookingForm, setBookingForm] = useState({
-    rentalDuration: "day" as RentalDuration,
-    quantity: 1,
-    userNotes: "",
-  });
-  const [isCreatingBooking, setIsCreatingBooking] = useState(false);
-  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [isSubscribing, setIsSubscribing] = useState(false);
 
   useEffect(() => {
-    const fetchMachine = async () => {
+    const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await miningMachinesPublicApi.getOne(params.id as string);
-        setMachine(response.data);
+        const [machineResponse, plansResponse] = await Promise.all([
+          miningMachinesPublicApi.getOne(params.id as string),
+          subscriptionPlansApi.getAll(params.id as string),
+        ]);
+        setMachine(machineResponse.data);
+        setPlans(plansResponse.data);
       } catch (err) {
         if (err instanceof ApiError) {
           setError(err.message);
@@ -56,57 +45,37 @@ export default function MachineDetailsPage() {
     };
 
     if (params.id) {
-      fetchMachine();
+      fetchData();
     }
   }, [params.id]);
 
-  const handleStartMining = () => {
+  const handleSubscribe = async (planId: string) => {
     if (!isAuthenticated) {
       router.push("/register");
       return;
     }
-    setShowBookingModal(true);
-  };
 
-  const handleCreateBooking = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!machine) return;
-
-    setIsCreatingBooking(true);
+    setIsSubscribing(true);
     try {
-      await bookingsApi.create({
-        machineId: machine.id,
-        rentalDuration: bookingForm.rentalDuration,
-        quantity: bookingForm.quantity,
-        userNotes: bookingForm.userNotes || undefined,
-      });
-      setBookingSuccess(true);
-      setTimeout(() => {
-        setShowBookingModal(false);
-        router.push("/dashboard/bookings");
-      }, 2000);
+      const response = await subscriptionsApi.create({ planId });
+      // Redirect to PayTabs payment page
+      if (response.data.paymentUrl) {
+        window.location.href = response.data.paymentUrl;
+      }
     } catch (err) {
-      console.error("Failed to create booking:", err);
-      alert(t('bookingModal.createBooking')); // TODO: Use proper error handling
+      console.error("Failed to create subscription:", err);
+      alert("Failed to create subscription. Please try again.");
     } finally {
-      setIsCreatingBooking(false);
+      setIsSubscribing(false);
     }
   };
 
-  const calculatedPrice = machine
-    ? (() => {
-        switch (bookingForm.rentalDuration) {
-          case "hour":
-            return machine.pricePerHour * bookingForm.quantity;
-          case "day":
-            return machine.pricePerDay * bookingForm.quantity;
-          case "week":
-            return machine.pricePerWeek * bookingForm.quantity;
-          case "month":
-            return machine.pricePerMonth * bookingForm.quantity;
-        }
-      })()
-    : 0;
+  const durationLabels: Record<string, string> = {
+    day: 'Day',
+    week: 'Week',
+    month: 'Month',
+    year: 'Year',
+  };
 
   return (
     <div className="min-h-screen main-bg relative">
@@ -225,39 +194,14 @@ export default function MachineDetailsPage() {
                     </div>
                   </div>
 
-                  {/* Pricing */}
+                  {/* Estimated Profits */}
                   <div className="glass rounded-2xl p-8">
                     <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-                      <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {t('pricing')}
-                    </h2>
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div className="p-4 rounded-xl bg-gold/10 border border-gold/20">
-                        <p className="text-xs text-foreground-muted mb-1">{t('perHour')}</p>
-                        <p className="text-xl font-bold text-gold">${machine.pricePerHour}</p>
-                      </div>
-                      <div className="p-4 rounded-xl bg-gold/10 border border-gold/20">
-                        <p className="text-xs text-foreground-muted mb-1">{t('perDay')}</p>
-                        <p className="text-xl font-bold text-gold">${machine.pricePerDay}</p>
-                      </div>
-                      <div className="p-4 rounded-xl bg-gold/10 border border-gold/20">
-                        <p className="text-xs text-foreground-muted mb-1">{t('perWeek')}</p>
-                        <p className="text-xl font-bold text-gold">${machine.pricePerWeek}</p>
-                      </div>
-                      <div className="p-4 rounded-xl bg-gold/10 border border-gold/20">
-                        <p className="text-xs text-foreground-muted mb-1">{t('perMonth')}</p>
-                        <p className="text-xl font-bold text-gold">${machine.pricePerMonth}</p>
-                      </div>
-                    </div>
-
-                    <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-                      <svg className="w-4 h-4 text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                       </svg>
                       {t('estimatedProfits')}
-                    </h3>
+                    </h2>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="p-3 rounded-lg bg-green/10">
                         <p className="text-xs text-foreground-muted">{t('dailyProfit')}</p>
@@ -299,154 +243,62 @@ export default function MachineDetailsPage() {
                       />
                     </div>
                   </div>
-
-                  {/* CTA */}
-                  <button
-                    onClick={handleStartMining}
-                    className="block w-full btn-gold px-6 py-4 rounded-xl text-lg font-semibold text-center"
-                  >
-                    {isAuthenticated ? t('cta.bookMachine') : t('cta.startMining')}
-                  </button>
                 </div>
               </div>
             ) : null}
+
+            {/* Subscription Plans */}
+            {machine && (
+              <div className="mt-8">
+                <div className="glass rounded-2xl p-8">
+                  <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+                    <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Subscription Plans
+                  </h2>
+                  
+                  {plans.length === 0 ? (
+                    <div className="text-center py-12">
+                      <p className="text-foreground-muted">No subscription plans available for this machine.</p>
+                    </div>
+                  ) : (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {plans.map((plan) => (
+                        <div
+                          key={plan.id}
+                          className="glass rounded-xl p-6 border border-gold/20 hover:border-gold/40 transition-all"
+                        >
+                          <h3 className="text-xl font-bold text-foreground mb-2">{plan.name}</h3>
+                          {plan.description && (
+                            <p className="text-sm text-foreground-muted mb-4">{plan.description}</p>
+                          )}
+                          <div className="mb-4">
+                            <span className="text-3xl font-bold text-gold">${plan.price}</span>
+                            <span className="text-foreground-muted text-sm ml-2">/ {durationLabels[plan.duration]}</span>
+                          </div>
+                          <div className="mb-4 text-sm text-foreground-muted">
+                            <p>Quantity: {plan.quantity} unit{plan.quantity > 1 ? 's' : ''}</p>
+                          </div>
+                          <button
+                            onClick={() => handleSubscribe(plan.id)}
+                            disabled={isSubscribing || !plan.isActive}
+                            className="btn-gold w-full py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {isSubscribing ? 'Processing...' : 'Subscribe Now'}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </main>
         
         <Footer />
-
-        {/* Booking Modal */}
-        {showBookingModal && machine && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="glass rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-              {bookingSuccess ? (
-                <div className="p-12 text-center">
-                  <div className="w-20 h-20 rounded-full bg-green/20 flex items-center justify-center mx-auto mb-6">
-                    <svg className="w-10 h-10 text-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <h2 className="text-2xl font-bold text-foreground mb-2">{t('bookingModal.success.title')}</h2>
-                  <p className="text-foreground-muted">{t('bookingModal.success.message')}</p>
-                </div>
-              ) : (
-                <>
-                  <div className="p-6 border-b border-border">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h2 className="text-xl font-bold text-foreground">{t('bookingModal.title', { name: machine.name })}</h2>
-                        <p className="text-sm text-foreground-muted">{t('bookingModal.subtitle')}</p>
-                      </div>
-                      <button
-                        onClick={() => setShowBookingModal(false)}
-                        className="p-2 hover:bg-gold/10 rounded-lg transition-colors"
-                      >
-                        <svg className="w-5 h-5 text-foreground-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                  <form onSubmit={handleCreateBooking} className="p-6 space-y-5">
-                    {/* Duration Selection */}
-                    <div>
-                      <label className="block text-sm font-medium text-foreground-muted mb-2">
-                        {t('bookingModal.rentalDuration')} <span className="text-gold">*</span>
-                      </label>
-                      <div className="grid grid-cols-2 gap-3">
-                        {(["hour", "day", "week", "month"] as RentalDuration[]).map((duration) => (
-                          <button
-                            key={duration}
-                            type="button"
-                            onClick={() => setBookingForm({ ...bookingForm, rentalDuration: duration })}
-                            className={`p-3 rounded-xl border text-sm font-medium transition-all ${
-                              bookingForm.rentalDuration === duration
-                                ? "border-gold bg-gold/10 text-gold"
-                                : "border-border hover:border-gold/30 text-foreground-muted"
-                            }`}
-                          >
-                            {durationLabels[duration]}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Quantity */}
-                    <div>
-                      <label className="block text-sm font-medium text-foreground-muted mb-2">
-                        {t('bookingModal.quantity')} <span className="text-gold">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        max={machine.totalUnits - machine.rentedUnits}
-                        value={bookingForm.quantity}
-                        onChange={(e) => setBookingForm({ ...bookingForm, quantity: parseInt(e.target.value) || 1 })}
-                        className="input-gold w-full px-4 py-3 rounded-xl bg-background-secondary/50"
-                        required
-                      />
-                      <p className="text-xs text-foreground-muted mt-1">
-                        {t('bookingModal.unitsAvailable', { count: machine.totalUnits - machine.rentedUnits })}
-                      </p>
-                    </div>
-
-                    {/* Notes */}
-                    <div>
-                      <label className="block text-sm font-medium text-foreground-muted mb-2">
-                        {t('bookingModal.notes')}
-                      </label>
-                      <textarea
-                        value={bookingForm.userNotes}
-                        onChange={(e) => setBookingForm({ ...bookingForm, userNotes: e.target.value })}
-                        className="input-gold w-full px-4 py-3 rounded-xl bg-background-secondary/50 resize-none"
-                        rows={3}
-                        placeholder={t('bookingModal.notesPlaceholder')}
-                      />
-                    </div>
-
-                    {/* Price Summary */}
-                    <div className="p-4 rounded-xl bg-gold/5 border border-gold/20">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-foreground-muted">{t('bookingModal.priceSummary', { duration: durationLabels[bookingForm.rentalDuration] })}</span>
-                        <span className="text-foreground">
-                          ${bookingForm.rentalDuration === "hour" ? machine.pricePerHour :
-                            bookingForm.rentalDuration === "day" ? machine.pricePerDay :
-                            bookingForm.rentalDuration === "week" ? machine.pricePerWeek :
-                            machine.pricePerMonth} × {bookingForm.quantity}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center pt-2 border-t border-gold/20">
-                        <span className="font-semibold text-foreground">{t('bookingModal.total')}</span>
-                        <span className="text-2xl font-bold text-gold">${calculatedPrice.toFixed(2)}</span>
-                      </div>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isCreatingBooking}
-                      className="btn-gold w-full py-4 rounded-xl font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
-                    >
-                      {isCreatingBooking ? (
-                        <>
-                          <div className="w-5 h-5 border-2 border-background border-t-transparent rounded-full animate-spin" />
-                          {t('bookingModal.creating')}
-                        </>
-                      ) : (
-                        t('bookingModal.createBooking')
-                      )}
-                    </button>
-
-                    <p className="text-xs text-foreground-muted text-center">
-                      {t('bookingModal.paymentNote')}
-                    </p>
-                  </form>
-                </>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
 }
-

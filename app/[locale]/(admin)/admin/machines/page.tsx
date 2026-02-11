@@ -28,7 +28,6 @@ const initialFormData: FormData = {
   algorithm: "SHA-256",
   miningCoin: "BTC",
   efficiency: 0,
-  pricePerHour: 0,
   pricePerDay: 0,
   pricePerWeek: 0,
   pricePerMonth: 0,
@@ -101,7 +100,6 @@ export default function MachinesPage() {
           algorithm: machine.algorithm || "",
           miningCoin: machine.miningCoin || "",
           efficiency: machine.efficiency || 0,
-          pricePerHour: machine.pricePerHour,
           pricePerDay: machine.pricePerDay,
           pricePerWeek: machine.pricePerWeek,
           pricePerMonth: machine.pricePerMonth,
@@ -574,19 +572,7 @@ export default function MachinesPage() {
               {/* Pricing */}
               <div>
                 <h3 className="text-sm font-semibold text-gold mb-4">Rental Pricing (USD)</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Per Hour *</label>
-                    <input
-                      type="number"
-                      name="pricePerHour"
-                      value={formData.pricePerHour}
-                      onChange={handleInputChange}
-                      required
-                      step="0.01"
-                      className="w-full input-gold px-4 py-3 rounded-xl text-sm"
-                    />
-                  </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm text-foreground-muted mb-2">Per Day *</label>
                     <input
