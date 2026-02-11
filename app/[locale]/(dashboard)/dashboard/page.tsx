@@ -29,36 +29,50 @@ export default function DashboardPage() {
   const loadAnalytics = async () => {
     try {
       const response = await bookingsApi.getAnalytics();
-      setAnalytics(response.data);
+      console.log("Analytics response:", response); // Debug log
+      if (response?.data) {
+        setAnalytics(response.data);
+      } else {
+        console.error("No data in analytics response");
+        setAnalytics(null);
+      }
     } catch (error) {
       console.error("Failed to load analytics:", error);
+      setAnalytics(null);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Helper function to safely parse numbers
+  const safeNumber = (value: unknown): number => {
+    if (value === null || value === undefined) return 0;
+    const num = typeof value === 'string' ? parseFloat(value) : Number(value);
+    return isNaN(num) ? 0 : num;
+  };
+
   const stats = analytics ? [
     { 
       label: "Total Investment", 
-      value: `$${Number(analytics.totalInvestment).toFixed(2)}`, 
+      value: `$${safeNumber(analytics.totalInvestment).toFixed(2)}`, 
       icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", 
       color: "gold" 
     },
     { 
       label: "Active Bookings", 
-      value: String(analytics.activeBookings), 
+      value: String(safeNumber(analytics.activeBookings)), 
       icon: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4", 
       color: "gold" 
     },
     { 
       label: "Total Revenue", 
-      value: `$${Number(analytics.totalRevenue).toFixed(2)}`, 
+      value: `$${safeNumber(analytics.totalRevenue).toFixed(2)}`, 
       icon: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6", 
       color: "green" 
     },
     { 
       label: "Total Bookings", 
-      value: String(analytics.totalBookings), 
+      value: String(safeNumber(analytics.totalBookings)), 
       icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2", 
       color: "gold" 
     },
@@ -153,7 +167,7 @@ export default function DashboardPage() {
           <div className="glass rounded-xl p-6 animate-fade-in-up">
             <h2 className="text-lg font-bold text-foreground mb-4">Bookings by Status</h2>
             <div className="space-y-3">
-              {Object.entries(analytics.bookingsByStatus).map(([status, count]) => (
+              {Object.entries(analytics?.bookingsByStatus || {}).map(([status, count]) => (
                 <div key={status} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`w-3 h-3 rounded-full ${
@@ -175,11 +189,11 @@ export default function DashboardPage() {
           {/* Revenue Chart */}
           <div className="glass rounded-xl p-6 animate-fade-in-up">
             <h2 className="text-lg font-bold text-foreground mb-4">Revenue Over Time</h2>
-            {analytics.revenueByMonth.length > 0 ? (
+            {(analytics?.revenueByMonth || []).length > 0 ? (
               <div className="space-y-4">
                 <div className="flex items-end gap-2 h-32">
-                  {analytics.revenueByMonth.map((item, index) => {
-                    const maxRevenue = Math.max(...analytics.revenueByMonth.map(r => r.revenue));
+                  {(analytics?.revenueByMonth || []).map((item, index) => {
+                    const maxRevenue = Math.max(...(analytics?.revenueByMonth || []).map(r => r.revenue));
                     const height = maxRevenue > 0 ? (item.revenue / maxRevenue) * 100 : 0;
                     return (
                       <div key={index} className="flex-1 flex flex-col items-center gap-2 group relative">
@@ -200,7 +214,7 @@ export default function DashboardPage() {
                 <div className="pt-4 border-t border-border">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-foreground-muted">Total Revenue</span>
-                    <span className="font-bold text-gold">${Number(analytics.totalRevenue).toFixed(2)}</span>
+                    <span className="font-bold text-gold">${Number(analytics?.totalRevenue || 0).toFixed(2)}</span>
                   </div>
                 </div>
               </div>
