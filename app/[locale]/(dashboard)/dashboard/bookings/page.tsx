@@ -179,7 +179,8 @@ export default function UserBookingsPage() {
     ? (() => {
         switch (createForm.rentalDuration) {
           case "hour":
-            return selectedMachine.pricePerHour * createForm.quantity;
+            // Calculate hourly price from daily price (divide by 24)
+            return (selectedMachine.pricePerDay / 24) * createForm.quantity;
           case "day":
             return selectedMachine.pricePerDay * createForm.quantity;
           case "week":
