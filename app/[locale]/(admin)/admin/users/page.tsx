@@ -5,11 +5,13 @@ import {
   adminUsersApi,
   User,
 } from "@/app/lib/api";
+import { useTranslations } from "next-intl";
 
 // Disable static generation for admin pages
 export const dynamic = 'force-dynamic';
 
 export default function AdminUsersPage() {
+  const t = useTranslations('admin.users');
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,19 +28,19 @@ export default function AdminUsersPage() {
       setUsers(response.data || []);
     } catch (err) {
       console.error("Failed to fetch users:", err);
-      setError("Failed to load users");
+      setError(t('errors.failedToLoad'));
       setUsers([]);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
+    if (!confirm(t('deleteConfirm'))) return;
     try {
       await adminUsersApi.delete(id);
       fetchUsers();
@@ -47,7 +49,7 @@ export default function AdminUsersPage() {
       }
     } catch (err) {
       console.error("Failed to delete user:", err);
-      alert("Failed to delete user");
+      alert(t('deleteFailed'));
     }
   };
 
@@ -102,10 +104,20 @@ export default function AdminUsersPage() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
-            User <span className="gradient-text">Management</span>
+            {(() => {
+              const titleTemplate = t('title', { management: '{management}' });
+              const parts = titleTemplate.split('{management}');
+              return parts.length > 1 ? (
+                <>
+                  {parts[0]}
+                  <span className="gradient-text">{t('managementText')}</span>
+                  {parts[1]}
+                </>
+              ) : t('title', { management: t('managementText') });
+            })()}
           </h1>
           <p className="text-foreground-muted text-sm">
-            Manage platform users, roles, and permissions.
+            {t('subtitle')}
           </p>
         </div>
         <button
@@ -115,34 +127,34 @@ export default function AdminUsersPage() {
           <svg className="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
-          Add User
+          {t('addUser')}
         </button>
       </div>
 
       {/* Statistics */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
         <div className="glass rounded-xl p-4">
-          <p className="text-xs text-foreground-muted mb-1">Total Users</p>
+          <p className="text-xs text-foreground-muted mb-1">{t('stats.total')}</p>
           <p className="text-2xl font-bold text-foreground">{stats.total}</p>
         </div>
         <div className="glass rounded-xl p-4">
-          <p className="text-xs text-foreground-muted mb-1">Active</p>
+          <p className="text-xs text-foreground-muted mb-1">{t('stats.active')}</p>
           <p className="text-2xl font-bold text-green">{stats.active}</p>
         </div>
         <div className="glass rounded-xl p-4">
-          <p className="text-xs text-foreground-muted mb-1">Inactive</p>
+          <p className="text-xs text-foreground-muted mb-1">{t('stats.inactive')}</p>
           <p className="text-2xl font-bold text-red">{stats.inactive}</p>
         </div>
         <div className="glass rounded-xl p-4">
-          <p className="text-xs text-foreground-muted mb-1">Admins</p>
+          <p className="text-xs text-foreground-muted mb-1">{t('stats.admins')}</p>
           <p className="text-2xl font-bold text-gold">{stats.admins}</p>
         </div>
         <div className="glass rounded-xl p-4">
-          <p className="text-xs text-foreground-muted mb-1">Regular Users</p>
+          <p className="text-xs text-foreground-muted mb-1">{t('stats.regularUsers')}</p>
           <p className="text-2xl font-bold text-foreground">{stats.users}</p>
         </div>
         <div className="glass rounded-xl p-4">
-          <p className="text-xs text-foreground-muted mb-1">Verified</p>
+          <p className="text-xs text-foreground-muted mb-1">{t('stats.verified')}</p>
           <p className="text-2xl font-bold text-blue-400">{stats.verified}</p>
         </div>
       </div>
@@ -152,7 +164,7 @@ export default function AdminUsersPage() {
         <div className="flex-1 min-w-[200px]">
           <input
             type="text"
-            placeholder="Search users..."
+            placeholder={t('filters.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full px-4 py-2 rounded-lg bg-background-secondary border border-border text-foreground placeholder-foreground-muted focus:outline-none focus:border-gold"
@@ -160,10 +172,10 @@ export default function AdminUsersPage() {
         </div>
         <div className="flex gap-2">
           {[
-            { value: "all", label: "All" },
-            { value: "admin", label: "Admins" },
-            { value: "user", label: "Users" },
-            { value: "manager", label: "Managers" },
+            { value: "all", label: t('filters.all') },
+            { value: "admin", label: t('filters.admins') },
+            { value: "user", label: t('filters.users') },
+            { value: "manager", label: t('filters.managers') },
           ].map((tab) => (
             <button
               key={tab.value}
@@ -199,18 +211,18 @@ export default function AdminUsersPage() {
             <svg className="w-16 h-16 mx-auto mb-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
-            <h3 className="text-lg font-semibold text-foreground mb-2">No users found</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-2">{t('emptyState.noUsers')}</h3>
             <p className="text-foreground-muted text-sm mb-4">
               {searchQuery || filterRole !== "all"
-                ? "Try adjusting your filters"
-                : "Get started by creating your first user"}
+                ? t('emptyState.adjustFilters')
+                : t('emptyState.createFirstUser')}
             </p>
             {!searchQuery && filterRole === "all" && (
               <button
                 onClick={() => setShowCreateModal(true)}
                 className="btn-gold px-6 py-3 rounded-xl text-sm font-semibold"
               >
-                Create User
+                {t('createUser')}
               </button>
             )}
           </div>
@@ -220,22 +232,22 @@ export default function AdminUsersPage() {
               <thead className="bg-background-secondary/50 border-b border-border">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    User
+                    {t('table.user')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    Email
+                    {t('table.email')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    Role
+                    {t('table.role')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    Status
+                    {t('table.status')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    Verified
+                    {t('table.verified')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    Actions
+                    {t('table.actions')}
                   </th>
                 </tr>
               </thead>
@@ -285,14 +297,14 @@ export default function AdminUsersPage() {
                             : "bg-red/20 text-red"
                         }`}
                       >
-                        {user.isActive ? "Active" : "Inactive"}
+                        {user.isActive ? t('status.active') : t('status.inactive')}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       {user.emailVerified ? (
-                        <span className="text-green text-sm">✓ Verified</span>
+                        <span className="text-green text-sm">✓ {t('table.verified')}</span>
                       ) : (
-                        <span className="text-foreground-muted text-sm">Not verified</span>
+                        <span className="text-foreground-muted text-sm">{t('details.notVerified')}</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -303,7 +315,7 @@ export default function AdminUsersPage() {
                             setShowEditModal(true);
                           }}
                           className="p-2 rounded-lg hover:bg-gold/10 text-gold transition-colors"
-                          title="Edit"
+                          title={t('editUser')}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -313,7 +325,7 @@ export default function AdminUsersPage() {
                           <button
                             onClick={() => handleDeactivate(user.id)}
                             className="p-2 rounded-lg hover:bg-red/10 text-red transition-colors"
-                            title="Deactivate"
+                            title={t('deactivate')}
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
@@ -323,7 +335,7 @@ export default function AdminUsersPage() {
                           <button
                             onClick={() => handleActivate(user.id)}
                             className="p-2 rounded-lg hover:bg-green/10 text-green transition-colors"
-                            title="Activate"
+                            title={t('activate')}
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -333,7 +345,7 @@ export default function AdminUsersPage() {
                         <button
                           onClick={() => handleDelete(user.id)}
                           className="p-2 rounded-lg hover:bg-red/10 text-red transition-colors"
-                          title="Delete"
+                          title={t('deleteUser')}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -354,7 +366,7 @@ export default function AdminUsersPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedUser(null)}>
           <div className="glass rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-foreground">User Details</h2>
+              <h2 className="text-2xl font-bold text-foreground">{t('details.title')}</h2>
               <button
                 onClick={() => setSelectedUser(null)}
                 className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
@@ -378,30 +390,30 @@ export default function AdminUsersPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 rounded-xl bg-background-secondary/50">
-                  <p className="text-xs text-foreground-muted mb-1">Role</p>
+                  <p className="text-xs text-foreground-muted mb-1">{t('details.role')}</p>
                   <p className="text-sm font-semibold text-foreground capitalize">{selectedUser.role}</p>
                 </div>
                 <div className="p-4 rounded-xl bg-background-secondary/50">
-                  <p className="text-xs text-foreground-muted mb-1">Status</p>
+                  <p className="text-xs text-foreground-muted mb-1">{t('details.status')}</p>
                   <p className={`text-sm font-semibold ${selectedUser.isActive ? "text-green" : "text-red"}`}>
-                    {selectedUser.isActive ? "Active" : "Inactive"}
+                    {selectedUser.isActive ? t('status.active') : t('status.inactive')}
                   </p>
                 </div>
                 <div className="p-4 rounded-xl bg-background-secondary/50">
-                  <p className="text-xs text-foreground-muted mb-1">Email Verified</p>
+                  <p className="text-xs text-foreground-muted mb-1">{t('details.emailVerified')}</p>
                   <p className={`text-sm font-semibold ${selectedUser.emailVerified ? "text-green" : "text-foreground-muted"}`}>
-                    {selectedUser.emailVerified ? "Verified" : "Not Verified"}
+                    {selectedUser.emailVerified ? t('details.verified') : t('details.notVerified')}
                   </p>
                 </div>
                 {selectedUser.phone && (
                   <div className="p-4 rounded-xl bg-background-secondary/50">
-                    <p className="text-xs text-foreground-muted mb-1">Phone</p>
+                    <p className="text-xs text-foreground-muted mb-1">{t('details.phone')}</p>
                     <p className="text-sm font-semibold text-foreground">{selectedUser.phone}</p>
                   </div>
                 )}
                 {selectedUser.createdAt && (
                   <div className="p-4 rounded-xl bg-background-secondary/50 col-span-2">
-                    <p className="text-xs text-foreground-muted mb-1">Joined</p>
+                    <p className="text-xs text-foreground-muted mb-1">{t('details.joined')}</p>
                     <p className="text-sm font-semibold text-foreground">
                       {new Date(selectedUser.createdAt).toLocaleDateString()}
                     </p>
@@ -415,28 +427,28 @@ export default function AdminUsersPage() {
                   }}
                   className="btn-gold px-6 py-3 rounded-xl text-sm font-semibold"
                 >
-                  Edit User
+                  {t('editUser')}
                 </button>
                 {selectedUser.isActive ? (
                   <button
                     onClick={() => handleDeactivate(selectedUser.id)}
                     className="px-6 py-3 rounded-xl text-sm font-semibold bg-red/10 text-red hover:bg-red/20 transition-colors"
                   >
-                    Deactivate
+                    {t('deactivate')}
                   </button>
                 ) : (
                   <button
                     onClick={() => handleActivate(selectedUser.id)}
                     className="px-6 py-3 rounded-xl text-sm font-semibold bg-green/10 text-green hover:bg-green/20 transition-colors"
                   >
-                    Activate
+                    {t('activate')}
                   </button>
                 )}
                 <button
                   onClick={() => handleDelete(selectedUser.id)}
                   className="px-6 py-3 rounded-xl text-sm font-semibold bg-red/10 text-red hover:bg-red/20 transition-colors"
                 >
-                  Delete
+                  {t('deleteUser')}
                 </button>
               </div>
             </div>
@@ -449,10 +461,10 @@ export default function AdminUsersPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="glass rounded-2xl p-8 max-w-md w-full">
             <h2 className="text-2xl font-bold text-foreground mb-6">
-              {showCreateModal ? "Create User" : "Edit User"}
+              {showCreateModal ? t('createUser') : t('editUser')}
             </h2>
             <p className="text-foreground-muted mb-6">
-              User creation/editing form will be implemented here. For now, you can manage users through the table actions.
+              {t('details.formNotImplemented')}
             </p>
             <button
               onClick={() => {
@@ -461,7 +473,7 @@ export default function AdminUsersPage() {
               }}
               className="btn-gold w-full px-6 py-3 rounded-xl text-sm font-semibold"
             >
-              Close
+              {t('details.close')}
             </button>
           </div>
         </div>

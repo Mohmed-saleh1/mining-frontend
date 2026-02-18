@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/app/lib/auth-context";
+import { useTranslations } from "next-intl";
 
 // Disable static generation for admin pages
 export const dynamic = 'force-dynamic';
@@ -13,23 +14,10 @@ import {
   BookingStatistics,
 } from "@/app/lib/api";
 
-const statusConfig: Record<BookingStatus, { label: string; color: string; bg: string }> = {
-  pending: { label: "Pending", color: "text-yellow-400", bg: "bg-yellow-400/10" },
-  awaiting_payment: { label: "Awaiting Payment", color: "text-blue-400", bg: "bg-blue-400/10" },
-  payment_sent: { label: "Payment Sent", color: "text-purple-400", bg: "bg-purple-400/10" },
-  approved: { label: "Approved", color: "text-green-400", bg: "bg-green-400/10" },
-  rejected: { label: "Rejected", color: "text-red-400", bg: "bg-red-400/10" },
-  cancelled: { label: "Cancelled", color: "text-gray-400", bg: "bg-gray-400/10" },
-};
-
-const durationLabels: Record<RentalDuration, string> = {
-  hour: "Per Hour",
-  day: "Per Day",
-  week: "Per Week",
-  month: "Per Month",
-};
-
 export default function AdminBookingsPage() {
+  const t = useTranslations('admin.bookings');
+  const tStatus = useTranslations('dashboard.status');
+  const tMachines = useTranslations('machines.details.bookingModal.durations');
   useAuth(); // Ensure user is authenticated
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [statistics, setStatistics] = useState<BookingStatistics | null>(null);
@@ -42,6 +30,22 @@ export default function AdminBookingsPage() {
   const [newMessage, setNewMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const statusConfig: Record<BookingStatus, { label: string; color: string; bg: string }> = {
+    pending: { label: tStatus('pending'), color: "text-yellow-400", bg: "bg-yellow-400/10" },
+    awaiting_payment: { label: tStatus('awaitingPayment'), color: "text-blue-400", bg: "bg-blue-400/10" },
+    payment_sent: { label: tStatus('paymentSent'), color: "text-purple-400", bg: "bg-purple-400/10" },
+    approved: { label: tStatus('approved'), color: "text-green-400", bg: "bg-green-400/10" },
+    rejected: { label: tStatus('rejected'), color: "text-red-400", bg: "bg-red-400/10" },
+    cancelled: { label: tStatus('cancelled'), color: "text-gray-400", bg: "bg-gray-400/10" },
+  };
+
+  const durationLabels: Record<RentalDuration, string> = {
+    hour: tMachines('hour'),
+    day: tMachines('day'),
+    week: tMachines('week'),
+    month: tMachines('month'),
+  };
 
   // Payment address form
   const [paymentAddress, setPaymentAddress] = useState("");
@@ -149,7 +153,7 @@ export default function AdminBookingsPage() {
 
   const handleReject = async () => {
     if (!selectedBooking) return;
-    if (!confirm("Are you sure you want to reject this booking?")) return;
+    if (!confirm(t('details.rejectConfirm'))) return;
 
     setIsRejecting(true);
     try {
@@ -187,12 +191,12 @@ export default function AdminBookingsPage() {
 
   const statCards = statistics
     ? [
-        { label: "Total", value: statistics.total, color: "text-foreground" },
-        { label: "Pending", value: statistics.pending, color: "text-yellow-400" },
-        { label: "Awaiting Payment", value: statistics.awaitingPayment, color: "text-blue-400" },
-        { label: "Payment Sent", value: statistics.paymentSent, color: "text-purple-400" },
-        { label: "Approved", value: statistics.approved, color: "text-green-400" },
-        { label: "Rejected", value: statistics.rejected, color: "text-red-400" },
+        { label: t('statistics.total'), value: statistics.total, color: "text-foreground" },
+        { label: t('statistics.pending'), value: statistics.pending, color: "text-yellow-400" },
+        { label: t('statistics.awaitingPayment'), value: statistics.awaitingPayment, color: "text-blue-400" },
+        { label: t('statistics.paymentSent'), value: statistics.paymentSent, color: "text-purple-400" },
+        { label: t('statistics.approved'), value: statistics.approved, color: "text-green-400" },
+        { label: t('statistics.rejected'), value: statistics.rejected, color: "text-red-400" },
       ]
     : [];
 
@@ -200,9 +204,9 @@ export default function AdminBookingsPage() {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Booking Management</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
         <p className="text-foreground-muted mt-1">
-          Review and manage all booking requests
+          {t('subtitle')}
         </p>
       </div>
 
@@ -228,7 +232,7 @@ export default function AdminBookingsPage() {
               : "bg-background-secondary text-foreground-muted hover:text-foreground"
           }`}
         >
-          All
+          {t('filters.all')}
         </button>
         {(Object.keys(statusConfig) as BookingStatus[]).map((status) => (
           <button
@@ -253,7 +257,8 @@ export default function AdminBookingsPage() {
           </div>
         ) : bookings.length === 0 ? (
           <div className="p-12 text-center">
-            <p className="text-foreground-muted">No bookings found</p>
+            <p className="text-foreground-muted">{t('details.noBookings')}</p>
+            <p className="text-foreground-muted text-sm mt-1">{t('details.noBookingsDescription')}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -261,25 +266,25 @@ export default function AdminBookingsPage() {
               <thead className="bg-background-secondary/50">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    User
+                    {t('table.user')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    Machine
+                    {t('table.machine')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    Details
+                    {t('table.duration')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    Amount
+                    {t('table.totalPrice')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    Status
+                    {t('table.status')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    Date
+                    {t('table.createdAt')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    Actions
+                    {t('table.actions')}
                   </th>
                 </tr>
               </thead>
@@ -299,7 +304,7 @@ export default function AdminBookingsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <p className="text-sm text-foreground">
-                        {booking.quantity} unit(s) • {durationLabels[booking.rentalDuration]}
+                        {booking.quantity} {t('table.quantity')} • {durationLabels[booking.rentalDuration]}
                       </p>
                     </td>
                     <td className="px-6 py-4">
@@ -320,7 +325,7 @@ export default function AdminBookingsPage() {
                         onClick={() => openBookingDetails(booking)}
                         className="btn-outline px-4 py-2 rounded-lg text-sm"
                       >
-                        View Details
+                        {t('table.viewDetails')}
                       </button>
                     </td>
                   </tr>
@@ -338,17 +343,17 @@ export default function AdminBookingsPage() {
               disabled={currentPage === 1}
               className="px-4 py-2 rounded-lg bg-background-secondary text-foreground-muted hover:text-foreground disabled:opacity-50 transition-colors"
             >
-              Previous
+              {t('pagination.previous')}
             </button>
             <span className="text-foreground-muted">
-              Page {currentPage} of {totalPages}
+              {t('pagination.page', { current: currentPage, total: totalPages })}
             </span>
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
               className="px-4 py-2 rounded-lg bg-background-secondary text-foreground-muted hover:text-foreground disabled:opacity-50 transition-colors"
             >
-              Next
+              {t('pagination.next')}
             </button>
           </div>
         )}
@@ -363,10 +368,10 @@ export default function AdminBookingsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-bold text-foreground">
-                    Booking Details
+                    {t('details.title')}
                   </h2>
                   <p className="text-sm text-foreground-muted">
-                    #{selectedBooking.id.slice(0, 8)}
+                    {t('details.bookingNumber', { id: selectedBooking.id.slice(0, 8) })}
                   </p>
                 </div>
                 <button
@@ -385,7 +390,7 @@ export default function AdminBookingsPage() {
               <div className="grid grid-cols-2 gap-6">
                 {/* User Info */}
                 <div className="space-y-2">
-                  <h3 className="font-semibold text-foreground">User</h3>
+                  <h3 className="font-semibold text-foreground">{t('details.userInfo')}</h3>
                   <p className="text-foreground">
                     {selectedBooking.user?.firstName} {selectedBooking.user?.lastName}
                   </p>
@@ -394,7 +399,7 @@ export default function AdminBookingsPage() {
 
                 {/* Machine Info */}
                 <div className="space-y-2">
-                  <h3 className="font-semibold text-foreground">Machine</h3>
+                  <h3 className="font-semibold text-foreground">{t('details.machineInfo')}</h3>
                   <p className="text-foreground">{selectedBooking.machine?.name}</p>
                   <p className="text-sm text-foreground-muted">{selectedBooking.machine?.miningCoin}</p>
                 </div>
@@ -402,19 +407,19 @@ export default function AdminBookingsPage() {
 
               <div className="grid grid-cols-4 gap-4">
                 <div>
-                  <p className="text-sm text-foreground-muted">Duration</p>
+                  <p className="text-sm text-foreground-muted">{t('table.duration')}</p>
                   <p className="font-medium text-foreground">{durationLabels[selectedBooking.rentalDuration]}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-foreground-muted">Quantity</p>
-                  <p className="font-medium text-foreground">{selectedBooking.quantity} unit(s)</p>
+                  <p className="text-sm text-foreground-muted">{t('table.quantity')}</p>
+                  <p className="font-medium text-foreground">{selectedBooking.quantity}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-foreground-muted">Total Price</p>
+                  <p className="text-sm text-foreground-muted">{t('table.totalPrice')}</p>
                   <p className="font-bold text-gold">${Number(selectedBooking.totalPrice).toFixed(2)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-foreground-muted">Status</p>
+                  <p className="text-sm text-foreground-muted">{t('table.status')}</p>
                   <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig[selectedBooking.status].bg} ${statusConfig[selectedBooking.status].color}`}>
                     {statusConfig[selectedBooking.status].label}
                   </span>
@@ -424,7 +429,7 @@ export default function AdminBookingsPage() {
               {/* User Notes */}
               {selectedBooking.userNotes && (
                 <div className="p-4 rounded-xl bg-background-secondary/50">
-                  <p className="text-sm text-foreground-muted mb-1">User Notes:</p>
+                  <p className="text-sm text-foreground-muted mb-1">{t('details.userNotes')}:</p>
                   <p className="text-foreground">{selectedBooking.userNotes}</p>
                 </div>
               )}
@@ -432,7 +437,7 @@ export default function AdminBookingsPage() {
               {/* Transaction Hash */}
               {selectedBooking.transactionHash && (
                 <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/30">
-                  <p className="text-sm text-purple-400 mb-1">Transaction Hash:</p>
+                  <p className="text-sm text-purple-400 mb-1">{t('details.transactionHash')}:</p>
                   <p className="font-mono text-sm break-all">{selectedBooking.transactionHash}</p>
                 </div>
               )}
@@ -440,10 +445,10 @@ export default function AdminBookingsPage() {
               {/* Actions based on status */}
               {selectedBooking.status === "pending" && (
                 <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/30 space-y-3">
-                  <p className="text-sm text-yellow-400 font-medium">Send Payment Address to User</p>
+                  <p className="text-sm text-yellow-400 font-medium">{t('details.sendPaymentAddress')}</p>
                   <input
                     type="text"
-                    placeholder="Enter wallet address..."
+                    placeholder={t('details.paymentAddressPlaceholder')}
                     value={paymentAddress}
                     onChange={(e) => setPaymentAddress(e.target.value)}
                     className="input-gold w-full px-4 py-3 rounded-xl bg-background-secondary/50"
@@ -453,16 +458,16 @@ export default function AdminBookingsPage() {
                     disabled={isSendingAddress || !paymentAddress.trim()}
                     className="btn-gold w-full py-3 rounded-xl font-semibold disabled:opacity-50"
                   >
-                    {isSendingAddress ? "Sending..." : "Send Payment Address"}
+                    {isSendingAddress ? t('details.sendingAddress') : t('details.sendPaymentAddress')}
                   </button>
                 </div>
               )}
 
               {selectedBooking.status === "payment_sent" && (
                 <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/30 space-y-3">
-                  <p className="text-sm text-green-400 font-medium">Review and Approve Payment</p>
+                  <p className="text-sm text-green-400 font-medium">{t('details.paymentInfo')}</p>
                   <textarea
-                    placeholder="Admin notes (optional)..."
+                    placeholder={t('details.notesPlaceholder')}
                     value={adminNotes}
                     onChange={(e) => setAdminNotes(e.target.value)}
                     className="input-gold w-full px-4 py-3 rounded-xl bg-background-secondary/50 resize-none"
@@ -474,14 +479,14 @@ export default function AdminBookingsPage() {
                       disabled={isApproving}
                       className="flex-1 btn-gold py-3 rounded-xl font-semibold disabled:opacity-50"
                     >
-                      {isApproving ? "Approving..." : "Approve Booking"}
+                      {isApproving ? t('details.approving') : t('details.approve')}
                     </button>
                     <button
                       onClick={handleReject}
                       disabled={isRejecting}
                       className="flex-1 py-3 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors font-semibold disabled:opacity-50"
                     >
-                      {isRejecting ? "Rejecting..." : "Reject"}
+                      {isRejecting ? t('details.rejecting') : t('details.reject')}
                     </button>
                   </div>
                 </div>
@@ -491,7 +496,7 @@ export default function AdminBookingsPage() {
             {/* Chat Section */}
             <div className="flex-1 overflow-hidden flex flex-col min-h-[300px]">
               <div className="px-6 py-3 border-b border-border">
-                <h3 className="font-semibold text-foreground">Chat with User</h3>
+                <h3 className="font-semibold text-foreground">{t('details.chatWithUser')}</h3>
               </div>
               
               {/* Messages */}
@@ -514,7 +519,7 @@ export default function AdminBookingsPage() {
                     >
                       {message.messageType === "payment_address" ? (
                         <div>
-                          <p className="text-xs text-blue-400 mb-1">Payment Address</p>
+                          <p className="text-xs text-blue-400 mb-1">{t('details.paymentAddress')}</p>
                           <p className="font-mono text-sm break-all">{message.content}</p>
                         </div>
                       ) : (
@@ -536,7 +541,7 @@ export default function AdminBookingsPage() {
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type a message..."
+                    placeholder={t('details.typeMessage')}
                     className="flex-1 input-gold px-4 py-3 rounded-xl bg-background-secondary/50"
                     disabled={isSending}
                   />

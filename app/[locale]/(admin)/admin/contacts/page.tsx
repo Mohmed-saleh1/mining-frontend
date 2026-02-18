@@ -7,6 +7,7 @@ import {
   ContactStatus,
   ContactStatistics,
 } from "@/app/lib/api";
+import { useTranslations } from "next-intl";
 
 // Disable static generation for admin pages
 export const dynamic = 'force-dynamic';
@@ -18,14 +19,8 @@ const statusColors: Record<ContactStatus, string> = {
   closed: "bg-foreground-muted/20 text-foreground-muted",
 };
 
-const statusLabels: Record<ContactStatus, string> = {
-  new: "New",
-  in_progress: "In Progress",
-  resolved: "Resolved",
-  closed: "Closed",
-};
-
 export default function AdminContactsPage() {
+  const t = useTranslations('admin.contacts');
   const [contacts, setContacts] = useState<ContactSubmission[]>([]);
   const [statistics, setStatistics] = useState<ContactStatistics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,6 +29,13 @@ export default function AdminContactsPage() {
   const [filterStatus, setFilterStatus] = useState<ContactStatus | "all">("all");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  const statusLabels: Record<ContactStatus, string> = {
+    new: t('status.new'),
+    in_progress: t('status.inProgress'),
+    resolved: t('status.resolved'),
+    closed: t('status.closed'),
+  };
 
   const fetchContacts = useCallback(async () => {
     try {
@@ -52,13 +54,13 @@ export default function AdminContactsPage() {
       setStatistics(statsRes.data);
     } catch (err) {
       console.error("Failed to fetch contacts:", err);
-      setError("Failed to load contact requests");
+      setError(t('failedToLoad'));
       setContacts([]);
       setTotalPages(1);
     } finally {
       setIsLoading(false);
     }
-  }, [page, filterStatus]);
+  }, [page, filterStatus, t]);
 
   useEffect(() => {
     fetchContacts();
@@ -89,7 +91,7 @@ export default function AdminContactsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this contact request?")) return;
+    if (!confirm(t('deleteConfirm'))) return;
     try {
       await contactAdminApi.delete(id);
       fetchContacts();
@@ -113,10 +115,20 @@ export default function AdminContactsPage() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
-          Contact <span className="gradient-text">Requests</span>
+          {(() => {
+            const titleTemplate = t('title', { requests: '{requests}' });
+            const parts = titleTemplate.split('{requests}');
+            return parts.length > 1 ? (
+              <>
+                {parts[0]}
+                <span className="gradient-text">{t('requestsText')}</span>
+                {parts[1]}
+              </>
+            ) : t('title', { requests: t('requestsText') });
+          })()}
         </h1>
         <p className="text-foreground-muted text-sm">
-          Manage and respond to contact form submissions.
+          {t('subtitle')}
         </p>
       </div>
 
@@ -124,23 +136,23 @@ export default function AdminContactsPage() {
       {statistics && (
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
           <div className="glass rounded-xl p-4">
-            <p className="text-xs text-foreground-muted mb-1">Total</p>
+            <p className="text-xs text-foreground-muted mb-1">{t('statistics.total')}</p>
             <p className="text-2xl font-bold text-foreground">{statistics.total}</p>
           </div>
           <div className="glass rounded-xl p-4">
-            <p className="text-xs text-foreground-muted mb-1">Unread</p>
+            <p className="text-xs text-foreground-muted mb-1">{t('statistics.unread')}</p>
             <p className="text-2xl font-bold text-red">{statistics.unread}</p>
           </div>
           <div className="glass rounded-xl p-4">
-            <p className="text-xs text-foreground-muted mb-1">New</p>
+            <p className="text-xs text-foreground-muted mb-1">{t('statistics.new')}</p>
             <p className="text-2xl font-bold text-blue-400">{statistics.new}</p>
           </div>
           <div className="glass rounded-xl p-4">
-            <p className="text-xs text-foreground-muted mb-1">In Progress</p>
+            <p className="text-xs text-foreground-muted mb-1">{t('statistics.inProgress')}</p>
             <p className="text-2xl font-bold text-gold">{statistics.inProgress}</p>
           </div>
           <div className="glass rounded-xl p-4">
-            <p className="text-xs text-foreground-muted mb-1">Resolved</p>
+            <p className="text-xs text-foreground-muted mb-1">{t('statistics.resolved')}</p>
             <p className="text-2xl font-bold text-green">{statistics.resolved}</p>
           </div>
         </div>
@@ -149,11 +161,11 @@ export default function AdminContactsPage() {
       {/* Filter Tabs */}
       <div className="flex flex-wrap gap-2 mb-6">
         {[
-          { value: "all", label: "All" },
-          { value: "new", label: "New" },
-          { value: "in_progress", label: "In Progress" },
-          { value: "resolved", label: "Resolved" },
-          { value: "closed", label: "Closed" },
+          { value: "all", label: t('filters.all') },
+          { value: "new", label: t('filters.new') },
+          { value: "in_progress", label: t('filters.inProgress') },
+          { value: "resolved", label: t('filters.resolved') },
+          { value: "closed", label: t('filters.closed') },
         ].map((tab) => (
           <button
             key={tab.value}
@@ -177,7 +189,7 @@ export default function AdminContactsPage() {
         {/* Contact List */}
         <div className="lg:col-span-1 glass rounded-xl overflow-hidden">
           <div className="p-4 border-b border-border">
-            <h2 className="font-semibold text-foreground">Messages</h2>
+            <h2 className="font-semibold text-foreground">{t('messages')}</h2>
           </div>
           
           {error ? (
@@ -195,7 +207,7 @@ export default function AdminContactsPage() {
               <svg className="w-12 h-12 mx-auto mb-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              <p className="text-foreground-muted text-sm">No messages found</p>
+              <p className="text-foreground-muted text-sm">{t('noMessages')}</p>
             </div>
           ) : (
             <div className="divide-y divide-border max-h-[600px] overflow-y-auto">
@@ -233,17 +245,17 @@ export default function AdminContactsPage() {
                 disabled={page === 1}
                 className="px-3 py-1 text-sm rounded-lg bg-background-secondary disabled:opacity-50"
               >
-                Prev
+                {t('pagination.prev')}
               </button>
               <span className="text-xs text-foreground-muted">
-                Page {page} of {totalPages}
+                {t('pagination.page', { current: page, total: totalPages })}
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
                 className="px-3 py-1 text-sm rounded-lg bg-background-secondary disabled:opacity-50"
               >
-                Next
+                {t('pagination.next')}
               </button>
             </div>
           )}
@@ -271,10 +283,10 @@ export default function AdminContactsPage() {
                       onChange={(e) => handleStatusChange(selectedContact.id, e.target.value as ContactStatus)}
                       className="px-3 py-2 rounded-lg bg-background-secondary border border-border text-sm text-foreground"
                     >
-                      <option value="new">New</option>
-                      <option value="in_progress">In Progress</option>
-                      <option value="resolved">Resolved</option>
-                      <option value="closed">Closed</option>
+                      <option value="new">{t('status.new')}</option>
+                      <option value="in_progress">{t('status.inProgress')}</option>
+                      <option value="resolved">{t('status.resolved')}</option>
+                      <option value="closed">{t('status.closed')}</option>
                     </select>
                     <button
                       onClick={() => handleDelete(selectedContact.id)}
@@ -307,11 +319,11 @@ export default function AdminContactsPage() {
                 {/* Metadata */}
                 <div className="grid grid-cols-2 gap-4 text-xs">
                   <div className="p-3 rounded-lg bg-background-secondary/30">
-                    <p className="text-foreground-muted mb-1">IP Address</p>
+                    <p className="text-foreground-muted mb-1">{t('details.ipAddress')}</p>
                     <p className="text-foreground font-mono">{selectedContact.ipAddress || "N/A"}</p>
                   </div>
                   <div className="p-3 rounded-lg bg-background-secondary/30">
-                    <p className="text-foreground-muted mb-1">Submitted</p>
+                    <p className="text-foreground-muted mb-1">{t('details.submitted')}</p>
                     <p className="text-foreground">{new Date(selectedContact.createdAt).toLocaleString()}</p>
                   </div>
                 </div>
@@ -326,7 +338,7 @@ export default function AdminContactsPage() {
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
-                  Reply via Email
+                  {t('details.replyViaEmail')}
                 </a>
               </div>
             </div>
@@ -336,9 +348,9 @@ export default function AdminContactsPage() {
                 <svg className="w-16 h-16 mx-auto mb-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <h3 className="text-lg font-semibold text-foreground mb-2">Select a Message</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-2">{t('details.selectMessage')}</h3>
                 <p className="text-sm text-foreground-muted">
-                  Choose a message from the list to view details
+                  {t('details.selectMessageDescription')}
                 </p>
               </div>
             </div>

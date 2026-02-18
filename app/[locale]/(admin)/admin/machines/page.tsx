@@ -9,6 +9,7 @@ import {
   UpdateMiningMachineData,
   ApiError,
 } from "@/app/lib/api";
+import { useTranslations } from "next-intl";
 
 // Disable static generation for admin pages
 export const dynamic = 'force-dynamic';
@@ -43,6 +44,8 @@ const initialFormData: FormData = {
 };
 
 export default function MachinesPage() {
+  const t = useTranslations('admin.machines');
+  const tCommon = useTranslations('common');
   const searchParams = useSearchParams();
   const router = useRouter();
   const action = searchParams.get("action");
@@ -67,7 +70,7 @@ export default function MachinesPage() {
       setMachines(response.data || []);
     } catch (err) {
       console.error("Failed to fetch machines:", err);
-      setError("Failed to load machines");
+      setError(t('errors.failedToLoad'));
       setMachines([]); // Set empty array on error
     } finally {
       setIsLoading(false);
@@ -166,10 +169,10 @@ export default function MachinesPage() {
     try {
       if (editingMachine) {
         await miningMachinesApi.update(editingMachine.id, formData as UpdateMiningMachineData, imageFile || undefined);
-        setSuccess("Machine updated successfully");
+        setSuccess(t('success.machineUpdated'));
       } else {
         await miningMachinesApi.create(formData, imageFile || undefined);
-        setSuccess("Machine created successfully");
+        setSuccess(t('success.machineCreated'));
       }
       
       await fetchMachines();
@@ -180,7 +183,7 @@ export default function MachinesPage() {
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
-        setError("An error occurred. Please try again.");
+        setError(editingMachine ? t('errors.failedToUpdate') : t('errors.failedToSave'));
       }
     } finally {
       setIsSaving(false);
@@ -188,9 +191,10 @@ export default function MachinesPage() {
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm(t('deleteConfirm'))) return;
     try {
       await miningMachinesApi.delete(id);
-      setSuccess("Machine deleted successfully");
+      setSuccess(t('success.machineDeleted'));
       await fetchMachines();
       setDeleteConfirmId(null);
       setTimeout(() => setSuccess(null), 3000);
@@ -198,7 +202,7 @@ export default function MachinesPage() {
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
-        setError("Failed to delete machine");
+        setError(t('errors.failedToDelete'));
       }
       setTimeout(() => setError(null), 3000);
     }
@@ -228,10 +232,20 @@ export default function MachinesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
-            Mining <span className="gradient-text">Machines</span>
+            {(() => {
+              const titleTemplate = t('title');
+              const parts = titleTemplate.split('Machines');
+              return parts.length > 1 ? (
+                <>
+                  {parts[0]}
+                  <span className="gradient-text">Machines</span>
+                  {parts[1]}
+                </>
+              ) : titleTemplate;
+            })()}
           </h1>
           <p className="text-foreground-muted text-sm">
-            Create and manage mining machines available for rent.
+            {t('subtitle')}
           </p>
         </div>
         <button
@@ -241,7 +255,7 @@ export default function MachinesPage() {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
-          Add Machine
+          {t('addNew')}
         </button>
       </div>
 
@@ -270,12 +284,12 @@ export default function MachinesPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-border">
-                <th className="text-left px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">Machine</th>
+                <th className="text-left px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">{t('table.name')}</th>
                 <th className="text-left px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">Specs</th>
-                <th className="text-left px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">Pricing</th>
+                <th className="text-left px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">{t('table.pricePerDay')}</th>
                 <th className="text-left px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">Profit/Day</th>
-                <th className="text-center px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">Status</th>
-                <th className="text-right px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">Actions</th>
+                <th className="text-center px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">{t('table.status')}</th>
+                <th className="text-right px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">{t('table.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -295,12 +309,13 @@ export default function MachinesPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
                       </svg>
                     </div>
-                    <p className="text-foreground-muted">No machines found</p>
+                    <p className="text-foreground-muted">{t('noMachines')}</p>
+                    <p className="text-foreground-muted text-sm mt-1">{t('noMachinesDescription')}</p>
                     <button
                       onClick={() => router.push("/admin/machines?action=new")}
                       className="mt-2 text-gold hover:underline text-sm"
                     >
-                      Add your first machine
+                      {t('addNew')}
                     </button>
                   </td>
                 </tr>
@@ -341,14 +356,14 @@ export default function MachinesPage() {
                               : "bg-foreground-muted/10 text-foreground-muted"
                           }`}
                         >
-                          {machine.isActive ? "Active" : "Inactive"}
+                          {machine.isActive ? t('form.status') : "Inactive"}
                         </button>
                         <button
                           onClick={() => handleToggleFeatured(machine.id)}
                           className={`p-1 rounded transition-colors ${
                             machine.isFeatured ? "text-gold" : "text-foreground-muted hover:text-gold"
                           }`}
-                          title={machine.isFeatured ? "Remove from featured" : "Add to featured"}
+                          title={machine.isFeatured ? t('form.isFeatured') : t('form.isFeatured')}
                         >
                           <svg className="w-4 h-4" fill={machine.isFeatured ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -361,7 +376,7 @@ export default function MachinesPage() {
                         <button
                           onClick={() => router.push(`/admin/machines?edit=${machine.id}`)}
                           className="p-2 rounded-lg hover:bg-gold/10 text-foreground-muted hover:text-gold transition-colors"
-                          title="Edit"
+                          title={t('edit')}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -370,7 +385,7 @@ export default function MachinesPage() {
                         <button
                           onClick={() => setDeleteConfirmId(machine.id)}
                           className="p-2 rounded-lg hover:bg-red/10 text-foreground-muted hover:text-red transition-colors"
-                          title="Delete"
+                          title={t('delete')}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -393,7 +408,7 @@ export default function MachinesPage() {
           <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto glass rounded-2xl p-6 animate-fade-in-up">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-foreground">
-                {editingMachine ? "Edit Machine" : "Add New Machine"}
+                {editingMachine ? t('edit') : t('addNew')}
               </h2>
               <button onClick={closeModal} className="p-2 rounded-lg hover:bg-gold/10 text-foreground-muted hover:text-gold transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -411,10 +426,10 @@ export default function MachinesPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Basic Info */}
               <div>
-                <h3 className="text-sm font-semibold text-gold mb-4">Basic Information</h3>
+                <h3 className="text-sm font-semibold text-gold mb-4">{t('form.basicInfo')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Name *</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.name')} <span className="text-gold">*</span></label>
                     <input
                       type="text"
                       name="name"
@@ -422,56 +437,56 @@ export default function MachinesPage() {
                       onChange={handleInputChange}
                       required
                       className="w-full input-gold px-4 py-3 rounded-xl text-sm"
-                      placeholder="Antminer S19 Pro"
+                      placeholder={t('form.namePlaceholder')}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Type</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.type')}</label>
                     <select
                       name="type"
                       value={formData.type}
                       onChange={handleInputChange}
                       className="w-full input-gold px-4 py-3 rounded-xl text-sm"
                     >
-                      <option value="asic">ASIC</option>
-                      <option value="gpu">GPU</option>
+                      <option value="asic">{t('form.asic')}</option>
+                      <option value="gpu">{t('form.gpu')}</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Manufacturer</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.manufacturer')}</label>
                     <input
                       type="text"
                       name="manufacturer"
                       value={formData.manufacturer}
                       onChange={handleInputChange}
                       className="w-full input-gold px-4 py-3 rounded-xl text-sm"
-                      placeholder="Bitmain"
+                      placeholder={t('form.manufacturerPlaceholder')}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Model</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.model')}</label>
                     <input
                       type="text"
                       name="model"
                       value={formData.model}
                       onChange={handleInputChange}
                       className="w-full input-gold px-4 py-3 rounded-xl text-sm"
-                      placeholder="S19 Pro"
+                      placeholder={t('form.modelPlaceholder')}
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm text-foreground-muted mb-2">Description</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.description')}</label>
                     <textarea
                       name="description"
                       value={formData.description}
                       onChange={handleInputChange}
                       rows={3}
                       className="w-full input-gold px-4 py-3 rounded-xl text-sm resize-none"
-                      placeholder="High-performance Bitcoin mining machine..."
+                      placeholder={t('form.descriptionPlaceholder')}
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm text-foreground-muted mb-2">Image</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.image')}</label>
                     <input
                       type="file"
                       accept="image/*"
@@ -493,10 +508,10 @@ export default function MachinesPage() {
 
               {/* Specifications */}
               <div>
-                <h3 className="text-sm font-semibold text-gold mb-4">Specifications</h3>
+                <h3 className="text-sm font-semibold text-gold mb-4">{t('form.specifications')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Hash Rate</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.hashRate')}</label>
                     <input
                       type="number"
                       name="hashRate"
@@ -508,7 +523,7 @@ export default function MachinesPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Hash Rate Unit</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.hashRateUnit')}</label>
                     <select
                       name="hashRateUnit"
                       value={formData.hashRateUnit}
@@ -522,7 +537,7 @@ export default function MachinesPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Power (Watts)</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.powerConsumption')}</label>
                     <input
                       type="number"
                       name="powerConsumption"
@@ -533,7 +548,7 @@ export default function MachinesPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Algorithm</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.algorithm')}</label>
                     <input
                       type="text"
                       name="algorithm"
@@ -544,7 +559,7 @@ export default function MachinesPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Mining Coin</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.miningCoin')}</label>
                     <input
                       type="text"
                       name="miningCoin"
@@ -555,7 +570,7 @@ export default function MachinesPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Efficiency (J/TH)</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.efficiency')}</label>
                     <input
                       type="number"
                       name="efficiency"
@@ -571,10 +586,10 @@ export default function MachinesPage() {
 
               {/* Pricing */}
               <div>
-                <h3 className="text-sm font-semibold text-gold mb-4">Rental Pricing (USD)</h3>
+                <h3 className="text-sm font-semibold text-gold mb-4">{t('form.pricing')}</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Per Day *</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.pricePerDay')} <span className="text-gold">*</span></label>
                     <input
                       type="number"
                       name="pricePerDay"
@@ -586,7 +601,7 @@ export default function MachinesPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Per Week *</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.pricePerWeek')} <span className="text-gold">*</span></label>
                     <input
                       type="number"
                       name="pricePerWeek"
@@ -598,7 +613,7 @@ export default function MachinesPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Per Month *</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.pricePerMonth')} <span className="text-gold">*</span></label>
                     <input
                       type="number"
                       name="pricePerMonth"
@@ -614,10 +629,10 @@ export default function MachinesPage() {
 
               {/* Profit */}
               <div>
-                <h3 className="text-sm font-semibold text-gold mb-4">Expected Profit (USD)</h3>
+                <h3 className="text-sm font-semibold text-gold mb-4">{t('form.profitability')}</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Per Hour *</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.profitPerHour')} <span className="text-gold">*</span></label>
                     <input
                       type="number"
                       name="profitPerHour"
@@ -629,7 +644,7 @@ export default function MachinesPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Per Day *</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.profitPerDay')} <span className="text-gold">*</span></label>
                     <input
                       type="number"
                       name="profitPerDay"
@@ -641,7 +656,7 @@ export default function MachinesPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Per Week *</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.profitPerWeek')} <span className="text-gold">*</span></label>
                     <input
                       type="number"
                       name="profitPerWeek"
@@ -653,7 +668,7 @@ export default function MachinesPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Per Month *</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.profitPerMonth')} <span className="text-gold">*</span></label>
                     <input
                       type="number"
                       name="profitPerMonth"
@@ -669,10 +684,10 @@ export default function MachinesPage() {
 
               {/* Settings */}
               <div>
-                <h3 className="text-sm font-semibold text-gold mb-4">Settings</h3>
+                <h3 className="text-sm font-semibold text-gold mb-4">{t('form.settings')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Total Units</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.totalUnits')}</label>
                     <input
                       type="number"
                       name="totalUnits"
@@ -683,7 +698,7 @@ export default function MachinesPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Sort Order</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.sortOrder')}</label>
                     <input
                       type="number"
                       name="sortOrder"
@@ -693,17 +708,17 @@ export default function MachinesPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">Status</label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.status')}</label>
                     <select
                       name="status"
                       value={formData.status}
                       onChange={handleInputChange}
                       className="w-full input-gold px-4 py-3 rounded-xl text-sm"
                     >
-                      <option value="available">Available</option>
-                      <option value="rented">Rented</option>
+                      <option value="available">{t('form.available')}</option>
+                      <option value="rented">{t('form.rented')}</option>
                       <option value="maintenance">Maintenance</option>
-                      <option value="inactive">Inactive</option>
+                      <option value="unavailable">{t('form.unavailable')}</option>
                     </select>
                   </div>
                 </div>
@@ -716,7 +731,7 @@ export default function MachinesPage() {
                       onChange={handleInputChange}
                       className="w-4 h-4 rounded border-gold/30 bg-background-secondary text-gold focus:ring-gold"
                     />
-                    <span className="text-sm text-foreground">Active</span>
+                    <span className="text-sm text-foreground">{t('form.isActive')}</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
@@ -726,7 +741,7 @@ export default function MachinesPage() {
                       onChange={handleInputChange}
                       className="w-4 h-4 rounded border-gold/30 bg-background-secondary text-gold focus:ring-gold"
                     />
-                    <span className="text-sm text-foreground">Featured</span>
+                    <span className="text-sm text-foreground">{t('form.isFeatured')}</span>
                   </label>
                 </div>
               </div>
@@ -738,7 +753,7 @@ export default function MachinesPage() {
                   onClick={closeModal}
                   className="px-6 py-3 rounded-xl text-sm font-medium text-foreground-muted hover:text-foreground transition-colors"
                 >
-                  Cancel
+                  {t('form.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -751,7 +766,7 @@ export default function MachinesPage() {
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
                   )}
-                  {editingMachine ? "Update Machine" : "Create Machine"}
+                  {editingMachine ? (isSaving ? t('form.updating') : t('form.update')) : (isSaving ? t('form.saving') : t('form.save'))}
                 </button>
               </div>
             </form>
@@ -770,22 +785,22 @@ export default function MachinesPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
               </div>
-              <h3 className="text-lg font-bold text-foreground mb-2">Delete Machine</h3>
+              <h3 className="text-lg font-bold text-foreground mb-2">{t('delete')}</h3>
               <p className="text-foreground-muted text-sm mb-6">
-                Are you sure you want to delete this machine? This action cannot be undone.
+                {t('deleteConfirm')}
               </p>
               <div className="flex gap-3 justify-center">
                 <button
                   onClick={() => setDeleteConfirmId(null)}
                   className="px-6 py-2.5 rounded-xl text-sm font-medium text-foreground-muted hover:text-foreground transition-colors"
                 >
-                  Cancel
+                  {t('form.cancel')}
                 </button>
                 <button
                   onClick={() => handleDelete(deleteConfirmId)}
                   className="px-6 py-2.5 rounded-xl text-sm font-semibold bg-red text-white hover:bg-red/90 transition-colors"
                 >
-                  Delete
+                  {t('delete')}
                 </button>
               </div>
             </div>

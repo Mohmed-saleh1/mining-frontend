@@ -955,6 +955,382 @@
       "signOut": "Sign Out",
       "loading": "Loading..."
     }
+  },
+  "admin": {
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "miningMachines": "Mining Machines",
+      "bookings": "Bookings",
+      "contactRequests": "Contact Requests",
+      "users": "Users",
+      "legalDocuments": "Legal Documents",
+      "adminPanel": "Admin Panel",
+      "administrator": "Administrator",
+      "site": "Site",
+      "logout": "Logout",
+      "loading": "Loading..."
+    },
+    "dashboard": {
+      "title": "Admin {dashboard}",
+      "dashboardText": "Dashboard",
+      "subtitle": "Manage your mining machines and monitor platform activity.",
+      "stats": {
+        "totalMachines": "Total Machines",
+        "activeMachines": "Active Machines",
+        "featured": "Featured",
+        "availableUnits": "Available Units"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "manageMachines": "Manage Machines",
+        "addNewMachine": "Add New Machine",
+        "manageUsers": "Manage Users",
+        "legalDocuments": "Legal Documents",
+        "viewSite": "View Site"
+      },
+      "recentMachines": {
+        "title": "Recent Machines",
+        "viewAll": "View All",
+        "noMachines": "No machines yet",
+        "addFirstMachine": "Add your first machine"
+      }
+    },
+    "bookings": {
+      "title": "Manage Bookings",
+      "subtitle": "View and manage all booking requests",
+      "statistics": {
+        "title": "Booking Statistics",
+        "total": "Total",
+        "pending": "Pending",
+        "awaitingPayment": "Awaiting Payment",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "cancelled": "Cancelled"
+      },
+      "filters": {
+        "all": "All",
+        "filterByStatus": "Filter by Status"
+      },
+      "table": {
+        "bookingId": "Booking ID",
+        "user": "User",
+        "machine": "Machine",
+        "quantity": "Quantity",
+        "duration": "Duration",
+        "totalPrice": "Total Price",
+        "status": "Status",
+        "createdAt": "Created",
+        "actions": "Actions",
+        "viewDetails": "View Details"
+      },
+      "details": {
+        "title": "Booking Details",
+        "bookingNumber": "Booking #{id}",
+        "userInfo": "User Information",
+        "machineInfo": "Machine Information",
+        "bookingInfo": "Booking Information",
+        "paymentInfo": "Payment Information",
+        "chatWithUser": "Chat with User",
+        "typeMessage": "Type a message...",
+        "send": "Send",
+        "sending": "Sending...",
+        "sendPaymentAddress": "Send Payment Address",
+        "paymentAddress": "Payment Address",
+        "paymentAddressPlaceholder": "Enter wallet address...",
+        "sendingAddress": "Sending...",
+        "approve": "Approve",
+        "reject": "Reject",
+        "rejectConfirm": "Are you sure you want to reject this booking?",
+        "approving": "Approving...",
+        "rejecting": "Rejecting...",
+        "adminNotes": "Admin Notes",
+        "notesPlaceholder": "Add notes about this booking...",
+        "cancel": "Cancel",
+        "noMessages": "No messages yet",
+        "noBookings": "No bookings found",
+        "noBookingsDescription": "There are no bookings matching your filters.",
+        "userNotes": "User Notes",
+        "transactionHash": "Transaction Hash"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page {current} of {total}"
+      }
+    },
+    "machines": {
+      "title": "Mining Machines",
+      "subtitle": "Manage your mining machine inventory",
+      "addNew": "Add New Machine",
+      "edit": "Edit Machine",
+      "delete": "Delete",
+      "deleteConfirm": "Are you sure you want to delete this machine? This action cannot be undone.",
+      "noMachines": "No machines found",
+      "noMachinesDescription": "Get started by adding your first mining machine.",
+      "table": {
+        "name": "Name",
+        "type": "Type",
+        "hashRate": "Hash Rate",
+        "pricePerDay": "Price/Day",
+        "status": "Status",
+        "units": "Units",
+        "actions": "Actions"
+      },
+      "form": {
+        "basicInfo": "Basic Information",
+        "name": "Machine Name",
+        "namePlaceholder": "e.g., Antminer S19 Pro",
+        "description": "Description",
+        "descriptionPlaceholder": "Describe the machine features and specifications...",
+        "image": "Machine Image",
+        "uploadImage": "Upload Image",
+        "changeImage": "Change Image",
+        "removeImage": "Remove Image",
+        "specifications": "Specifications",
+        "type": "Machine Type",
+        "asic": "ASIC",
+        "gpu": "GPU",
+        "manufacturer": "Manufacturer",
+        "manufacturerPlaceholder": "e.g., Bitmain",
+        "model": "Model",
+        "modelPlaceholder": "e.g., S19 Pro",
+        "hashRate": "Hash Rate",
+        "hashRateUnit": "Hash Rate Unit",
+        "powerConsumption": "Power Consumption (W)",
+        "algorithm": "Algorithm",
+        "miningCoin": "Mining Coin",
+        "efficiency": "Efficiency (J/TH)",
+        "pricing": "Pricing",
+        "pricePerDay": "Price Per Day ($)",
+        "pricePerWeek": "Price Per Week ($)",
+        "pricePerMonth": "Price Per Month ($)",
+        "profitability": "Profitability",
+        "profitPerHour": "Profit Per Hour ($)",
+        "profitPerDay": "Profit Per Day ($)",
+        "profitPerWeek": "Profit Per Week ($)",
+        "profitPerMonth": "Profit Per Month ($)",
+        "availability": "Availability",
+        "status": "Status",
+        "available": "Available",
+        "rented": "Rented",
+        "unavailable": "Unavailable",
+        "totalUnits": "Total Units",
+        "rentedUnits": "Rented Units",
+        "settings": "Settings",
+        "isActive": "Active",
+        "isFeatured": "Featured",
+        "sortOrder": "Sort Order",
+        "save": "Save Machine",
+        "saving": "Saving...",
+        "update": "Update Machine",
+        "updating": "Updating...",
+        "cancel": "Cancel",
+        "required": "Required",
+        "optional": "Optional"
+      },
+      "errors": {
+        "failedToLoad": "Failed to load machines",
+        "failedToSave": "Failed to save machine",
+        "failedToUpdate": "Failed to update machine",
+        "failedToDelete": "Failed to delete machine"
+      },
+      "success": {
+        "machineCreated": "Machine created successfully!",
+        "machineUpdated": "Machine updated successfully!",
+        "machineDeleted": "Machine deleted successfully!"
+      }
+    },
+    "users": {
+      "title": "User {management}",
+      "managementText": "Management",
+      "subtitle": "Manage platform users, roles, and permissions.",
+      "addUser": "Add User",
+      "editUser": "Edit User",
+      "createUser": "Create User",
+      "deleteUser": "Delete User",
+      "deleteConfirm": "Are you sure you want to delete this user? This action cannot be undone.",
+      "deleteFailed": "Failed to delete user",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "stats": {
+        "total": "Total Users",
+        "active": "Active",
+        "inactive": "Inactive",
+        "admins": "Admins",
+        "regularUsers": "Regular Users",
+        "verified": "Verified"
+      },
+      "filters": {
+        "all": "All",
+        "admins": "Admins",
+        "users": "Users",
+        "managers": "Managers",
+        "searchPlaceholder": "Search users..."
+      },
+      "table": {
+        "user": "User",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "verified": "Verified",
+        "actions": "Actions"
+      },
+      "emptyState": {
+        "noUsers": "No users found",
+        "adjustFilters": "Try adjusting your filters",
+        "createFirstUser": "Get started by creating your first user"
+      },
+      "details": {
+        "title": "User Details",
+        "role": "Role",
+        "status": "Status",
+        "emailVerified": "Email Verified",
+        "verified": "Verified",
+        "notVerified": "Not Verified",
+        "phone": "Phone",
+        "joined": "Joined",
+        "close": "Close",
+        "formNotImplemented": "User creation/editing form will be implemented here. For now, you can manage users through the table actions."
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "errors": {
+        "failedToLoad": "Failed to load users"
+      }
+    },
+    "contacts": {
+      "title": "Contact {requests}",
+      "requestsText": "Requests",
+      "subtitle": "Manage and respond to contact form submissions.",
+      "statistics": {
+        "total": "Total",
+        "unread": "Unread",
+        "new": "New",
+        "inProgress": "In Progress",
+        "resolved": "Resolved"
+      },
+      "filters": {
+        "all": "All",
+        "new": "New",
+        "inProgress": "In Progress",
+        "resolved": "Resolved",
+        "closed": "Closed"
+      },
+      "messages": "Messages",
+      "noMessages": "No messages found",
+      "failedToLoad": "Failed to load contact requests",
+      "deleteConfirm": "Are you sure you want to delete this contact request?",
+      "details": {
+        "selectMessage": "Select a Message",
+        "selectMessageDescription": "Choose a message from the list to view details",
+        "ipAddress": "IP Address",
+        "submitted": "Submitted",
+        "replyViaEmail": "Reply via Email"
+      },
+      "status": {
+        "new": "New",
+        "inProgress": "In Progress",
+        "resolved": "Resolved",
+        "closed": "Closed"
+      },
+      "pagination": {
+        "prev": "Prev",
+        "next": "Next",
+        "page": "Page {current} of {total}"
+      }
+    },
+    "subscriptions": {
+      "title": "All Subscriptions",
+      "subtitle": "Manage all user subscriptions",
+      "loading": "Loading subscriptions...",
+      "statistics": {
+        "total": "Total",
+        "pending": "Pending",
+        "active": "Active",
+        "expired": "Expired",
+        "cancelled": "Cancelled"
+      },
+      "filters": {
+        "all": "All"
+      },
+      "status": {
+        "pendingPayment": "Pending Payment",
+        "active": "Active",
+        "expired": "Expired",
+        "cancelled": "Cancelled"
+      },
+      "emptyState": {
+        "title": "No Subscriptions Found",
+        "noSubscriptions": "No subscriptions have been created yet.",
+        "noSubscriptionsWithStatus": "No subscriptions with status \"{status}\""
+      },
+      "table": {
+        "user": "User",
+        "machine": "Machine",
+        "amount": "Amount",
+        "payment": "Payment",
+        "created": "Created",
+        "crypto": "Crypto",
+        "card": "Card"
+      },
+      "details": {
+        "title": "Subscription Details",
+        "status": "Status",
+        "machine": "Machine",
+        "duration": "Duration",
+        "plan": "Plan",
+        "user": "User",
+        "amount": "Amount",
+        "quantity": "Quantity",
+        "unit": "unit",
+        "units": "units",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "paymentMethod": "Payment Method",
+        "binancePay": "Binance Pay (Crypto)",
+        "paytabsCard": "PayTabs (Card)",
+        "paytabsPaymentId": "PayTabs Payment ID",
+        "binanceOrderId": "Binance Order ID",
+        "binancePrepayId": "Binance Prepay ID",
+        "paidAt": "Paid At",
+        "notes": "Notes"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page {current} of {total}"
+      }
+    },
+    "legalDocuments": {
+      "title": "Legal {documents}",
+      "documentsText": "Documents",
+      "subtitle": "Manage privacy policy and terms of service.",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "edit": "Edit",
+      "create": "Create",
+      "lastUpdated": "Last updated:",
+      "noPrivacyPolicy": "No privacy policy created yet.",
+      "noTermsOfService": "No terms of service created yet.",
+      "editModal": {
+        "title": "Edit {type}",
+        "contentEnglish": "Content (English)",
+        "contentArabic": "Content (Arabic)",
+        "contentEnglishPlaceholder": "Enter the content in English...",
+        "contentArabicPlaceholder": "Enter the content in Arabic (optional)...",
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving...",
+        "updatedSuccessfully": "{type} updated successfully"
+      },
+      "errors": {
+        "failedToLoad": "Failed to load legal documents",
+        "errorOccurred": "An error occurred. Please try again."
+      },
+      "loading": "Loading..."
+    }
   }
 }
 
