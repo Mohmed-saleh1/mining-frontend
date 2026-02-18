@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/app/lib/auth-context";
 import { walletsApi, Wallet, CryptoType, ApiError } from "@/app/lib/api";
+import { useTranslations } from "next-intl";
 
 // Disable static generation for dashboard pages
 export const dynamic = 'force-dynamic';
@@ -76,6 +77,8 @@ const cryptoTextColors: Record<CryptoType, string> = {
 };
 
 export default function WalletPage() {
+  const t = useTranslations('dashboard.wallet');
+  const tCommon = useTranslations('common');
   const { user } = useAuth();
   const [wallets, setWallets] = useState<Wallet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -96,7 +99,7 @@ export default function WalletPage() {
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
-        setError("Failed to fetch wallets");
+        setError(t('failedToFetch'));
       }
     } finally {
       setIsLoading(false);
@@ -145,7 +148,7 @@ export default function WalletPage() {
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
-        setError("Failed to update wallet address");
+        setError(t('failedToUpdate'));
       }
     } finally {
       setIsUpdating(false);
@@ -188,10 +191,20 @@ export default function WalletPage() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
-          My <span className="gradient-text">Wallet</span>
+          {(() => {
+            const titleTemplate = t('title', { wallet: '{wallet}' });
+            const parts = titleTemplate.split('{wallet}');
+            return parts.length > 1 ? (
+              <>
+                {parts[0]}
+                <span className="gradient-text">{t('walletText')}</span>
+                {parts[1]}
+              </>
+            ) : t('title', { wallet: t('walletText') });
+          })()}
         </h1>
         <p className="text-foreground-muted text-sm">
-          View and manage your cryptocurrency wallets
+          {t('subtitle')}
         </p>
       </div>
 
@@ -216,10 +229,10 @@ export default function WalletPage() {
       <div className="glass rounded-xl p-6 mb-8 animate-fade-in-up">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <p className="text-foreground-muted text-sm mb-1">Total Portfolio Value</p>
+            <p className="text-foreground-muted text-sm mb-1">{t('totalPortfolioValue')}</p>
             <h2 className="text-3xl lg:text-4xl font-bold gradient-text">$0.00</h2>
             <p className="text-foreground-muted text-xs mt-1">
-              {wallets.length} cryptocurrencies
+              {wallets.length} {t('cryptocurrencies')}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -230,7 +243,7 @@ export default function WalletPage() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
-              Refresh
+              {t('refresh')}
             </button>
           </div>
         </div>
@@ -259,14 +272,14 @@ export default function WalletPage() {
 
               {/* Balance */}
               <div className="mb-4">
-                <p className="text-xs text-foreground-muted mb-1">Balance</p>
+                <p className="text-xs text-foreground-muted mb-1">{t('balance')}</p>
                 <p className="text-2xl font-bold text-foreground">
                   {formatBalance(wallet.balance)}
                   <span className="text-sm text-foreground-muted ml-1">{wallet.symbol}</span>
                 </p>
                 {wallet.pendingBalance > 0 && (
                   <p className="text-xs text-gold mt-1">
-                    +{formatBalance(wallet.pendingBalance)} pending
+                    +{formatBalance(wallet.pendingBalance)} {t('pending')}
                   </p>
                 )}
               </div>
@@ -275,7 +288,7 @@ export default function WalletPage() {
               <div className="border-t border-border pt-4">
                 {wallet.walletAddress ? (
                   <div>
-                    <p className="text-xs text-foreground-muted mb-2">Receive Address</p>
+                    <p className="text-xs text-foreground-muted mb-2">{t('receiveAddress')}</p>
                     <div className="flex items-center gap-2">
                       <code className="flex-1 text-xs text-foreground bg-background-secondary/50 px-2 py-1.5 rounded truncate">
                         {wallet.walletAddress}
@@ -318,7 +331,7 @@ export default function WalletPage() {
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
-                    Add Receive Address
+                    {t('addReceiveAddress')}
                   </button>
                 )}
               </div>
@@ -335,8 +348,8 @@ export default function WalletPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
             </svg>
           </div>
-          <h3 className="text-lg font-bold text-foreground mb-2">No Wallets Found</h3>
-          <p className="text-foreground-muted text-sm">Your crypto wallets will appear here</p>
+          <h3 className="text-lg font-bold text-foreground mb-2">{t('noWallets')}</h3>
+          <p className="text-foreground-muted text-sm">{t('noWalletsDescription')}</p>
         </div>
       )}
 
@@ -364,10 +377,12 @@ export default function WalletPage() {
                 })()}
                 <div>
                   <h3 className="text-lg font-bold text-foreground">
-                    {selectedWallet.walletAddress ? "Update" : "Add"} {selectedWallet.symbol} Address
+                    {selectedWallet.walletAddress 
+                      ? t('updateAddress', { symbol: selectedWallet.symbol })
+                      : t('addAddress', { symbol: selectedWallet.symbol })}
                   </h3>
                   <p className="text-xs text-foreground-muted">
-                    Enter your {selectedWallet.name} wallet address to receive funds
+                    {t('addressDescription', { name: selectedWallet.name })}
                   </p>
                 </div>
               </div>
@@ -384,17 +399,17 @@ export default function WalletPage() {
             {/* Address Input */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-foreground mb-2">
-                Wallet Address
+                {t('walletAddress')}
               </label>
               <input
                 type="text"
                 value={newAddress}
                 onChange={(e) => setNewAddress(e.target.value)}
-                placeholder={`Enter your ${selectedWallet.symbol} wallet address`}
+                placeholder={t('addressPlaceholder', { symbol: selectedWallet.symbol })}
                 className="input-gold w-full px-4 py-3 rounded-lg text-sm"
               />
               <p className="text-xs text-foreground-muted mt-2">
-                Make sure to enter the correct {selectedWallet.symbol} address. Funds sent to wrong addresses cannot be recovered.
+                {t('addressWarning', { symbol: selectedWallet.symbol })}
               </p>
             </div>
 
@@ -404,7 +419,7 @@ export default function WalletPage() {
                 onClick={handleCloseModal}
                 className="flex-1 btn-outline px-4 py-3 rounded-lg text-sm font-medium"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 onClick={handleUpdateAddress}
@@ -417,14 +432,14 @@ export default function WalletPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    Saving...
+                    {t('saving')}
                   </>
                 ) : (
                   <>
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    Save Address
+                    {t('saveAddress')}
                   </>
                 )}
               </button>

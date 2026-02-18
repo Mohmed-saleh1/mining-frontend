@@ -4,18 +4,10 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/app/lib/auth-context";
 import { bookingsApi, BookingAnalytics, BookingStatus } from "@/app/lib/api";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 // Disable static generation for dashboard pages
 export const dynamic = 'force-dynamic';
-
-const statusLabels: Record<BookingStatus, string> = {
-  pending: "Pending",
-  awaiting_payment: "Awaiting Payment",
-  payment_sent: "Payment Sent",
-  approved: "Approved",
-  rejected: "Rejected",
-  cancelled: "Cancelled",
-};
 
 const statusColors: Record<BookingStatus, string> = {
   pending: "bg-yellow-400",
@@ -27,9 +19,20 @@ const statusColors: Record<BookingStatus, string> = {
 };
 
 export default function AnalyticsPage() {
+  const t = useTranslations('dashboard.analytics');
+  const tStatus = useTranslations('dashboard.status');
   const { user } = useAuth();
   const [analytics, setAnalytics] = useState<BookingAnalytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const statusLabels: Record<BookingStatus, string> = {
+    pending: tStatus('pending'),
+    awaiting_payment: tStatus('awaitingPayment'),
+    payment_sent: tStatus('paymentSent'),
+    approved: tStatus('approved'),
+    rejected: tStatus('rejected'),
+    cancelled: tStatus('cancelled'),
+  };
 
   useEffect(() => {
     loadAnalytics();
@@ -74,7 +77,7 @@ export default function AnalyticsPage() {
     return (
       <div className="p-6 lg:p-8">
         <div className="text-center py-12">
-          <p className="text-foreground-muted">Failed to load analytics</p>
+          <p className="text-foreground-muted">{t('failedToLoad')}</p>
         </div>
       </div>
     );
@@ -102,17 +105,27 @@ export default function AnalyticsPage() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
-              Analytics <span className="gradient-text">Dashboard</span>
+              {(() => {
+                const titleTemplate = t('title', { dashboard: '{dashboard}' });
+                const parts = titleTemplate.split('{dashboard}');
+                return parts.length > 1 ? (
+                  <>
+                    {parts[0]}
+                    <span className="gradient-text">{t('dashboardText')}</span>
+                    {parts[1]}
+                  </>
+                ) : t('title', { dashboard: t('dashboardText') });
+              })()}
             </h1>
             <p className="text-foreground-muted text-sm">
-              Comprehensive insights into your bookings and revenue
+              {t('subtitle')}
             </p>
           </div>
           <Link
             href="/dashboard/bookings"
             className="btn-outline px-4 py-2 rounded-lg text-sm font-medium"
           >
-            View Bookings
+            {t('viewBookings')}
           </Link>
         </div>
       </div>
@@ -127,7 +140,7 @@ export default function AnalyticsPage() {
               </svg>
             </div>
             <div>
-              <p className="text-xs text-foreground-muted mb-1">Total Investment</p>
+              <p className="text-xs text-foreground-muted mb-1">{t('totalInvestment')}</p>
               <p className="text-2xl font-bold text-foreground">
                 ${Number(analytics?.totalInvestment || 0).toFixed(2)}
               </p>
@@ -143,7 +156,7 @@ export default function AnalyticsPage() {
               </svg>
             </div>
             <div>
-              <p className="text-xs text-foreground-muted mb-1">Total Revenue</p>
+              <p className="text-xs text-foreground-muted mb-1">{t('totalRevenue')}</p>
               <p className="text-2xl font-bold text-foreground">
                 ${Number(analytics?.totalRevenue || 0).toFixed(2)}
               </p>
@@ -159,7 +172,7 @@ export default function AnalyticsPage() {
               </svg>
             </div>
             <div>
-              <p className="text-xs text-foreground-muted mb-1">Total Bookings</p>
+              <p className="text-xs text-foreground-muted mb-1">{t('totalBookings')}</p>
               <p className="text-2xl font-bold text-foreground">{analytics?.totalBookings || 0}</p>
             </div>
           </div>
@@ -173,7 +186,7 @@ export default function AnalyticsPage() {
               </svg>
             </div>
             <div>
-              <p className="text-xs text-foreground-muted mb-1">Active Bookings</p>
+              <p className="text-xs text-foreground-muted mb-1">{t('activeBookings')}</p>
               <p className="text-2xl font-bold text-foreground">{analytics?.activeBookings || 0}</p>
             </div>
           </div>
@@ -184,7 +197,7 @@ export default function AnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue Over Time - Bar Chart */}
         <div className="glass rounded-xl p-6">
-          <h2 className="text-lg font-bold text-foreground mb-6">Revenue Over Time</h2>
+          <h2 className="text-lg font-bold text-foreground mb-6">{t('revenueOverTime')}</h2>
           {revenueByMonth.length > 0 ? (
             <div className="space-y-4">
               <div className="flex items-end gap-3 h-64">
@@ -216,7 +229,7 @@ export default function AnalyticsPage() {
               </div>
               <div className="pt-4 border-t border-border">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-foreground-muted">Average Monthly Revenue</span>
+                  <span className="text-sm text-foreground-muted">{t('averageMonthlyRevenue')}</span>
                   <span className="text-sm font-bold text-foreground">
                     ${revenueByMonth.length > 0
                       ? (revenueByMonth.reduce((sum, item) => sum + item.revenue, 0) / revenueByMonth.length).toFixed(2)
@@ -230,15 +243,15 @@ export default function AnalyticsPage() {
               <svg className="w-16 h-16 mx-auto mb-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
-              <p className="text-foreground-muted text-sm">No revenue data available yet</p>
-              <p className="text-foreground-muted text-xs mt-1">Approved bookings will appear here</p>
+              <p className="text-foreground-muted text-sm">{t('noRevenueData')}</p>
+              <p className="text-foreground-muted text-xs mt-1">{t('noRevenueDescription')}</p>
             </div>
           )}
         </div>
 
         {/* Bookings by Status - Pie Chart */}
         <div className="glass rounded-xl p-6">
-          <h2 className="text-lg font-bold text-foreground mb-6">Bookings by Status</h2>
+          <h2 className="text-lg font-bold text-foreground mb-6">{t('bookingsByStatus')}</h2>
           {totalBookingsForPie > 0 ? (
             <div className="space-y-6">
               {/* Pie Chart Visualization */}
@@ -277,7 +290,7 @@ export default function AnalyticsPage() {
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
                     <p className="text-2xl font-bold text-foreground">{totalBookingsForPie}</p>
-                    <p className="text-xs text-foreground-muted">Total</p>
+                    <p className="text-xs text-foreground-muted">{t('total')}</p>
                   </div>
                 </div>
               </div>
@@ -305,7 +318,7 @@ export default function AnalyticsPage() {
               <svg className="w-16 h-16 mx-auto mb-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
-              <p className="text-foreground-muted text-sm">No bookings data available</p>
+              <p className="text-foreground-muted text-sm">{t('noBookingsData')}</p>
             </div>
           )}
         </div>
@@ -315,7 +328,7 @@ export default function AnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Status Breakdown Table */}
         <div className="glass rounded-xl p-6">
-          <h2 className="text-lg font-bold text-foreground mb-4">Status Breakdown</h2>
+          <h2 className="text-lg font-bold text-foreground mb-4">{t('statusBreakdown')}</h2>
           <div className="space-y-3">
             {Object.entries(bookingsByStatus).map(([status, count]) => (
               <div key={status} className="flex items-center justify-between p-3 rounded-lg bg-background-secondary/30">
@@ -341,22 +354,22 @@ export default function AnalyticsPage() {
 
         {/* Revenue Summary */}
         <div className="glass rounded-xl p-6">
-          <h2 className="text-lg font-bold text-foreground mb-4">Revenue Summary</h2>
+          <h2 className="text-lg font-bold text-foreground mb-4">{t('revenueSummary')}</h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 rounded-lg bg-background-secondary/30">
-              <span className="text-sm text-foreground-muted">Total Investment</span>
+              <span className="text-sm text-foreground-muted">{t('totalInvestment')}</span>
               <span className="text-lg font-bold text-foreground">
                 ${Number(analytics?.totalInvestment || 0).toFixed(2)}
               </span>
             </div>
             <div className="flex items-center justify-between p-4 rounded-lg bg-background-secondary/30">
-              <span className="text-sm text-foreground-muted">Total Revenue</span>
+              <span className="text-sm text-foreground-muted">{t('totalRevenue')}</span>
               <span className="text-lg font-bold text-green">
                 ${Number(analytics?.totalRevenue || 0).toFixed(2)}
               </span>
             </div>
             <div className="flex items-center justify-between p-4 rounded-lg bg-gold/10 border border-gold/20">
-              <span className="text-sm font-medium text-foreground">ROI</span>
+              <span className="text-sm font-medium text-foreground">{t('roi')}</span>
               <span className="text-lg font-bold text-gold">
                 {(analytics?.totalInvestment || 0) > 0
                   ? (((analytics?.totalRevenue || 0) / (analytics?.totalInvestment || 1)) * 100).toFixed(1)
@@ -365,7 +378,7 @@ export default function AnalyticsPage() {
             </div>
             {revenueByMonth.length > 0 && (
               <div className="pt-4 border-t border-border">
-                <p className="text-xs text-foreground-muted mb-2">Best Performing Month</p>
+                <p className="text-xs text-foreground-muted mb-2">{t('bestPerformingMonth')}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-foreground">
                     {revenueByMonth.reduce((max, item) => 
@@ -385,10 +398,10 @@ export default function AnalyticsPage() {
       {/* Additional Insights */}
       {(analytics?.totalBookings || 0) > 0 && (
         <div className="glass rounded-xl p-6">
-          <h2 className="text-lg font-bold text-foreground mb-4">Key Insights</h2>
+          <h2 className="text-lg font-bold text-foreground mb-4">{t('keyInsights')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 rounded-lg bg-background-secondary/30">
-              <p className="text-xs text-foreground-muted mb-1">Approval Rate</p>
+              <p className="text-xs text-foreground-muted mb-1">{t('approvalRate')}</p>
               <p className="text-2xl font-bold text-foreground">
                 {(analytics?.totalBookings || 0) > 0
                   ? (((analytics?.activeBookings || 0) / (analytics?.totalBookings || 1)) * 100).toFixed(1)
@@ -396,7 +409,7 @@ export default function AnalyticsPage() {
               </p>
             </div>
             <div className="p-4 rounded-lg bg-background-secondary/30">
-              <p className="text-xs text-foreground-muted mb-1">Avg. Booking Value</p>
+              <p className="text-xs text-foreground-muted mb-1">{t('avgBookingValue')}</p>
               <p className="text-2xl font-bold text-foreground">
                 ${(analytics?.totalBookings || 0) > 0
                   ? ((analytics?.totalInvestment || 0) / (analytics?.totalBookings || 1)).toFixed(2)
@@ -404,7 +417,7 @@ export default function AnalyticsPage() {
               </p>
             </div>
             <div className="p-4 rounded-lg bg-background-secondary/30">
-              <p className="text-xs text-foreground-muted mb-1">Avg. Revenue per Booking</p>
+              <p className="text-xs text-foreground-muted mb-1">{t('avgRevenuePerBooking')}</p>
               <p className="text-2xl font-bold text-foreground">
                 ${(analytics?.activeBookings || 0) > 0
                   ? ((analytics?.totalRevenue || 0) / (analytics?.activeBookings || 1)).toFixed(2)
@@ -417,3 +430,5 @@ export default function AnalyticsPage() {
     </div>
   );
 }
+
+

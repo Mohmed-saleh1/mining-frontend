@@ -862,7 +862,7 @@ export const legalDocumentsApi = {
 // Subscription Types
 export type PlanDuration = 'day' | 'week' | 'month' | 'year';
 export type SubscriptionStatus = 'pending' | 'active' | 'expired' | 'cancelled';
-export type PaymentMethod = 'paytabs' | 'binance';
+export type PaymentMethod = 'paytabs' | 'binance' | 'cryptomus';
 
 export interface SubscriptionPlan {
   id: string;

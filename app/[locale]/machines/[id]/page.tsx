@@ -516,11 +516,10 @@ export default function MachineDetailsPage() {
 
               {/* Payment Options */}
               <div className="p-6 space-y-3">
-                {/* Card Payment (PayTabs) */}
+                {/* Card Payment (PayTabs) - Disabled */}
                 <button
-                  onClick={() => handlePayment('paytabs')}
-                  disabled={isSubscribing}
-                  className="w-full p-4 rounded-xl border-2 border-border hover:border-gold/60 transition-all flex items-center gap-4 group disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={true}
+                  className="w-full p-4 rounded-xl border-2 border-border opacity-50 cursor-not-allowed flex items-center gap-4 group relative"
                 >
                   <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -528,23 +527,22 @@ export default function MachineDetailsPage() {
                     </svg>
                   </div>
                   <div className="flex-1 text-left">
-                    <p className="font-semibold text-foreground group-hover:text-gold transition-colors">
+                    <p className="font-semibold text-foreground">
                       Pay with Card
                     </p>
                     <p className="text-xs text-foreground-muted">
                       Credit / Debit Card via PayTabs
                     </p>
                   </div>
-                  <svg className="w-5 h-5 text-foreground-muted group-hover:text-gold transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gold/20 text-gold">
+                    Coming Soon
+                  </span>
                 </button>
 
-                {/* Crypto Payment (Binance Pay) */}
+                {/* Crypto Payment (Binance Pay) - Disabled */}
                 <button
-                  onClick={() => handlePayment('binance')}
-                  disabled={isSubscribing}
-                  className="w-full p-4 rounded-xl border-2 border-border hover:border-gold/60 transition-all flex items-center gap-4 group disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={true}
+                  className="w-full p-4 rounded-xl border-2 border-border opacity-50 cursor-not-allowed flex items-center gap-4 group relative"
                 >
                   <div className="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
@@ -552,11 +550,35 @@ export default function MachineDetailsPage() {
                     </svg>
                   </div>
                   <div className="flex-1 text-left">
-                    <p className="font-semibold text-foreground group-hover:text-gold transition-colors">
+                    <p className="font-semibold text-foreground">
                       Pay with Crypto
                     </p>
                     <p className="text-xs text-foreground-muted">
                       USDT / BTC / ETH via Binance Pay
+                    </p>
+                  </div>
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gold/20 text-gold">
+                    Coming Soon
+                  </span>
+                </button>
+
+                {/* Crypto Payment (Cryptomus) */}
+                <button
+                  onClick={() => handlePayment('cryptomus')}
+                  disabled={isSubscribing}
+                  className="w-full p-4 rounded-xl border-2 border-gold hover:border-gold/60 transition-all flex items-center gap-4 group disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-purple-400" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className="font-semibold text-foreground group-hover:text-gold transition-colors">
+                      Pay with Crypto
+                    </p>
+                    <p className="text-xs text-foreground-muted">
+                      BTC / ETH / USDT / LTC via Cryptomus
                     </p>
                   </div>
                   <svg className="w-5 h-5 text-foreground-muted group-hover:text-gold transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">

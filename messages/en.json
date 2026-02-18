@@ -764,6 +764,197 @@
         }
       }
     }
+  },
+  "dashboard": {
+    "welcome": {
+      "title": "Welcome back, {name}!",
+      "subtitle": "Here's what's happening with your investments today."
+    },
+    "emailVerification": {
+      "title": "Verify your email address",
+      "description": "Please verify your email to access all features",
+      "verifyNow": "Verify Now"
+    },
+    "stats": {
+      "totalInvestment": "Total Investment",
+      "activeBookings": "Active Bookings",
+      "totalRevenue": "Total Revenue",
+      "totalBookings": "Total Bookings"
+    },
+    "analytics": {
+      "bookingsByStatus": "Bookings by Status",
+      "revenueOverTime": "Revenue Over Time",
+      "totalRevenue": "Total Revenue",
+      "noRevenueData": "No revenue data available yet",
+      "noRevenueDescription": "Approved bookings will appear here"
+    },
+    "status": {
+      "pending": "Pending",
+      "awaitingPayment": "Awaiting Payment",
+      "paymentSent": "Payment Sent",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled"
+    },
+    "getStarted": {
+      "title": "Get Started",
+      "verifyEmail": {
+        "title": "Verify your email",
+        "completed": "Completed",
+        "description": "Check your inbox for verification link"
+      },
+      "fundWallet": {
+        "title": "Fund your wallet",
+        "description": "Add crypto to start investing"
+      },
+      "choosePackage": {
+        "title": "Choose a package",
+        "description": "Select an investment plan"
+      }
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "myBookings": "My Bookings",
+      "manageWallet": "Manage Wallet",
+      "subscriptions": "Subscriptions",
+      "editProfile": "Edit Profile"
+    },
+    "recentActivity": {
+      "title": "Recent Activity",
+      "noActivity": "No recent activity",
+      "description": "Your transactions will appear here"
+    },
+    "bookings": {
+      "title": "My Bookings",
+      "subtitle": "Manage your mining machine rental requests",
+      "newBooking": "New Booking",
+      "noBookings": "No Bookings Yet",
+      "noBookingsDescription": "Create your first booking request to start mining",
+      "createBooking": "Create Booking",
+      "createNewBooking": "Create New Booking",
+      "selectMachine": "Select Machine",
+      "chooseMachine": "Choose a machine...",
+      "rentalDuration": "Rental Duration",
+      "quantity": "Quantity",
+      "notes": "Notes (Optional)",
+      "notesPlaceholder": "Any special requests or notes...",
+      "estimatedTotal": "Estimated Total",
+      "createBookingRequest": "Create Booking Request",
+      "creating": "Creating...",
+      "bookingDetails": "Booking Details",
+      "bookingNumber": "Booking #{id}",
+      "duration": "Duration:",
+      "quantityLabel": "Quantity:",
+      "units": "unit(s)",
+      "paymentAddress": "Payment Address:",
+      "transactionHash": "Transaction hash (optional)",
+      "transactionHashPlaceholder": "Transaction hash (optional)",
+      "sentPayment": "I've Sent the Payment",
+      "processing": "Processing...",
+      "cancelBooking": "Cancel Booking",
+      "cancelConfirm": "Are you sure you want to cancel this booking?",
+      "chatWithAdmin": "Chat with Admin",
+      "typeMessage": "Type a message...",
+      "newMessage": "New message from admin",
+      "created": "Created:",
+      "paymentAddressLabel": "Payment Address"
+    },
+    "wallet": {
+      "title": "My {wallet}",
+      "walletText": "Wallet",
+      "subtitle": "View and manage your cryptocurrency wallets",
+      "totalPortfolioValue": "Total Portfolio Value",
+      "cryptocurrencies": "cryptocurrencies",
+      "refresh": "Refresh",
+      "balance": "Balance",
+      "pending": "pending",
+      "receiveAddress": "Receive Address",
+      "addReceiveAddress": "Add Receive Address",
+      "noWallets": "No Wallets Found",
+      "noWalletsDescription": "Your crypto wallets will appear here",
+      "updateAddress": "Update {symbol} Address",
+      "addAddress": "Add {symbol} Address",
+      "addressDescription": "Enter your {name} wallet address to receive funds",
+      "walletAddress": "Wallet Address",
+      "addressPlaceholder": "Enter your {symbol} wallet address",
+      "addressWarning": "Make sure to enter the correct {symbol} address. Funds sent to wrong addresses cannot be recovered.",
+      "cancel": "Cancel",
+      "saveAddress": "Save Address",
+      "saving": "Saving...",
+      "failedToFetch": "Failed to fetch wallets",
+      "failedToUpdate": "Failed to update wallet address"
+    },
+    "profile": {
+      "title": "Profile Settings",
+      "subtitle": "Manage your account settings and security preferences",
+      "profileInformation": "Profile Information",
+      "security": "Security",
+      "verified": "Verified",
+      "verifyEmail": "Verify Email",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "emailAddress": "Email Address",
+      "emailCannotChange": "Email cannot be changed",
+      "phoneNumber": "Phone Number",
+      "saveChanges": "Save Changes",
+      "saving": "Saving...",
+      "profileUpdated": "Profile updated successfully!",
+      "changePassword": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password",
+      "minimumCharacters": "Minimum 8 characters",
+      "changing": "Changing...",
+      "passwordChanged": "Password changed successfully!",
+      "accountInformation": "Account Information",
+      "memberSince": "Member Since",
+      "lastLogin": "Last Login",
+      "accountStatus": "Account Status",
+      "active": "Active",
+      "accountId": "Account ID",
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "currentPasswordRequired": "Current password is required",
+      "passwordMinLength": "New password must be at least 8 characters",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "failedToUpdateProfile": "Failed to update profile. Please try again.",
+      "failedToChangePassword": "Failed to change password. Please try again."
+    },
+    "analytics": {
+      "title": "Analytics {dashboard}",
+      "dashboardText": "Dashboard",
+      "subtitle": "Comprehensive insights into your bookings and revenue",
+      "viewBookings": "View Bookings",
+      "totalInvestment": "Total Investment",
+      "totalRevenue": "Total Revenue",
+      "totalBookings": "Total Bookings",
+      "activeBookings": "Active Bookings",
+      "revenueOverTime": "Revenue Over Time",
+      "averageMonthlyRevenue": "Average Monthly Revenue",
+      "noRevenueData": "No revenue data available yet",
+      "noRevenueDescription": "Approved bookings will appear here",
+      "bookingsByStatus": "Bookings by Status",
+      "total": "Total",
+      "noBookingsData": "No bookings data available",
+      "statusBreakdown": "Status Breakdown",
+      "revenueSummary": "Revenue Summary",
+      "roi": "ROI",
+      "bestPerformingMonth": "Best Performing Month",
+      "keyInsights": "Key Insights",
+      "approvalRate": "Approval Rate",
+      "avgBookingValue": "Avg. Booking Value",
+      "avgRevenuePerBooking": "Avg. Revenue per Booking",
+      "failedToLoad": "Failed to load analytics"
+    },
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "analytics": "Analytics",
+      "bookings": "Bookings",
+      "wallet": "Wallet",
+      "profile": "Profile",
+      "signOut": "Sign Out",
+      "loading": "Loading..."
+    }
   }
 }
 

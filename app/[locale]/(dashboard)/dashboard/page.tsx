@@ -4,23 +4,25 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/app/lib/auth-context";
 import { bookingsApi, BookingAnalytics, BookingStatus } from "@/app/lib/api";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 // Disable static generation for dashboard pages
 export const dynamic = 'force-dynamic';
 
-const statusLabels: Record<BookingStatus, string> = {
-  pending: "Pending",
-  awaiting_payment: "Awaiting Payment",
-  payment_sent: "Payment Sent",
-  approved: "Approved",
-  rejected: "Rejected",
-  cancelled: "Cancelled",
-};
-
 export default function DashboardPage() {
+  const t = useTranslations('dashboard');
   const { user } = useAuth();
   const [analytics, setAnalytics] = useState<BookingAnalytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const statusLabels: Record<BookingStatus, string> = {
+    pending: t('status.pending'),
+    awaiting_payment: t('status.awaitingPayment'),
+    payment_sent: t('status.paymentSent'),
+    approved: t('status.approved'),
+    rejected: t('status.rejected'),
+    cancelled: t('status.cancelled'),
+  };
 
   useEffect(() => {
     loadAnalytics();
@@ -53,34 +55,34 @@ export default function DashboardPage() {
 
   const stats = analytics ? [
     { 
-      label: "Total Investment", 
+      label: t('stats.totalInvestment'), 
       value: `$${safeNumber(analytics.totalInvestment).toFixed(2)}`, 
       icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", 
       color: "gold" 
     },
     { 
-      label: "Active Bookings", 
+      label: t('stats.activeBookings'), 
       value: String(safeNumber(analytics.activeBookings)), 
       icon: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4", 
       color: "gold" 
     },
     { 
-      label: "Total Revenue", 
+      label: t('stats.totalRevenue'), 
       value: `$${safeNumber(analytics.totalRevenue).toFixed(2)}`, 
       icon: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6", 
       color: "green" 
     },
     { 
-      label: "Total Bookings", 
+      label: t('stats.totalBookings'), 
       value: String(safeNumber(analytics.totalBookings)), 
       icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2", 
       color: "gold" 
     },
   ] : [
-    { label: "Total Investment", value: "$0.00", icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", color: "gold" },
-    { label: "Active Bookings", value: "0", icon: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4", color: "gold" },
-    { label: "Total Revenue", value: "$0.00", icon: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6", color: "green" },
-    { label: "Total Bookings", value: "0", icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2", color: "gold" },
+    { label: t('stats.totalInvestment'), value: "$0.00", icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", color: "gold" },
+    { label: t('stats.activeBookings'), value: "0", icon: "M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4", color: "gold" },
+    { label: t('stats.totalRevenue'), value: "$0.00", icon: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6", color: "green" },
+    { label: t('stats.totalBookings'), value: "0", icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2", color: "gold" },
   ];
 
   return (
@@ -88,10 +90,20 @@ export default function DashboardPage() {
       {/* Welcome Header */}
       <div className="mb-8">
         <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
-          Welcome back, <span className="gradient-text">{user?.firstName}</span>!
+          {(() => {
+            const titleTemplate = t('welcome.title', { name: '{name}' });
+            const parts = titleTemplate.split('{name}');
+            return (
+              <>
+                {parts[0]}
+                <span className="gradient-text">{user?.firstName}</span>
+                {parts[1]}
+              </>
+            );
+          })()}
         </h1>
         <p className="text-foreground-muted text-sm">
-          Here&apos;s what&apos;s happening with your investments today.
+          {t('welcome.subtitle')}
         </p>
       </div>
 
@@ -105,16 +117,16 @@ export default function DashboardPage() {
               </svg>
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-gold">Verify your email address</p>
+              <p className="text-sm font-medium text-gold">{t('emailVerification.title')}</p>
               <p className="text-xs text-foreground-muted">
-                Please verify your email to access all features
+                {t('emailVerification.description')}
               </p>
             </div>
             <Link
               href="/verify-email-notice"
               className="btn-outline px-4 py-2 rounded-lg text-xs font-medium"
             >
-              Verify Now
+              {t('emailVerification.verifyNow')}
             </Link>
           </div>
         </div>
@@ -165,7 +177,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Bookings by Status */}
           <div className="glass rounded-xl p-6 animate-fade-in-up">
-            <h2 className="text-lg font-bold text-foreground mb-4">Bookings by Status</h2>
+            <h2 className="text-lg font-bold text-foreground mb-4">{t('analytics.bookingsByStatus')}</h2>
             <div className="space-y-3">
               {Object.entries(analytics?.bookingsByStatus || {}).map(([status, count]) => (
                 <div key={status} className="flex items-center justify-between">
@@ -188,7 +200,7 @@ export default function DashboardPage() {
 
           {/* Revenue Chart */}
           <div className="glass rounded-xl p-6 animate-fade-in-up">
-            <h2 className="text-lg font-bold text-foreground mb-4">Revenue Over Time</h2>
+            <h2 className="text-lg font-bold text-foreground mb-4">{t('analytics.revenueOverTime')}</h2>
             {(analytics?.revenueByMonth || []).length > 0 ? (
               <div className="space-y-4">
                 <div className="flex items-end gap-2 h-32">
@@ -213,15 +225,15 @@ export default function DashboardPage() {
                 </div>
                 <div className="pt-4 border-t border-border">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-foreground-muted">Total Revenue</span>
+                    <span className="text-foreground-muted">{t('analytics.totalRevenue')}</span>
                     <span className="font-bold text-gold">${Number(analytics?.totalRevenue || 0).toFixed(2)}</span>
                   </div>
                 </div>
               </div>
             ) : (
               <div className="text-center py-8">
-                <p className="text-foreground-muted text-sm">No revenue data available yet</p>
-                <p className="text-foreground-muted text-xs mt-1">Approved bookings will appear here</p>
+                <p className="text-foreground-muted text-sm">{t('analytics.noRevenueData')}</p>
+                <p className="text-foreground-muted text-xs mt-1">{t('analytics.noRevenueDescription')}</p>
               </div>
             )}
           </div>
@@ -232,7 +244,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Get Started Card */}
         <div className="glass rounded-xl p-6 animate-fade-in-up stagger-2">
-          <h2 className="text-lg font-bold text-foreground mb-4">Get Started</h2>
+          <h2 className="text-lg font-bold text-foreground mb-4">{t('getStarted.title')}</h2>
           <div className="space-y-3">
             <div className="flex items-center gap-4 p-3 rounded-lg bg-background-secondary/50">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center ${user?.emailVerified ? 'bg-green/20 text-green' : 'bg-gold/20 text-gold'}`}>
@@ -245,9 +257,9 @@ export default function DashboardPage() {
                 )}
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">Verify your email</p>
+                <p className="text-sm font-medium text-foreground">{t('getStarted.verifyEmail.title')}</p>
                 <p className="text-xs text-foreground-muted">
-                  {user?.emailVerified ? 'Completed' : 'Check your inbox for verification link'}
+                  {user?.emailVerified ? t('getStarted.verifyEmail.completed') : t('getStarted.verifyEmail.description')}
                 </p>
               </div>
             </div>
@@ -256,8 +268,8 @@ export default function DashboardPage() {
                 <span className="text-sm font-bold">2</span>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">Fund your wallet</p>
-                <p className="text-xs text-foreground-muted">Add crypto to start investing</p>
+                <p className="text-sm font-medium text-foreground">{t('getStarted.fundWallet.title')}</p>
+                <p className="text-xs text-foreground-muted">{t('getStarted.fundWallet.description')}</p>
               </div>
             </div>
             <div className="flex items-center gap-4 p-3 rounded-lg bg-background-secondary/50">
@@ -265,8 +277,8 @@ export default function DashboardPage() {
                 <span className="text-sm font-bold">3</span>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">Choose a package</p>
-                <p className="text-xs text-foreground-muted">Select an investment plan</p>
+                <p className="text-sm font-medium text-foreground">{t('getStarted.choosePackage.title')}</p>
+                <p className="text-xs text-foreground-muted">{t('getStarted.choosePackage.description')}</p>
               </div>
             </div>
           </div>
@@ -274,7 +286,7 @@ export default function DashboardPage() {
 
         {/* Quick Links Card */}
         <div className="glass rounded-xl p-6 animate-fade-in-up stagger-3">
-          <h2 className="text-lg font-bold text-foreground mb-4">Quick Actions</h2>
+          <h2 className="text-lg font-bold text-foreground mb-4">{t('quickActions.title')}</h2>
           <div className="grid grid-cols-2 gap-3">
             <Link
               href="/dashboard/bookings"
@@ -283,7 +295,7 @@ export default function DashboardPage() {
               <svg className="w-8 h-8 text-gold mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
-              <p className="text-sm font-medium text-foreground">My Bookings</p>
+              <p className="text-sm font-medium text-foreground">{t('quickActions.myBookings')}</p>
             </Link>
             <Link
               href="/dashboard/wallet"
@@ -292,7 +304,7 @@ export default function DashboardPage() {
               <svg className="w-8 h-8 text-gold mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
               </svg>
-              <p className="text-sm font-medium text-foreground">Manage Wallet</p>
+              <p className="text-sm font-medium text-foreground">{t('quickActions.manageWallet')}</p>
             </Link>
             <Link
               href="/dashboard/subscriptions"
@@ -301,7 +313,7 @@ export default function DashboardPage() {
               <svg className="w-8 h-8 text-gold mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
-              <p className="text-sm font-medium text-foreground">Subscriptions</p>
+              <p className="text-sm font-medium text-foreground">{t('quickActions.subscriptions')}</p>
             </Link>
             <Link
               href="/dashboard/profile"
@@ -310,7 +322,7 @@ export default function DashboardPage() {
               <svg className="w-8 h-8 text-gold mb-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-              <p className="text-sm font-medium text-foreground">Edit Profile</p>
+              <p className="text-sm font-medium text-foreground">{t('quickActions.editProfile')}</p>
             </Link>
           </div>
         </div>
@@ -318,15 +330,15 @@ export default function DashboardPage() {
 
       {/* Recent Activity */}
       <div className="glass rounded-xl p-6 animate-fade-in-up stagger-4">
-        <h2 className="text-lg font-bold text-foreground mb-4">Recent Activity</h2>
+        <h2 className="text-lg font-bold text-foreground mb-4">{t('recentActivity.title')}</h2>
         <div className="text-center py-8">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-background-secondary flex items-center justify-center">
             <svg className="w-8 h-8 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </div>
-          <p className="text-foreground-muted text-sm">No recent activity</p>
-          <p className="text-foreground-muted text-xs mt-1">Your transactions will appear here</p>
+          <p className="text-foreground-muted text-sm">{t('recentActivity.noActivity')}</p>
+          <p className="text-foreground-muted text-xs mt-1">{t('recentActivity.description')}</p>
         </div>
       </div>
     </div>

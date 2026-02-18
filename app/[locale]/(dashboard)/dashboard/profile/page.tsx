@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { useAuth, ApiError } from "@/app/lib/auth-context";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 // Disable static generation for dashboard pages
 export const dynamic = 'force-dynamic';
 
 export default function ProfilePage() {
+  const t = useTranslations('dashboard.profile');
   const { user, updateProfile, changePassword, refreshUser } = useAuth();
   const [activeTab, setActiveTab] = useState<"profile" | "security">("profile");
   
@@ -53,11 +55,11 @@ export default function ProfilePage() {
     e.preventDefault();
     
     if (!profileForm.firstName.trim()) {
-      setProfileError("First name is required");
+      setProfileError(t('firstNameRequired'));
       return;
     }
     if (!profileForm.lastName.trim()) {
-      setProfileError("Last name is required");
+      setProfileError(t('lastNameRequired'));
       return;
     }
 
@@ -76,7 +78,7 @@ export default function ProfilePage() {
       if (err instanceof ApiError) {
         setProfileError(err.errorDescription || err.message);
       } else {
-        setProfileError("Failed to update profile. Please try again.");
+        setProfileError(t('failedToUpdateProfile'));
       }
     } finally {
       setProfileLoading(false);
@@ -87,15 +89,15 @@ export default function ProfilePage() {
     e.preventDefault();
 
     if (!passwordForm.currentPassword) {
-      setPasswordError("Current password is required");
+      setPasswordError(t('currentPasswordRequired'));
       return;
     }
     if (passwordForm.newPassword.length < 8) {
-      setPasswordError("New password must be at least 8 characters");
+      setPasswordError(t('passwordMinLength'));
       return;
     }
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setPasswordError("Passwords do not match");
+      setPasswordError(t('passwordsDoNotMatch'));
       return;
     }
 
@@ -114,7 +116,7 @@ export default function ProfilePage() {
       if (err instanceof ApiError) {
         setPasswordError(err.errorDescription || err.message);
       } else {
-        setPasswordError("Failed to change password. Please try again.");
+        setPasswordError(t('failedToChangePassword'));
       }
     } finally {
       setPasswordLoading(false);
@@ -125,9 +127,9 @@ export default function ProfilePage() {
     <div className="p-6 lg:p-8 max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">Profile Settings</h1>
+        <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">{t('title')}</h1>
         <p className="text-foreground-muted text-sm">
-          Manage your account settings and security preferences
+          {t('subtitle')}
         </p>
       </div>
 
@@ -150,7 +152,7 @@ export default function ProfilePage() {
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    Verified
+                    {t('verified')}
                   </span>
                 ) : (
                   <Link
@@ -160,7 +162,7 @@ export default function ProfilePage() {
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
-                    Verify Email
+                    {t('verifyEmail')}
                   </Link>
                 )}
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-background-secondary text-foreground-muted text-xs capitalize">
@@ -182,7 +184,7 @@ export default function ProfilePage() {
                   : "text-foreground-muted hover:text-foreground"
               }`}
             >
-              Profile Information
+              {t('profileInformation')}
               {activeTab === "profile" && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gold" />
               )}
@@ -195,7 +197,7 @@ export default function ProfilePage() {
                   : "text-foreground-muted hover:text-foreground"
               }`}
             >
-              Security
+              {t('security')}
               {activeTab === "security" && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gold" />
               )}
@@ -224,7 +226,7 @@ export default function ProfilePage() {
                     <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span>Profile updated successfully!</span>
+                    <span>{t('profileUpdated')}</span>
                   </div>
                 </div>
               )}
@@ -232,7 +234,7 @@ export default function ProfilePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-sm font-medium text-foreground-muted mb-2">
-                    First Name
+                    {t('firstName')}
                   </label>
                   <input
                     type="text"
@@ -245,7 +247,7 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground-muted mb-2">
-                    Last Name
+                    {t('lastName')}
                   </label>
                   <input
                     type="text"
@@ -260,7 +262,7 @@ export default function ProfilePage() {
 
               <div>
                 <label className="block text-sm font-medium text-foreground-muted mb-2">
-                  Email Address
+                  {t('emailAddress')}
                 </label>
                 <input
                   type="email"
@@ -268,12 +270,12 @@ export default function ProfilePage() {
                   disabled
                   className="input-gold w-full px-4 py-3 rounded-lg text-sm opacity-50 cursor-not-allowed"
                 />
-                <p className="text-xs text-foreground-muted mt-1">Email cannot be changed</p>
+                <p className="text-xs text-foreground-muted mt-1">{t('emailCannotChange')}</p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-foreground-muted mb-2">
-                  Phone Number
+                  {t('phoneNumber')}
                 </label>
                 <input
                   type="tel"
@@ -297,11 +299,11 @@ export default function ProfilePage() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
-                      <span>Saving...</span>
+                      <span>{t('saving')}</span>
                     </>
                   ) : (
                     <>
-                      <span>Save Changes</span>
+                      <span>{t('saveChanges')}</span>
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
@@ -316,7 +318,7 @@ export default function ProfilePage() {
             <div className="space-y-6 animate-fade-in-up">
               {/* Change Password Form */}
               <form onSubmit={handlePasswordSubmit} className="space-y-5">
-                <h3 className="text-lg font-semibold text-foreground">Change Password</h3>
+                <h3 className="text-lg font-semibold text-foreground">{t('changePassword')}</h3>
 
                 {passwordError && (
                   <div className="p-4 rounded-lg bg-red/10 border border-red/30 text-red text-sm">
@@ -335,14 +337,14 @@ export default function ProfilePage() {
                       <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      <span>Password changed successfully!</span>
+                      <span>{t('passwordChanged')}</span>
                     </div>
                   </div>
                 )}
 
                 <div>
                   <label className="block text-sm font-medium text-foreground-muted mb-2">
-                    Current Password
+                    {t('currentPassword')}
                   </label>
                   <input
                     type="password"
@@ -356,7 +358,7 @@ export default function ProfilePage() {
 
                 <div>
                   <label className="block text-sm font-medium text-foreground-muted mb-2">
-                    New Password
+                    {t('newPassword')}
                   </label>
                   <input
                     type="password"
@@ -366,12 +368,12 @@ export default function ProfilePage() {
                     className="input-gold w-full px-4 py-3 rounded-lg text-sm"
                     placeholder="••••••••"
                   />
-                  <p className="text-xs text-foreground-muted mt-1">Minimum 8 characters</p>
+                  <p className="text-xs text-foreground-muted mt-1">{t('minimumCharacters')}</p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-foreground-muted mb-2">
-                    Confirm New Password
+                    {t('confirmNewPassword')}
                   </label>
                   <input
                     type="password"
@@ -395,11 +397,11 @@ export default function ProfilePage() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
-                        <span>Changing...</span>
+                        <span>{t('changing')}</span>
                       </>
                     ) : (
                       <>
-                        <span>Change Password</span>
+                        <span>{t('changePassword')}</span>
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
@@ -411,10 +413,10 @@ export default function ProfilePage() {
 
               {/* Account Info */}
               <div className="pt-6 border-t border-border">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Account Information</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">{t('accountInformation')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="p-4 rounded-lg bg-background-secondary/50">
-                    <p className="text-xs text-foreground-muted mb-1">Member Since</p>
+                    <p className="text-xs text-foreground-muted mb-1">{t('memberSince')}</p>
                     <p className="text-sm font-medium text-foreground">
                       {user?.createdAt
                         ? new Date(user.createdAt).toLocaleDateString("en-US", {
@@ -426,7 +428,7 @@ export default function ProfilePage() {
                     </p>
                   </div>
                   <div className="p-4 rounded-lg bg-background-secondary/50">
-                    <p className="text-xs text-foreground-muted mb-1">Last Login</p>
+                    <p className="text-xs text-foreground-muted mb-1">{t('lastLogin')}</p>
                     <p className="text-sm font-medium text-foreground">
                       {user?.lastLoginAt
                         ? new Date(user.lastLoginAt).toLocaleDateString("en-US", {
@@ -440,11 +442,11 @@ export default function ProfilePage() {
                     </p>
                   </div>
                   <div className="p-4 rounded-lg bg-background-secondary/50">
-                    <p className="text-xs text-foreground-muted mb-1">Account Status</p>
-                    <p className="text-sm font-medium text-green">Active</p>
+                    <p className="text-xs text-foreground-muted mb-1">{t('accountStatus')}</p>
+                    <p className="text-sm font-medium text-green">{t('active')}</p>
                   </div>
                   <div className="p-4 rounded-lg bg-background-secondary/50">
-                    <p className="text-xs text-foreground-muted mb-1">Account ID</p>
+                    <p className="text-xs text-foreground-muted mb-1">{t('accountId')}</p>
                     <p className="text-sm font-medium text-foreground font-mono">
                       {user?.id?.slice(0, 8)}...{user?.id?.slice(-4)}
                     </p>

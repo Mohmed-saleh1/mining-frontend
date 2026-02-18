@@ -764,6 +764,197 @@
         }
       }
     }
+  },
+  "dashboard": {
+    "welcome": {
+      "title": "مرحبًا بعودتك، {name}!",
+      "subtitle": "إليك ما يحدث مع استثماراتك اليوم."
+    },
+    "emailVerification": {
+      "title": "تحقق من عنوان بريدك الإلكتروني",
+      "description": "يرجى التحقق من بريدك الإلكتروني للوصول إلى جميع الميزات",
+      "verifyNow": "تحقق الآن"
+    },
+    "stats": {
+      "totalInvestment": "إجمالي الاستثمار",
+      "activeBookings": "الحجوزات النشطة",
+      "totalRevenue": "إجمالي الإيرادات",
+      "totalBookings": "إجمالي الحجوزات"
+    },
+    "analytics": {
+      "bookingsByStatus": "الحجوزات حسب الحالة",
+      "revenueOverTime": "الإيرادات بمرور الوقت",
+      "totalRevenue": "إجمالي الإيرادات",
+      "noRevenueData": "لا توجد بيانات إيرادات متاحة بعد",
+      "noRevenueDescription": "ستظهر الحجوزات المعتمدة هنا"
+    },
+    "status": {
+      "pending": "قيد الانتظار",
+      "awaitingPayment": "في انتظار الدفع",
+      "paymentSent": "تم إرسال الدفع",
+      "approved": "معتمد",
+      "rejected": "مرفوض",
+      "cancelled": "ملغى"
+    },
+    "getStarted": {
+      "title": "ابدأ",
+      "verifyEmail": {
+        "title": "تحقق من بريدك الإلكتروني",
+        "completed": "مكتمل",
+        "description": "تحقق من صندوق الوارد للحصول على رابط التحقق"
+      },
+      "fundWallet": {
+        "title": "قم بتمويل محفظتك",
+        "description": "أضف العملات المشفرة لبدء الاستثمار"
+      },
+      "choosePackage": {
+        "title": "اختر حزمة",
+        "description": "اختر خطة استثمار"
+      }
+    },
+    "quickActions": {
+      "title": "إجراءات سريعة",
+      "myBookings": "حجوزاتي",
+      "manageWallet": "إدارة المحفظة",
+      "subscriptions": "الاشتراكات",
+      "editProfile": "تعديل الملف الشخصي"
+    },
+    "recentActivity": {
+      "title": "النشاط الأخير",
+      "noActivity": "لا يوجد نشاط حديث",
+      "description": "ستظهر معاملاتك هنا"
+    },
+    "bookings": {
+      "title": "حجوزاتي",
+      "subtitle": "إدارة طلبات إيجار أجهزة الاستخراج الخاصة بك",
+      "newBooking": "حجز جديد",
+      "noBookings": "لا توجد حجوزات بعد",
+      "noBookingsDescription": "أنشئ طلب الحجز الأول لبدء الاستخراج",
+      "createBooking": "إنشاء حجز",
+      "createNewBooking": "إنشاء حجز جديد",
+      "selectMachine": "اختر الجهاز",
+      "chooseMachine": "اختر جهازًا...",
+      "rentalDuration": "مدة الإيجار",
+      "quantity": "الكمية",
+      "notes": "ملاحظات (اختياري)",
+      "notesPlaceholder": "أي طلبات خاصة أو ملاحظات...",
+      "estimatedTotal": "الإجمالي المقدر",
+      "createBookingRequest": "إنشاء طلب حجز",
+      "creating": "جاري الإنشاء...",
+      "bookingDetails": "تفاصيل الحجز",
+      "bookingNumber": "الحجز رقم #{id}",
+      "duration": "المدة:",
+      "quantityLabel": "الكمية:",
+      "units": "وحدة/وحدات",
+      "paymentAddress": "عنوان الدفع:",
+      "transactionHash": "رمز المعاملة (اختياري)",
+      "transactionHashPlaceholder": "رمز المعاملة (اختياري)",
+      "sentPayment": "لقد أرسلت الدفع",
+      "processing": "جاري المعالجة...",
+      "cancelBooking": "إلغاء الحجز",
+      "cancelConfirm": "هل أنت متأكد أنك تريد إلغاء هذا الحجز؟",
+      "chatWithAdmin": "الدردشة مع المسؤول",
+      "typeMessage": "اكتب رسالة...",
+      "newMessage": "رسالة جديدة من المسؤول",
+      "created": "تم الإنشاء:",
+      "paymentAddressLabel": "عنوان الدفع"
+    },
+    "wallet": {
+      "title": "محفظتي",
+      "walletText": "المحفظة",
+      "subtitle": "عرض وإدارة محافظ العملات المشفرة الخاصة بك",
+      "totalPortfolioValue": "إجمالي قيمة المحفظة",
+      "cryptocurrencies": "عملات مشفرة",
+      "refresh": "تحديث",
+      "balance": "الرصيد",
+      "pending": "قيد الانتظار",
+      "receiveAddress": "عنوان الاستلام",
+      "addReceiveAddress": "إضافة عنوان الاستلام",
+      "noWallets": "لم يتم العثور على محافظ",
+      "noWalletsDescription": "ستظهر محافظ العملات المشفرة الخاصة بك هنا",
+      "updateAddress": "تحديث عنوان {symbol}",
+      "addAddress": "إضافة عنوان {symbol}",
+      "addressDescription": "أدخل عنوان محفظة {name} لاستلام الأموال",
+      "walletAddress": "عنوان المحفظة",
+      "addressPlaceholder": "أدخل عنوان محفظة {symbol}",
+      "addressWarning": "تأكد من إدخال عنوان {symbol} الصحيح. لا يمكن استرداد الأموال المرسلة إلى عناوين خاطئة.",
+      "cancel": "إلغاء",
+      "saveAddress": "حفظ العنوان",
+      "saving": "جاري الحفظ...",
+      "failedToFetch": "فشل جلب المحافظ",
+      "failedToUpdate": "فشل تحديث عنوان المحفظة"
+    },
+    "profile": {
+      "title": "إعدادات الملف الشخصي",
+      "subtitle": "إدارة إعدادات حسابك وتفضيلات الأمان",
+      "profileInformation": "معلومات الملف الشخصي",
+      "security": "الأمان",
+      "verified": "مؤكد",
+      "verifyEmail": "تحقق من البريد الإلكتروني",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "emailAddress": "عنوان البريد الإلكتروني",
+      "emailCannotChange": "لا يمكن تغيير البريد الإلكتروني",
+      "phoneNumber": "رقم الهاتف",
+      "saveChanges": "حفظ التغييرات",
+      "saving": "جاري الحفظ...",
+      "profileUpdated": "تم تحديث الملف الشخصي بنجاح!",
+      "changePassword": "تغيير كلمة المرور",
+      "currentPassword": "كلمة المرور الحالية",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmNewPassword": "تأكيد كلمة المرور الجديدة",
+      "minimumCharacters": "الحد الأدنى 8 أحرف",
+      "changing": "جاري التغيير...",
+      "passwordChanged": "تم تغيير كلمة المرور بنجاح!",
+      "accountInformation": "معلومات الحساب",
+      "memberSince": "عضو منذ",
+      "lastLogin": "آخر تسجيل دخول",
+      "accountStatus": "حالة الحساب",
+      "active": "نشط",
+      "accountId": "معرف الحساب",
+      "firstNameRequired": "الاسم الأول مطلوب",
+      "lastNameRequired": "اسم العائلة مطلوب",
+      "currentPasswordRequired": "كلمة المرور الحالية مطلوبة",
+      "passwordMinLength": "يجب أن تكون كلمة المرور الجديدة 8 أحرف على الأقل",
+      "passwordsDoNotMatch": "كلمات المرور غير متطابقة",
+      "failedToUpdateProfile": "فشل تحديث الملف الشخصي. يرجى المحاولة مرة أخرى.",
+      "failedToChangePassword": "فشل تغيير كلمة المرور. يرجى المحاولة مرة أخرى."
+    },
+    "analytics": {
+      "title": "التحليلات {dashboard}",
+      "dashboardText": "لوحة التحكم",
+      "subtitle": "رؤى شاملة حول حجوزاتك وإيراداتك",
+      "viewBookings": "عرض الحجوزات",
+      "totalInvestment": "إجمالي الاستثمار",
+      "totalRevenue": "إجمالي الإيرادات",
+      "totalBookings": "إجمالي الحجوزات",
+      "activeBookings": "الحجوزات النشطة",
+      "revenueOverTime": "الإيرادات بمرور الوقت",
+      "averageMonthlyRevenue": "متوسط الإيرادات الشهرية",
+      "noRevenueData": "لا توجد بيانات إيرادات متاحة بعد",
+      "noRevenueDescription": "ستظهر الحجوزات المعتمدة هنا",
+      "bookingsByStatus": "الحجوزات حسب الحالة",
+      "total": "الإجمالي",
+      "noBookingsData": "لا توجد بيانات حجوزات متاحة",
+      "statusBreakdown": "تفصيل الحالة",
+      "revenueSummary": "ملخص الإيرادات",
+      "roi": "عائد الاستثمار",
+      "bestPerformingMonth": "أفضل شهر أداءً",
+      "keyInsights": "رؤى رئيسية",
+      "approvalRate": "معدل الموافقة",
+      "avgBookingValue": "متوسط قيمة الحجز",
+      "avgRevenuePerBooking": "متوسط الإيرادات لكل حجز",
+      "failedToLoad": "فشل تحميل التحليلات"
+    },
+    "sidebar": {
+      "dashboard": "لوحة التحكم",
+      "analytics": "التحليلات",
+      "bookings": "الحجوزات",
+      "wallet": "المحفظة",
+      "profile": "الملف الشخصي",
+      "signOut": "تسجيل الخروج",
+      "loading": "جاري التحميل..."
+    }
   }
 }
 

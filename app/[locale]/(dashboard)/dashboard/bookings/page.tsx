@@ -11,27 +11,16 @@ import {
   MiningMachine,
   BookingMessage,
 } from "@/app/lib/api";
+import { useTranslations } from "next-intl";
 
 // Disable static generation for dashboard pages
 export const dynamic = 'force-dynamic';
 
-const statusConfig: Record<BookingStatus, { label: string; color: string; bg: string }> = {
-  pending: { label: "Pending", color: "text-yellow-400", bg: "bg-yellow-400/10" },
-  awaiting_payment: { label: "Awaiting Payment", color: "text-blue-400", bg: "bg-blue-400/10" },
-  payment_sent: { label: "Payment Sent", color: "text-purple-400", bg: "bg-purple-400/10" },
-  approved: { label: "Approved", color: "text-green-400", bg: "bg-green-400/10" },
-  rejected: { label: "Rejected", color: "text-red-400", bg: "bg-red-400/10" },
-  cancelled: { label: "Cancelled", color: "text-gray-400", bg: "bg-gray-400/10" },
-};
-
-const durationLabels: Record<RentalDuration, string> = {
-  hour: "Per Hour",
-  day: "Per Day",
-  week: "Per Week",
-  month: "Per Month",
-};
-
 export default function UserBookingsPage() {
+  const t = useTranslations('dashboard.bookings');
+  const tStatus = useTranslations('dashboard.status');
+  const tCommon = useTranslations('common');
+  const tMachines = useTranslations('machines.details.bookingModal.durations');
   const { user } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [machines, setMachines] = useState<MiningMachine[]>([]);
@@ -42,6 +31,22 @@ export default function UserBookingsPage() {
   const [newMessage, setNewMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const statusConfig: Record<BookingStatus, { label: string; color: string; bg: string }> = {
+    pending: { label: tStatus('pending'), color: "text-yellow-400", bg: "bg-yellow-400/10" },
+    awaiting_payment: { label: tStatus('awaitingPayment'), color: "text-blue-400", bg: "bg-blue-400/10" },
+    payment_sent: { label: tStatus('paymentSent'), color: "text-purple-400", bg: "bg-purple-400/10" },
+    approved: { label: tStatus('approved'), color: "text-green-400", bg: "bg-green-400/10" },
+    rejected: { label: tStatus('rejected'), color: "text-red-400", bg: "bg-red-400/10" },
+    cancelled: { label: tStatus('cancelled'), color: "text-gray-400", bg: "bg-gray-400/10" },
+  };
+
+  const durationLabels: Record<RentalDuration, string> = {
+    hour: tMachines('hour'),
+    day: tMachines('day'),
+    week: tMachines('week'),
+    month: tMachines('month'),
+  };
 
   // Create booking form state
   const [createForm, setCreateForm] = useState({
@@ -135,7 +140,7 @@ export default function UserBookingsPage() {
   };
 
   const handleCancelBooking = async (bookingId: string) => {
-    if (!confirm("Are you sure you want to cancel this booking?")) return;
+    if (!confirm(t('cancelConfirm'))) return;
 
     try {
       await bookingsApi.cancelBooking(bookingId);
@@ -204,9 +209,9 @@ export default function UserBookingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">My Bookings</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
           <p className="text-foreground-muted mt-1">
-            Manage your mining machine rental requests
+            {t('subtitle')}
           </p>
         </div>
         <button
@@ -216,7 +221,7 @@ export default function UserBookingsPage() {
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          New Booking
+          {t('newBooking')}
         </button>
       </div>
 
@@ -228,15 +233,15 @@ export default function UserBookingsPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-foreground mb-2">No Bookings Yet</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-2">{t('noBookings')}</h3>
           <p className="text-foreground-muted mb-6">
-            Create your first booking request to start mining
+            {t('noBookingsDescription')}
           </p>
           <button
             onClick={() => setShowCreateModal(true)}
             className="btn-gold px-6 py-3 rounded-xl font-semibold"
           >
-            Create Booking
+            {t('createBooking')}
           </button>
         </div>
       ) : (
@@ -257,10 +262,10 @@ export default function UserBookingsPage() {
                   <div>
                     <h3 className="font-semibold text-foreground">{booking.machine?.name || "Machine"}</h3>
                     <p className="text-sm text-foreground-muted">
-                      {booking.quantity} unit(s) • {durationLabels[booking.rentalDuration]}
+                      {booking.quantity} {t('units')} • {durationLabels[booking.rentalDuration]}
                     </p>
                     <p className="text-xs text-foreground-muted mt-1">
-                      Created: {new Date(booking.createdAt).toLocaleDateString()}
+                      {t('created')} {new Date(booking.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
@@ -274,7 +279,7 @@ export default function UserBookingsPage() {
               {booking.messages && booking.messages.filter(m => m.isFromAdmin && !m.isRead).length > 0 && (
                 <div className="mt-4 flex items-center gap-2 text-gold">
                   <span className="w-2 h-2 rounded-full bg-gold animate-pulse" />
-                  <span className="text-sm">New message from admin</span>
+                  <span className="text-sm">{t('newMessage')}</span>
                 </div>
               )}
             </div>
@@ -288,7 +293,7 @@ export default function UserBookingsPage() {
           <div className="glass rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-border">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-foreground">Create New Booking</h2>
+                <h2 className="text-xl font-bold text-foreground">{t('createNewBooking')}</h2>
                 <button
                   onClick={() => setShowCreateModal(false)}
                   className="p-2 hover:bg-gold/10 rounded-lg transition-colors"
@@ -303,7 +308,7 @@ export default function UserBookingsPage() {
               {/* Machine Selection */}
               <div>
                 <label className="block text-sm font-medium text-foreground-muted mb-2">
-                  Select Machine <span className="text-gold">*</span>
+                  {t('selectMachine')} <span className="text-gold">*</span>
                 </label>
                 <select
                   value={createForm.machineId}
@@ -311,7 +316,7 @@ export default function UserBookingsPage() {
                   className="input-gold w-full px-4 py-3 rounded-xl bg-background-secondary/50"
                   required
                 >
-                  <option value="">Choose a machine...</option>
+                  <option value="">{t('chooseMachine')}</option>
                   {machines.filter(m => m.isActive).map((machine) => (
                     <option key={machine.id} value={machine.id}>
                       {machine.name} - {machine.miningCoin}
@@ -323,7 +328,7 @@ export default function UserBookingsPage() {
               {/* Duration Selection */}
               <div>
                 <label className="block text-sm font-medium text-foreground-muted mb-2">
-                  Rental Duration <span className="text-gold">*</span>
+                  {t('rentalDuration')} <span className="text-gold">*</span>
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   {(["hour", "day", "week", "month"] as RentalDuration[]).map((duration) => (
@@ -346,7 +351,7 @@ export default function UserBookingsPage() {
               {/* Quantity */}
               <div>
                 <label className="block text-sm font-medium text-foreground-muted mb-2">
-                  Quantity <span className="text-gold">*</span>
+                  {t('quantity')} <span className="text-gold">*</span>
                 </label>
                 <input
                   type="number"
@@ -361,14 +366,14 @@ export default function UserBookingsPage() {
               {/* Notes */}
               <div>
                 <label className="block text-sm font-medium text-foreground-muted mb-2">
-                  Notes (Optional)
+                  {t('notes')}
                 </label>
                 <textarea
                   value={createForm.userNotes}
                   onChange={(e) => setCreateForm({ ...createForm, userNotes: e.target.value })}
                   className="input-gold w-full px-4 py-3 rounded-xl bg-background-secondary/50 resize-none"
                   rows={3}
-                  placeholder="Any special requests or notes..."
+                  placeholder={t('notesPlaceholder')}
                 />
               </div>
 
@@ -376,7 +381,7 @@ export default function UserBookingsPage() {
               {selectedMachine && (
                 <div className="p-4 rounded-xl bg-gold/5 border border-gold/20">
                   <div className="flex justify-between items-center">
-                    <span className="text-foreground-muted">Estimated Total</span>
+                    <span className="text-foreground-muted">{t('estimatedTotal')}</span>
                     <span className="text-2xl font-bold text-gold">${calculatedPrice.toFixed(2)}</span>
                   </div>
                 </div>
@@ -387,7 +392,7 @@ export default function UserBookingsPage() {
                 disabled={isCreating || !createForm.machineId}
                 className="btn-gold w-full py-4 rounded-xl font-semibold disabled:opacity-50"
               >
-                {isCreating ? "Creating..." : "Create Booking Request"}
+                {isCreating ? t('creating') : t('createBookingRequest')}
               </button>
             </form>
           </div>
@@ -406,7 +411,7 @@ export default function UserBookingsPage() {
                     {selectedBooking.machine?.name}
                   </h2>
                   <p className="text-sm text-foreground-muted">
-                    Booking #{selectedBooking.id.slice(0, 8)}
+                    {t('bookingNumber', { id: selectedBooking.id.slice(0, 8) })}
                   </p>
                 </div>
                 <button
@@ -430,26 +435,26 @@ export default function UserBookingsPage() {
               </div>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-foreground-muted">Duration:</span>
+                  <span className="text-foreground-muted">{t('duration')}</span>
                   <span className="ml-2 text-foreground">{durationLabels[selectedBooking.rentalDuration]}</span>
                 </div>
                 <div>
-                  <span className="text-foreground-muted">Quantity:</span>
-                  <span className="ml-2 text-foreground">{selectedBooking.quantity} unit(s)</span>
+                  <span className="text-foreground-muted">{t('quantityLabel')}</span>
+                  <span className="ml-2 text-foreground">{selectedBooking.quantity} {t('units')}</span>
                 </div>
               </div>
 
               {/* Payment Address Display */}
               {selectedBooking.paymentAddress && selectedBooking.status === "awaiting_payment" && (
                 <div className="mt-4 p-4 rounded-xl bg-blue-500/10 border border-blue-500/30">
-                  <p className="text-sm text-blue-400 font-medium mb-2">Payment Address:</p>
+                  <p className="text-sm text-blue-400 font-medium mb-2">{t('paymentAddress')}</p>
                   <p className="text-foreground font-mono text-sm break-all bg-background-secondary/50 p-3 rounded-lg">
                     {selectedBooking.paymentAddress}
                   </p>
                   <div className="mt-4 space-y-3">
                     <input
                       type="text"
-                      placeholder="Transaction hash (optional)"
+                      placeholder={t('transactionHashPlaceholder')}
                       value={transactionHash}
                       onChange={(e) => setTransactionHash(e.target.value)}
                       className="input-gold w-full px-4 py-3 rounded-xl bg-background-secondary/50 text-sm"
@@ -459,7 +464,7 @@ export default function UserBookingsPage() {
                       disabled={isMarkingPayment}
                       className="btn-gold w-full py-3 rounded-xl font-semibold text-sm disabled:opacity-50"
                     >
-                      {isMarkingPayment ? "Processing..." : "I've Sent the Payment"}
+                      {isMarkingPayment ? t('processing') : t('sentPayment')}
                     </button>
                   </div>
                 </div>
@@ -471,7 +476,7 @@ export default function UserBookingsPage() {
                   onClick={() => handleCancelBooking(selectedBooking.id)}
                   className="mt-4 w-full py-3 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors text-sm font-medium"
                 >
-                  Cancel Booking
+                  {t('cancelBooking')}
                 </button>
               )}
             </div>
@@ -479,7 +484,7 @@ export default function UserBookingsPage() {
             {/* Chat Section */}
             <div className="flex-1 overflow-hidden flex flex-col">
               <div className="px-6 py-3 border-b border-border">
-                <h3 className="font-semibold text-foreground">Chat with Admin</h3>
+                <h3 className="font-semibold text-foreground">{t('chatWithAdmin')}</h3>
               </div>
               
               {/* Messages */}
@@ -502,7 +507,7 @@ export default function UserBookingsPage() {
                     >
                       {message.messageType === "payment_address" ? (
                         <div>
-                          <p className="text-xs text-blue-400 mb-1">Payment Address</p>
+                          <p className="text-xs text-blue-400 mb-1">{t('paymentAddressLabel')}</p>
                           <p className="font-mono text-sm break-all">{message.content}</p>
                         </div>
                       ) : (
@@ -524,7 +529,7 @@ export default function UserBookingsPage() {
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type a message..."
+                    placeholder={t('typeMessage')}
                     className="flex-1 input-gold px-4 py-3 rounded-xl bg-background-secondary/50"
                     disabled={isSending}
                   />
