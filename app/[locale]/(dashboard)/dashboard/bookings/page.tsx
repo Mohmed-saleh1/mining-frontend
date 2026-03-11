@@ -66,6 +66,18 @@ export default function UserBookingsPage() {
     loadMachines();
   }, []);
 
+  // Add effect to reload bookings when component becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadBookings();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
+
   useEffect(() => {
     if (selectedBooking && showDetailsModal) {
       scrollToBottom();
@@ -79,7 +91,15 @@ export default function UserBookingsPage() {
   const loadBookings = async () => {
     try {
       const response = await bookingsApi.getMyBookings();
-      setBookings(Array.isArray(response.data) ? response.data : []);
+      
+      // The API response is double-wrapped: response.data.data contains the bookings array
+      const actualData = (response.data as any)?.data || response.data;
+      
+      if (Array.isArray(actualData)) {
+        setBookings(actualData);
+      } else {
+        setBookings([]);
+      }
     } catch (error) {
       console.error("Failed to load bookings:", error);
       setBookings([]);
@@ -214,15 +234,26 @@ export default function UserBookingsPage() {
             {t('subtitle')}
           </p>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="btn-gold px-6 py-3 rounded-xl font-semibold flex items-center gap-2"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          {t('newBooking')}
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={loadBookings}
+            className="btn-outline px-4 py-3 rounded-xl font-semibold flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Refresh
+          </button>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="btn-gold px-6 py-3 rounded-xl font-semibold flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            {t('newBooking')}
+          </button>
+        </div>
       </div>
 
       {/* Bookings List */}

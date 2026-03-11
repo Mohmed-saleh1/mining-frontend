@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { miningMachinesPublicApi, subscriptionsApi, MiningMachine, PlanDuration, PaymentMethod, ApiError } from "@/app/lib/api";
+import { miningMachinesPublicApi, subscriptionsApi, bookingsApi, MiningMachine, PlanDuration, PaymentMethod, RentalDuration, ApiError } from "@/app/lib/api";
 import { useAuth } from "@/app/lib/auth-context";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
@@ -99,6 +99,44 @@ export default function MachineDetailsPage() {
     } catch (err) {
       console.error("Failed to create subscription:", err);
       alert("Failed to create subscription. Please try again.");
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
+
+  const handleContactAdmin = async () => {
+    if (!machine || !isAuthenticated) return;
+
+    setIsSubscribing(true);
+    setShowPaymentModal(false);
+
+    try {
+      // Map PlanDuration to RentalDuration (year -> month, others stay the same)
+      const rentalDuration: RentalDuration = selectedDuration === 'year' ? 'month' : selectedDuration as RentalDuration;
+      const actualDurationNumber = selectedDuration === 'year' ? durationNumber * 12 : durationNumber;
+      
+      // Create a booking request instead of subscription
+      const response = await bookingsApi.create({
+        machineId: machine.id,
+        rentalDuration,
+        quantity,
+        userNotes: `Machine subscription request: ${actualDurationNumber} ${rentalDuration}(s) for ${machine.name}. Total: $${totalPrice.toFixed(2)}`,
+      });
+      
+      // Show success message and redirect to bookings page
+      alert("Booking request created successfully! You will be redirected to chat with admin.");
+      
+      // Add a small delay to ensure the booking is saved before redirecting
+      setTimeout(() => {
+        router.push("/dashboard/bookings");
+      }, 1000);
+    } catch (err) {
+      console.error("Failed to create booking:", err);
+      if (err instanceof Error) {
+        alert(`Failed to contact admin: ${err.message}`);
+      } else {
+        alert("Failed to contact admin. Please try again.");
+      }
     } finally {
       setIsSubscribing(false);
     }
@@ -521,7 +559,7 @@ export default function MachineDetailsPage() {
                   disabled={true}
                   className="w-full p-4 rounded-xl border-2 border-border opacity-50 cursor-not-allowed flex items-center gap-4 group relative"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
                     <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
@@ -531,7 +569,7 @@ export default function MachineDetailsPage() {
                       Pay with Card
                     </p>
                     <p className="text-xs text-foreground-muted">
-                      Credit / Debit Card via PayTabs
+                      Credit / Debit Card
                     </p>
                   </div>
                   <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gold/20 text-gold">
@@ -539,14 +577,14 @@ export default function MachineDetailsPage() {
                   </span>
                 </button>
 
-                {/* Crypto Payment (Binance Pay) - Disabled */}
+                {/* Combined Crypto Payment - Disabled */}
                 <button
                   disabled={true}
                   className="w-full p-4 rounded-xl border-2 border-border opacity-50 cursor-not-allowed flex items-center gap-4 group relative"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-6 h-6 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2L6.5 7.5L8.5 9.5L12 6L15.5 9.5L17.5 7.5L12 2ZM2 12L4 10L6 12L4 14L2 12ZM6.5 16.5L12 22L17.5 16.5L15.5 14.5L12 18L8.5 14.5L6.5 16.5ZM18 12L20 10L22 12L20 14L18 12ZM12 10L10 12L12 14L14 12L12 10Z" />
+                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center shrink-0">
+                    <svg className="w-6 h-6 text-purple-400" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                     </svg>
                   </div>
                   <div className="flex-1 text-left">
@@ -554,7 +592,7 @@ export default function MachineDetailsPage() {
                       Pay with Crypto
                     </p>
                     <p className="text-xs text-foreground-muted">
-                      USDT / BTC / ETH via Binance Pay
+                      BTC / ETH / USDT / LTC via Binance & Cryptomus
                     </p>
                   </div>
                   <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gold/20 text-gold">
@@ -562,23 +600,23 @@ export default function MachineDetailsPage() {
                   </span>
                 </button>
 
-                {/* Crypto Payment (Cryptomus) */}
+                {/* Contact Admin Option */}
                 <button
-                  onClick={() => handlePayment('cryptomus')}
+                  onClick={handleContactAdmin}
                   disabled={isSubscribing}
                   className="w-full p-4 rounded-xl border-2 border-gold hover:border-gold/60 transition-all flex items-center gap-4 group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-6 h-6 text-purple-400" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center shrink-0">
+                    <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                   </div>
                   <div className="flex-1 text-left">
                     <p className="font-semibold text-foreground group-hover:text-gold transition-colors">
-                      Pay with Crypto
+                      Contact Admin
                     </p>
                     <p className="text-xs text-foreground-muted">
-                      BTC / ETH / USDT / LTC via Cryptomus
+                      Chat with admin to subscribe to this machine
                     </p>
                   </div>
                   <svg className="w-5 h-5 text-foreground-muted group-hover:text-gold transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">

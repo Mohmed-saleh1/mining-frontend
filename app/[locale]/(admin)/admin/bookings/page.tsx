@@ -18,7 +18,7 @@ export default function AdminBookingsPage() {
   const t = useTranslations('admin.bookings');
   const tStatus = useTranslations('dashboard.status');
   const tMachines = useTranslations('machines.details.bookingModal.durations');
-  useAuth(); // Ensure user is authenticated
+  const { user } = useAuth(); // Ensure user is authenticated
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [statistics, setStatistics] = useState<BookingStatistics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -79,10 +79,20 @@ export default function AdminBookingsPage() {
         limit: 10,
         status: statusFilter === "all" ? undefined : statusFilter,
       });
-      setBookings(Array.isArray(response.data?.data) ? response.data.data : []);
-      setTotalPages(response.data?.totalPages || 1);
+      // Admin API returns paginated response: response.data.data.data contains the bookings array
+      const paginatedData = (response.data as any)?.data;
+      const bookingsArray = paginatedData?.data;
+      
+      if (Array.isArray(bookingsArray)) {
+        setBookings(bookingsArray);
+      } else {
+        setBookings([]);
+      }
+      
+      setTotalPages(paginatedData?.totalPages || 1);
     } catch (error) {
-      console.error("Failed to load bookings:", error);
+      console.error("Failed to load admin bookings:", error);
+      console.error("Error details:", error);
       setBookings([]);
       setTotalPages(1);
     } finally {
@@ -203,11 +213,22 @@ export default function AdminBookingsPage() {
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
-        <p className="text-foreground-muted mt-1">
-          {t('subtitle')}
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+          <p className="text-foreground-muted mt-1">
+            {t('subtitle')}
+          </p>
+        </div>
+        <button
+          onClick={loadBookings}
+          className="btn-outline px-4 py-3 rounded-xl font-semibold flex items-center gap-2"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Refresh
+        </button>
       </div>
 
       {/* Statistics Cards */}

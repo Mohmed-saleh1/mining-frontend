@@ -95,7 +95,13 @@ async function request<T>(
 
   const data = await response.json();
 
+
   if (!response.ok) {
+    console.error(`API Error for ${endpoint}:`, {
+      status: response.status,
+      message: data.message,
+      data: data
+    });
     throw new ApiError(
       data.message || 'An error occurred',
       response.status,
