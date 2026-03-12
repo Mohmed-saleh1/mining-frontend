@@ -102,9 +102,8 @@ export default function AdminBookingsPage() {
 
   const loadStatistics = async () => {
     try {
-      const response = await bookingsAdminApi.getStatistics();
-      const statisticsData = response.data?.data || response.data;
-      setStatistics(statisticsData);
+      const statistics = await bookingsAdminApi.getStatistics();
+      setStatistics(statistics);
     } catch (error) {
       console.error("Failed to load statistics:", error);
     }
