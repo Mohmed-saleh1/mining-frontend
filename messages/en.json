@@ -45,6 +45,7 @@
     },
     "userMenu": {
       "adminDashboard": "Admin Dashboard",
+      "managerDashboard": "Manager Dashboard",
       "profile": "Profile",
       "signOut": "Sign Out",
       "verifyEmail": "Verify email",
@@ -1331,6 +1332,157 @@
         "errorOccurred": "An error occurred. Please try again."
       },
       "loading": "Loading..."
+    }
+  },
+  "manager": {
+    "sidebar": {
+      "loading": "Loading...",
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "reports": "Reports",
+      "managerPanel": "Manager Panel",
+      "manager": "Manager",
+      "site": "Site",
+      "logout": "Logout"
+    },
+    "dashboard": {
+      "title": "Manager Dashboard",
+      "subtitle": "Manage users and view system reports",
+      "stats": {
+        "totalUsers": "Total Users",
+        "activeUsers": "Active Users",
+        "admins": "Administrators",
+        "managers": "Managers"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "manageUsers": "Manage Users",
+        "manageUsersDesc": "View and manage all system users",
+        "createUser": "Create New User",
+        "createUserDesc": "Add a new user to the system",
+        "viewReports": "View Reports",
+        "viewReportsDesc": "Access system analytics and reports"
+      },
+      "recentUsers": {
+        "title": "Recent Users",
+        "viewAll": "View All"
+      }
+    },
+    "users": {
+      "title": "User Management",
+      "subtitle": "Create and manage system users",
+      "createUser": "Create User",
+      "searchPlaceholder": "Search users...",
+      "noUsers": "No users found",
+      "stats": {
+        "total": "Total",
+        "active": "Active",
+        "admins": "Admins",
+        "managers": "Managers"
+      },
+      "filters": {
+        "allRoles": "All Roles",
+        "admin": "Admin",
+        "manager": "Manager",
+        "user": "User"
+      },
+      "table": {
+        "user": "User",
+        "role": "Role",
+        "status": "Status",
+        "verified": "Verified",
+        "joined": "Joined",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "verified": {
+        "yes": "Verified",
+        "no": "Not Verified"
+      },
+      "actions": {
+        "view": "View"
+      },
+      "userDetails": {
+        "title": "User Details"
+      },
+      "details": {
+        "role": "Role",
+        "status": "Status",
+        "emailVerified": "Email Verified",
+        "joined": "Joined",
+        "phone": "Phone",
+        "lastLogin": "Last Login"
+      },
+      "createModal": {
+        "title": "Create New User",
+        "fields": {
+          "email": "Email Address",
+          "password": "Password",
+          "firstName": "First Name",
+          "lastName": "Last Name",
+          "phone": "Phone Number",
+          "role": "User Role"
+        },
+        "placeholders": {
+          "email": "Enter email address",
+          "password": "Enter password (min 6 characters)",
+          "firstName": "Enter first name",
+          "lastName": "Enter last name",
+          "phone": "Enter phone number (optional)"
+        },
+        "roles": {
+          "user": "Regular User",
+          "manager": "Manager",
+          "admin": "Administrator"
+        },
+        "roleDescription": "Select the role for this user. This determines their access level.",
+        "buttons": {
+          "cancel": "Cancel",
+          "create": "Create User",
+          "creating": "Creating..."
+        },
+        "errors": {
+          "createFailed": "Failed to create user. Please try again."
+        }
+      },
+      "errors": {
+        "failedToLoad": "Failed to load users"
+      }
+    },
+    "reports": {
+      "title": "System Reports",
+      "subtitle": "View analytics and system statistics",
+      "overview": {
+        "totalUsers": "Total Users",
+        "activeRate": "Active Rate",
+        "verificationRate": "Verification Rate",
+        "newThisMonth": "New This Month",
+        "active": "active",
+        "fromLastMonth": "from last month"
+      },
+      "roleDistribution": {
+        "title": "Role Distribution",
+        "users": "Regular Users",
+        "managers": "Managers",
+        "admins": "Administrators"
+      },
+      "statusSummary": {
+        "title": "Status Summary",
+        "active": "Active Users",
+        "inactive": "Inactive Users",
+        "verified": "Verified Users",
+        "unverified": "Unverified Users"
+      },
+      "quickStats": {
+        "title": "Quick Stats",
+        "totalAccounts": "Total Accounts",
+        "activeToday": "Active Today",
+        "newRegistrations": "New Registrations",
+        "pendingVerifications": "Pending Verifications"
+      }
     }
   }
 }

@@ -45,6 +45,7 @@
     },
     "userMenu": {
       "adminDashboard": "لوحة التحكم الإدارية",
+      "managerDashboard": "لوحة تحكم المدير",
       "profile": "الملف الشخصي",
       "signOut": "تسجيل الخروج",
       "verifyEmail": "تأكيد البريد الإلكتروني",
@@ -1330,6 +1331,157 @@
         "errorOccurred": "حدث خطأ. يرجى المحاولة مرة أخرى."
       },
       "loading": "جاري التحميل..."
+    }
+  },
+  "manager": {
+    "sidebar": {
+      "loading": "جاري التحميل...",
+      "dashboard": "لوحة التحكم",
+      "users": "المستخدمون",
+      "reports": "التقارير",
+      "managerPanel": "لوحة تحكم المدير",
+      "manager": "مدير",
+      "site": "الموقع",
+      "logout": "تسجيل الخروج"
+    },
+    "dashboard": {
+      "title": "لوحة تحكم المدير",
+      "subtitle": "إدارة المستخدمين وعرض تقارير النظام",
+      "stats": {
+        "totalUsers": "إجمالي المستخدمين",
+        "activeUsers": "المستخدمون النشطون",
+        "admins": "المديرون",
+        "managers": "المشرفون"
+      },
+      "quickActions": {
+        "title": "الإجراءات السريعة",
+        "manageUsers": "إدارة المستخدمين",
+        "manageUsersDesc": "عرض وإدارة جميع مستخدمي النظام",
+        "createUser": "إنشاء مستخدم جديد",
+        "createUserDesc": "إضافة مستخدم جديد إلى النظام",
+        "viewReports": "عرض التقارير",
+        "viewReportsDesc": "الوصول إلى تحليلات النظام والتقارير"
+      },
+      "recentUsers": {
+        "title": "المستخدمون الجدد",
+        "viewAll": "عرض الكل"
+      }
+    },
+    "users": {
+      "title": "إدارة المستخدمين",
+      "subtitle": "إنشاء وإدارة مستخدمي النظام",
+      "createUser": "إنشاء مستخدم",
+      "searchPlaceholder": "البحث عن المستخدمين...",
+      "noUsers": "لم يتم العثور على مستخدمين",
+      "stats": {
+        "total": "الإجمالي",
+        "active": "نشط",
+        "admins": "مديرون",
+        "managers": "مشرفون"
+      },
+      "filters": {
+        "allRoles": "جميع الأدوار",
+        "admin": "مدير",
+        "manager": "مشرف",
+        "user": "مستخدم"
+      },
+      "table": {
+        "user": "المستخدم",
+        "role": "الدور",
+        "status": "الحالة",
+        "verified": "مؤكد",
+        "joined": "تاريخ الانضمام",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "active": "نشط",
+        "inactive": "غير نشط"
+      },
+      "verified": {
+        "yes": "مؤكد",
+        "no": "غير مؤكد"
+      },
+      "actions": {
+        "view": "عرض"
+      },
+      "userDetails": {
+        "title": "تفاصيل المستخدم"
+      },
+      "details": {
+        "role": "الدور",
+        "status": "الحالة",
+        "emailVerified": "البريد الإلكتروني مؤكد",
+        "joined": "تاريخ الانضمام",
+        "phone": "الهاتف",
+        "lastLogin": "آخر تسجيل دخول"
+      },
+      "createModal": {
+        "title": "إنشاء مستخدم جديد",
+        "fields": {
+          "email": "عنوان البريد الإلكتروني",
+          "password": "كلمة المرور",
+          "firstName": "الاسم الأول",
+          "lastName": "اسم العائلة",
+          "phone": "رقم الهاتف",
+          "role": "دور المستخدم"
+        },
+        "placeholders": {
+          "email": "أدخل عنوان البريد الإلكتروني",
+          "password": "أدخل كلمة المرور (6 أحرف على الأقل)",
+          "firstName": "أدخل الاسم الأول",
+          "lastName": "أدخل اسم العائلة",
+          "phone": "أدخل رقم الهاتف (اختياري)"
+        },
+        "roles": {
+          "user": "مستخدم عادي",
+          "manager": "مشرف",
+          "admin": "مدير"
+        },
+        "roleDescription": "اختر دور هذا المستخدم. هذا يحدد مستوى الوصول الخاص به.",
+        "buttons": {
+          "cancel": "إلغاء",
+          "create": "إنشاء مستخدم",
+          "creating": "جاري الإنشاء..."
+        },
+        "errors": {
+          "createFailed": "فشل إنشاء المستخدم. يرجى المحاولة مرة أخرى."
+        }
+      },
+      "errors": {
+        "failedToLoad": "فشل تحميل المستخدمين"
+      }
+    },
+    "reports": {
+      "title": "تقارير النظام",
+      "subtitle": "عرض التحليلات وإحصائيات النظام",
+      "overview": {
+        "totalUsers": "إجمالي المستخدمين",
+        "activeRate": "معدل النشاط",
+        "verificationRate": "معدل التحقق",
+        "newThisMonth": "جديد هذا الشهر",
+        "active": "نشط",
+        "fromLastMonth": "من الشهر الماضي"
+      },
+      "roleDistribution": {
+        "title": "توزيع الأدوار",
+        "users": "المستخدمون العاديون",
+        "managers": "المشرفون",
+        "admins": "المديرون"
+      },
+      "statusSummary": {
+        "title": "ملخص الحالة",
+        "active": "المستخدمون النشطون",
+        "inactive": "المستخدمون غير النشطون",
+        "verified": "المستخدمون المؤكدون",
+        "unverified": "المستخدمون غير المؤكدين"
+      },
+      "quickStats": {
+        "title": "إحصائيات سريعة",
+        "totalAccounts": "إجمالي الحسابات",
+        "activeToday": "نشط اليوم",
+        "newRegistrations": "التسجيلات الجديدة",
+        "pendingVerifications": "التحققات المعلقة"
+      }
     }
   }
 }
