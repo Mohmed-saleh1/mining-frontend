@@ -141,7 +141,7 @@ export default function UserBookingsPage() {
   };
 
   const handleMarkPaymentSent = async () => {
-    if (!selectedBooking) return;
+    if (!selectedBooking || !selectedBooking.id) return;
 
     setIsMarkingPayment(true);
     try {
@@ -149,7 +149,8 @@ export default function UserBookingsPage() {
         selectedBooking.id,
         transactionHash || undefined
       );
-      setSelectedBooking(response.data);
+      const bookingData = response.data?.data || response.data;
+      setSelectedBooking(bookingData);
       await loadBookings();
       setTransactionHash("");
     } catch (error) {
@@ -173,13 +174,14 @@ export default function UserBookingsPage() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedBooking || !newMessage.trim()) return;
+    if (!selectedBooking || !selectedBooking.id || !newMessage.trim()) return;
 
     setIsSending(true);
     try {
       await bookingsApi.sendMessage(selectedBooking.id, newMessage.trim());
       const response = await bookingsApi.getMyBooking(selectedBooking.id);
-      setSelectedBooking(response.data);
+      const bookingData = response.data?.data || response.data;
+      setSelectedBooking(bookingData);
       setNewMessage("");
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -431,7 +433,7 @@ export default function UserBookingsPage() {
       )}
 
       {/* Booking Details Modal */}
-      {showDetailsModal && selectedBooking && (
+      {showDetailsModal && selectedBooking && selectedBooking.id && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="glass rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
             {/* Header */}
@@ -442,7 +444,7 @@ export default function UserBookingsPage() {
                     {selectedBooking.machine?.name}
                   </h2>
                   <p className="text-sm text-foreground-muted">
-                    {t('bookingNumber', { id: selectedBooking.id.slice(0, 8) })}
+                    {t('bookingNumber', { id: selectedBooking.id?.slice(0, 8) || 'N/A' })}
                   </p>
                 </div>
                 <button
@@ -459,19 +461,19 @@ export default function UserBookingsPage() {
             {/* Booking Info */}
             <div className="p-6 border-b border-border">
               <div className="flex items-center justify-between mb-4">
-                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusConfig[selectedBooking.status].bg} ${statusConfig[selectedBooking.status].color}`}>
-                  {statusConfig[selectedBooking.status].label}
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${selectedBooking.status ? statusConfig[selectedBooking.status]?.bg || 'bg-gray-500/20' : 'bg-gray-500/20'} ${selectedBooking.status ? statusConfig[selectedBooking.status]?.color || 'text-gray-500' : 'text-gray-500'}`}>
+                  {selectedBooking.status ? statusConfig[selectedBooking.status]?.label || 'Unknown' : 'Unknown'}
                 </span>
-                <span className="text-xl font-bold text-gold">${Number(selectedBooking.totalPrice).toFixed(2)}</span>
+                <span className="text-xl font-bold text-gold">${selectedBooking.totalPrice ? Number(selectedBooking.totalPrice).toFixed(2) : '0.00'}</span>
               </div>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-foreground-muted">{t('duration')}</span>
-                  <span className="ml-2 text-foreground">{durationLabels[selectedBooking.rentalDuration]}</span>
+                  <span className="ml-2 text-foreground">{selectedBooking.rentalDuration ? durationLabels[selectedBooking.rentalDuration] : 'N/A'}</span>
                 </div>
                 <div>
                   <span className="text-foreground-muted">{t('quantityLabel')}</span>
-                  <span className="ml-2 text-foreground">{selectedBooking.quantity} {t('units')}</span>
+                  <span className="ml-2 text-foreground">{selectedBooking.quantity ?? 'N/A'} {t('units')}</span>
                 </div>
               </div>
 

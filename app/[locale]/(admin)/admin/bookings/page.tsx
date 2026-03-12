@@ -103,7 +103,8 @@ export default function AdminBookingsPage() {
   const loadStatistics = async () => {
     try {
       const response = await bookingsAdminApi.getStatistics();
-      setStatistics(response.data);
+      const statisticsData = response.data?.data || response.data;
+      setStatistics(statisticsData);
     } catch (error) {
       console.error("Failed to load statistics:", error);
     }
@@ -112,17 +113,26 @@ export default function AdminBookingsPage() {
   const openBookingDetails = async (booking: Booking) => {
     try {
       const response = await bookingsAdminApi.getOne(booking.id);
-      setSelectedBooking(response.data);
-      setShowDetailsModal(true);
-      // Mark messages as read
-      await bookingsAdminApi.markMessagesRead(booking.id);
+      // Handle nested response structure from backend
+      const bookingData = response.data?.data || response.data;
+      
+      if (bookingData && bookingData.id) {
+        setSelectedBooking(bookingData);
+        setShowDetailsModal(true);
+        // Mark messages as read
+        await bookingsAdminApi.markMessagesRead(booking.id);
+      } else {
+        console.error("Invalid booking data received:", response);
+        alert("Failed to load booking details. Please try again.");
+      }
     } catch (error) {
       console.error("Failed to load booking details:", error);
+      alert("Failed to load booking details. Please try again.");
     }
   };
 
   const handleSendPaymentAddress = async () => {
-    if (!selectedBooking || !paymentAddress.trim()) return;
+    if (!selectedBooking || !selectedBooking.id || !paymentAddress.trim()) return;
 
     setIsSendingAddress(true);
     try {
@@ -130,7 +140,8 @@ export default function AdminBookingsPage() {
         selectedBooking.id,
         paymentAddress.trim()
       );
-      setSelectedBooking(response.data);
+      const bookingData = response.data?.data || response.data;
+      setSelectedBooking(bookingData);
       setPaymentAddress("");
       await loadBookings();
       await loadStatistics();
@@ -142,7 +153,7 @@ export default function AdminBookingsPage() {
   };
 
   const handleApprove = async () => {
-    if (!selectedBooking) return;
+    if (!selectedBooking || !selectedBooking.id) return;
 
     setIsApproving(true);
     try {
@@ -150,7 +161,8 @@ export default function AdminBookingsPage() {
         selectedBooking.id,
         adminNotes || undefined
       );
-      setSelectedBooking(response.data);
+      const bookingData = response.data?.data || response.data;
+      setSelectedBooking(bookingData);
       setAdminNotes("");
       await loadBookings();
       await loadStatistics();
@@ -162,7 +174,7 @@ export default function AdminBookingsPage() {
   };
 
   const handleReject = async () => {
-    if (!selectedBooking) return;
+    if (!selectedBooking || !selectedBooking.id) return;
     if (!confirm(t('details.rejectConfirm'))) return;
 
     setIsRejecting(true);
@@ -171,7 +183,8 @@ export default function AdminBookingsPage() {
         selectedBooking.id,
         adminNotes || undefined
       );
-      setSelectedBooking(response.data);
+      const bookingData = response.data?.data || response.data;
+      setSelectedBooking(bookingData);
       setAdminNotes("");
       await loadBookings();
       await loadStatistics();
@@ -184,13 +197,14 @@ export default function AdminBookingsPage() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedBooking || !newMessage.trim()) return;
+    if (!selectedBooking || !selectedBooking.id || !newMessage.trim()) return;
 
     setIsSending(true);
     try {
       await bookingsAdminApi.sendMessage(selectedBooking.id, newMessage.trim());
       const response = await bookingsAdminApi.getOne(selectedBooking.id);
-      setSelectedBooking(response.data);
+      const bookingData = response.data?.data || response.data;
+      setSelectedBooking(bookingData);
       setNewMessage("");
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -381,7 +395,7 @@ export default function AdminBookingsPage() {
       </div>
 
       {/* Booking Details Modal */}
-      {showDetailsModal && selectedBooking && (
+      {showDetailsModal && selectedBooking && selectedBooking.id && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="glass rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
             {/* Header */}
@@ -392,7 +406,7 @@ export default function AdminBookingsPage() {
                     {t('details.title')}
                   </h2>
                   <p className="text-sm text-foreground-muted">
-                    {t('details.bookingNumber', { id: selectedBooking.id.slice(0, 8) })}
+                    {t('details.bookingNumber', { id: selectedBooking.id?.slice(0, 8) || 'N/A' })}
                   </p>
                 </div>
                 <button
@@ -429,20 +443,20 @@ export default function AdminBookingsPage() {
               <div className="grid grid-cols-4 gap-4">
                 <div>
                   <p className="text-sm text-foreground-muted">{t('table.duration')}</p>
-                  <p className="font-medium text-foreground">{durationLabels[selectedBooking.rentalDuration]}</p>
+                  <p className="font-medium text-foreground">{selectedBooking.rentalDuration ? durationLabels[selectedBooking.rentalDuration] : 'N/A'}</p>
                 </div>
                 <div>
                   <p className="text-sm text-foreground-muted">{t('table.quantity')}</p>
-                  <p className="font-medium text-foreground">{selectedBooking.quantity}</p>
+                  <p className="font-medium text-foreground">{selectedBooking.quantity ?? 'N/A'}</p>
                 </div>
                 <div>
                   <p className="text-sm text-foreground-muted">{t('table.totalPrice')}</p>
-                  <p className="font-bold text-gold">${Number(selectedBooking.totalPrice).toFixed(2)}</p>
+                  <p className="font-bold text-gold">${selectedBooking.totalPrice ? Number(selectedBooking.totalPrice).toFixed(2) : '0.00'}</p>
                 </div>
                 <div>
                   <p className="text-sm text-foreground-muted">{t('table.status')}</p>
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig[selectedBooking.status].bg} ${statusConfig[selectedBooking.status].color}`}>
-                    {statusConfig[selectedBooking.status].label}
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${selectedBooking.status ? statusConfig[selectedBooking.status]?.bg || 'bg-gray-500/20' : 'bg-gray-500/20'} ${selectedBooking.status ? statusConfig[selectedBooking.status]?.color || 'text-gray-500' : 'text-gray-500'}`}>
+                    {selectedBooking.status ? statusConfig[selectedBooking.status]?.label || 'Unknown' : 'Unknown'}
                   </span>
                 </div>
               </div>

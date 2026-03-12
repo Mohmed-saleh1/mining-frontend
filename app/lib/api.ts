@@ -88,29 +88,56 @@ async function request<T>(
     (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
-
-  const data = await response.json();
-
-
-  if (!response.ok) {
-    console.error(`API Error for ${endpoint}:`, {
-      status: response.status,
-      message: data.message,
-      data: data
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers,
     });
+
+    let data;
+    try {
+      data = await response.json();
+    } catch (jsonError) {
+      console.error(`Failed to parse JSON response for ${endpoint}:`, jsonError);
+      throw new ApiError(
+        `Invalid response format from server`,
+        response.status,
+        'INVALID_RESPONSE',
+        'The server returned an invalid response format'
+      );
+    }
+
+    if (!response.ok) {
+      console.error(`API Error for ${endpoint}:`, {
+        status: response.status,
+        statusText: response.statusText,
+        message: data?.message,
+        errorCode: data?.errorCode,
+        errorDescription: data?.errorDescription,
+        data: data
+      });
+      throw new ApiError(
+        data?.message || `HTTP ${response.status}: ${response.statusText}`,
+        response.status,
+        data?.errorCode,
+        data?.errorDescription
+      );
+    }
+
+    return data;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    
+    console.error(`Network error for ${endpoint}:`, error);
     throw new ApiError(
-      data.message || 'An error occurred',
-      response.status,
-      data.errorCode,
-      data.errorDescription
+      'Network error - please check your connection',
+      0,
+      'NETWORK_ERROR',
+      error instanceof Error ? error.message : 'Unknown network error'
     );
   }
-
-  return data;
 }
 
 async function requestWithFile<T>(
