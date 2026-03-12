@@ -111,9 +111,7 @@ export default function AdminBookingsPage() {
 
   const openBookingDetails = async (booking: Booking) => {
     try {
-      const response = await bookingsAdminApi.getOne(booking.id);
-      // Handle nested response structure from backend
-      const bookingData = response.data?.data || response.data;
+      const bookingData = await bookingsAdminApi.getOne(booking.id);
       
       if (bookingData && bookingData.id) {
         setSelectedBooking(bookingData);
@@ -121,7 +119,7 @@ export default function AdminBookingsPage() {
         // Mark messages as read
         await bookingsAdminApi.markMessagesRead(booking.id);
       } else {
-        console.error("Invalid booking data received:", response);
+        console.error("Invalid booking data received:", bookingData);
         alert("Failed to load booking details. Please try again.");
       }
     } catch (error) {
@@ -135,11 +133,10 @@ export default function AdminBookingsPage() {
 
     setIsSendingAddress(true);
     try {
-      const response = await bookingsAdminApi.sendPaymentAddress(
+      const bookingData = await bookingsAdminApi.sendPaymentAddress(
         selectedBooking.id,
         paymentAddress.trim()
       );
-      const bookingData = response.data?.data || response.data;
       setSelectedBooking(bookingData);
       setPaymentAddress("");
       await loadBookings();
@@ -156,11 +153,10 @@ export default function AdminBookingsPage() {
 
     setIsApproving(true);
     try {
-      const response = await bookingsAdminApi.approve(
+      const bookingData = await bookingsAdminApi.approve(
         selectedBooking.id,
         adminNotes || undefined
       );
-      const bookingData = response.data?.data || response.data;
       setSelectedBooking(bookingData);
       setAdminNotes("");
       await loadBookings();
@@ -178,11 +174,10 @@ export default function AdminBookingsPage() {
 
     setIsRejecting(true);
     try {
-      const response = await bookingsAdminApi.reject(
+      const bookingData = await bookingsAdminApi.reject(
         selectedBooking.id,
         adminNotes || undefined
       );
-      const bookingData = response.data?.data || response.data;
       setSelectedBooking(bookingData);
       setAdminNotes("");
       await loadBookings();
@@ -201,8 +196,7 @@ export default function AdminBookingsPage() {
     setIsSending(true);
     try {
       await bookingsAdminApi.sendMessage(selectedBooking.id, newMessage.trim());
-      const response = await bookingsAdminApi.getOne(selectedBooking.id);
-      const bookingData = response.data?.data || response.data;
+      const bookingData = await bookingsAdminApi.getOne(selectedBooking.id);
       setSelectedBooking(bookingData);
       setNewMessage("");
     } catch (error) {

@@ -145,11 +145,10 @@ export default function UserBookingsPage() {
 
     setIsMarkingPayment(true);
     try {
-      const response = await bookingsApi.markPaymentSent(
+      const bookingData = await bookingsApi.markPaymentSent(
         selectedBooking.id,
         transactionHash || undefined
       );
-      const bookingData = response.data?.data || response.data;
       setSelectedBooking(bookingData);
       await loadBookings();
       setTransactionHash("");
@@ -179,8 +178,7 @@ export default function UserBookingsPage() {
     setIsSending(true);
     try {
       await bookingsApi.sendMessage(selectedBooking.id, newMessage.trim());
-      const response = await bookingsApi.getMyBooking(selectedBooking.id);
-      const bookingData = response.data?.data || response.data;
+      const bookingData = await bookingsApi.getMyBooking(selectedBooking.id);
       setSelectedBooking(bookingData);
       setNewMessage("");
     } catch (error) {
