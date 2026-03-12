@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { authApi, ApiError } from "@/app/lib/api";
@@ -8,10 +8,12 @@ import { authApi, ApiError } from "@/app/lib/api";
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const token = searchParams.get("token");
+  const token = searchParams.get("token")?.trim() ?? null;
   
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [error, setError] = useState<string | null>(null);
+  const hasVerifiedRef = useRef(false);
+  const requestStartedRef = useRef(false);
 
   useEffect(() => {
     const verifyEmail = async () => {
@@ -20,15 +22,18 @@ function VerifyEmailContent() {
         setError("Invalid verification link. No token provided.");
         return;
       }
+      if (requestStartedRef.current) return;
+      requestStartedRef.current = true;
 
       try {
         await authApi.verifyEmail(token);
+        hasVerifiedRef.current = true;
         setStatus("success");
-        // Redirect to dashboard after 3 seconds
         setTimeout(() => {
           router.push("/");
         }, 3000);
       } catch (err) {
+        if (hasVerifiedRef.current) return;
         setStatus("error");
         if (err instanceof ApiError) {
           setError(err.errorDescription || err.message);
