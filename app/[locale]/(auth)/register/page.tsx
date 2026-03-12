@@ -4,11 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth, ApiError } from "@/app/lib/auth-context";
+import dynamicImport from 'next/dynamic';
 
 // Disable static generation for auth pages
 export const dynamic = 'force-dynamic';
 
-export default function RegisterPage() {
+function RegisterPageContent() {
   const router = useRouter();
   const { register } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -328,3 +329,18 @@ export default function RegisterPage() {
     </div>
   );
 }
+
+// Create a dynamic import to ensure client-side only rendering
+const RegisterPage = dynamicImport(() => Promise.resolve(RegisterPageContent), {
+  ssr: false,
+  loading: () => (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading...</p>
+      </div>
+    </div>
+  ),
+});
+
+export default RegisterPage;

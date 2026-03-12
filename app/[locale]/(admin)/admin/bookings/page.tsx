@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/app/lib/auth-context";
 import { useTranslations } from "next-intl";
+import ClientOnly from "@/app/components/ClientOnly";
 
 // Disable static generation for admin pages
 export const dynamic = 'force-dynamic';
@@ -102,8 +103,8 @@ export default function AdminBookingsPage() {
 
   const loadStatistics = async () => {
     try {
-      const statistics = await bookingsAdminApi.getStatistics();
-      setStatistics(statistics);
+      const response = await bookingsAdminApi.getStatistics();
+      setStatistics(response.data);
     } catch (error) {
       console.error("Failed to load statistics:", error);
     }
@@ -111,7 +112,8 @@ export default function AdminBookingsPage() {
 
   const openBookingDetails = async (booking: Booking) => {
     try {
-      const bookingData = await bookingsAdminApi.getOne(booking.id);
+      const response = await bookingsAdminApi.getOne(booking.id);
+      const bookingData = response.data;
       
       if (bookingData && bookingData.id) {
         setSelectedBooking(bookingData);
@@ -119,7 +121,7 @@ export default function AdminBookingsPage() {
         // Mark messages as read
         await bookingsAdminApi.markMessagesRead(booking.id);
       } else {
-        console.error("Invalid booking data received:", bookingData);
+        console.error("Invalid booking data received:", response);
         alert("Failed to load booking details. Please try again.");
       }
     } catch (error) {
@@ -133,11 +135,11 @@ export default function AdminBookingsPage() {
 
     setIsSendingAddress(true);
     try {
-      const bookingData = await bookingsAdminApi.sendPaymentAddress(
+      const response = await bookingsAdminApi.sendPaymentAddress(
         selectedBooking.id,
         paymentAddress.trim()
       );
-      setSelectedBooking(bookingData);
+      setSelectedBooking(response.data);
       setPaymentAddress("");
       await loadBookings();
       await loadStatistics();
@@ -153,11 +155,11 @@ export default function AdminBookingsPage() {
 
     setIsApproving(true);
     try {
-      const bookingData = await bookingsAdminApi.approve(
+      const response = await bookingsAdminApi.approve(
         selectedBooking.id,
         adminNotes || undefined
       );
-      setSelectedBooking(bookingData);
+      setSelectedBooking(response.data);
       setAdminNotes("");
       await loadBookings();
       await loadStatistics();
@@ -174,11 +176,11 @@ export default function AdminBookingsPage() {
 
     setIsRejecting(true);
     try {
-      const bookingData = await bookingsAdminApi.reject(
+      const response = await bookingsAdminApi.reject(
         selectedBooking.id,
         adminNotes || undefined
       );
-      setSelectedBooking(bookingData);
+      setSelectedBooking(response.data);
       setAdminNotes("");
       await loadBookings();
       await loadStatistics();
@@ -196,8 +198,8 @@ export default function AdminBookingsPage() {
     setIsSending(true);
     try {
       await bookingsAdminApi.sendMessage(selectedBooking.id, newMessage.trim());
-      const bookingData = await bookingsAdminApi.getOne(selectedBooking.id);
-      setSelectedBooking(bookingData);
+      const response = await bookingsAdminApi.getOne(selectedBooking.id);
+      setSelectedBooking(response.data);
       setNewMessage("");
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -218,7 +220,17 @@ export default function AdminBookingsPage() {
     : [];
 
   return (
-    <div className="p-6 space-y-6">
+    <ClientOnly 
+      fallback={
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading...</p>
+          </div>
+        </div>
+      }
+    >
+      <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -588,7 +600,8 @@ export default function AdminBookingsPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </ClientOnly>
   );
 }
 

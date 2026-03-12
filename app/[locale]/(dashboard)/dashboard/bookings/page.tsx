@@ -145,11 +145,11 @@ export default function UserBookingsPage() {
 
     setIsMarkingPayment(true);
     try {
-      const bookingData = await bookingsApi.markPaymentSent(
+      const response = await bookingsApi.markPaymentSent(
         selectedBooking.id,
         transactionHash || undefined
       );
-      setSelectedBooking(bookingData);
+      setSelectedBooking(response.data);
       await loadBookings();
       setTransactionHash("");
     } catch (error) {
@@ -178,8 +178,8 @@ export default function UserBookingsPage() {
     setIsSending(true);
     try {
       await bookingsApi.sendMessage(selectedBooking.id, newMessage.trim());
-      const bookingData = await bookingsApi.getMyBooking(selectedBooking.id);
-      setSelectedBooking(bookingData);
+      const response = await bookingsApi.getMyBooking(selectedBooking.id);
+      setSelectedBooking(response.data);
       setNewMessage("");
     } catch (error) {
       console.error("Failed to send message:", error);

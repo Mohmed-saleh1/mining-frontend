@@ -7,6 +7,9 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/app/lib/auth-context";
 import { useTranslations } from "next-intl";
 
+// Disable static generation for admin pages
+export const dynamic = 'force-dynamic';
+
 export default function AdminLayout({
   children,
 }: {

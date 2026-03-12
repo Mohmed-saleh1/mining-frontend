@@ -6,6 +6,9 @@ import Link from "next/link";
 import { useAuth } from "@/app/lib/auth-context";
 import { useTranslations } from "next-intl";
 
+// Disable static generation for dashboard pages
+export const dynamic = 'force-dynamic';
+
 export default function DashboardLayout({
   children,
 }: {

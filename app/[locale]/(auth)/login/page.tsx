@@ -5,11 +5,12 @@ import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useAuth, ApiError } from "@/app/lib/auth-context";
+import dynamicImport from 'next/dynamic';
 
 // Disable static generation for auth pages
 export const dynamic = 'force-dynamic';
 
-export default function LoginPage() {
+function LoginPageContent() {
   const t = useTranslations('auth.login');
   const router = useRouter();
   const { login } = useAuth();
@@ -223,3 +224,18 @@ export default function LoginPage() {
     </div>
   );
 }
+
+// Create a dynamic import to ensure client-side only rendering
+const LoginPage = dynamicImport(() => Promise.resolve(LoginPageContent), {
+  ssr: false,
+  loading: () => (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading...</p>
+      </div>
+    </div>
+  ),
+});
+
+export default LoginPage;

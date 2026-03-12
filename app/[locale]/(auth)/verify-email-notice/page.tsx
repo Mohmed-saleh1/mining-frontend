@@ -4,11 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/app/lib/auth-context";
 import { authApi, ApiError } from "@/app/lib/api";
+import dynamicImport from 'next/dynamic';
 
 // Disable static generation for auth pages
 export const dynamic = 'force-dynamic';
 
-export default function VerifyEmailNoticePage() {
+function VerifyEmailNoticePageContent() {
   const { user } = useAuth();
   const [isResending, setIsResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
@@ -118,3 +119,18 @@ export default function VerifyEmailNoticePage() {
     </div>
   );
 }
+
+// Create a dynamic import to ensure client-side only rendering
+const VerifyEmailNoticePage = dynamicImport(() => Promise.resolve(VerifyEmailNoticePageContent), {
+  ssr: false,
+  loading: () => (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading...</p>
+      </div>
+    </div>
+  ),
+});
+
+export default VerifyEmailNoticePage;
