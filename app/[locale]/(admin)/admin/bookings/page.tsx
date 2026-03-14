@@ -4,9 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/app/lib/auth-context";
 import { useTranslations } from "next-intl";
 import ClientOnly from "@/app/components/ClientOnly";
-
-// Disable static generation for admin pages
-export const dynamic = 'force-dynamic';
 import {
   bookingsAdminApi,
   Booking,
@@ -14,6 +11,9 @@ import {
   RentalDuration,
   BookingStatistics,
 } from "@/app/lib/api";
+
+// Disable static generation for admin pages
+export const dynamic = 'force-dynamic';
 
 export default function AdminBookingsPage() {
   const t = useTranslations('admin.bookings');

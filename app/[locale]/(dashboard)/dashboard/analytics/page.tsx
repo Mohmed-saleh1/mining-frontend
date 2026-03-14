@@ -86,12 +86,42 @@ export default function AnalyticsPage() {
   // Calculate percentages for pie chart
   const bookingsByStatus = analytics?.bookingsByStatus || {};
   const revenueByMonth = analytics?.revenueByMonth || [];
-  const totalBookingsForPie = Object.values(bookingsByStatus).reduce((a, b) => a + b, 0);
+  const subscriptionsByStatus = analytics?.subscriptionMetrics?.subscriptionsByStatus || {};
+  
+  const totalBookingsForPie = Object.values(bookingsByStatus).reduce((a, b) => Number(a) + Number(b), 0);
   const bookingPercentages = Object.entries(bookingsByStatus).map(([status, count]) => ({
     status: status as BookingStatus,
-    count,
-    percentage: totalBookingsForPie > 0 ? (count / totalBookingsForPie) * 100 : 0,
+    count: Number(count),
+    percentage: totalBookingsForPie > 0 ? (Number(count) / totalBookingsForPie) * 100 : 0,
   })).filter(item => item.count > 0);
+
+  const totalSubscriptionsForPie = Object.values(subscriptionsByStatus).reduce((a, b) => Number(a) + Number(b), 0);
+  const subscriptionPercentages = Object.entries(subscriptionsByStatus).map(([status, count]) => ({
+    status,
+    count: Number(count),
+    percentage: totalSubscriptionsForPie > 0 ? (Number(count) / totalSubscriptionsForPie) * 100 : 0,
+  })).filter(item => item.count > 0);
+
+  const subscriptionStatusColors: Record<string, string> = {
+    pending: "bg-yellow-400",
+    active: "bg-green",
+    expired: "bg-red-400",
+    cancelled: "bg-gray-400",
+  };
+
+  const subscriptionStatusStrokeColors: Record<string, string> = {
+    pending: "#FBBF24",
+    active: "#10B981",
+    expired: "#F87171",
+    cancelled: "#9CA3AF",
+  };
+
+  const subscriptionStatusLabels: Record<string, string> = {
+    pending: "Pending",
+    active: "Active",
+    expired: "Expired",
+    cancelled: "Cancelled",
+  };
 
   // Calculate max revenue for chart scaling
   const maxRevenue = revenueByMonth.length > 0
@@ -344,7 +374,7 @@ export default function AnalyticsPage() {
                     <div
                       className={`h-2 rounded-full ${subscriptionStatusColors[status] || 'bg-gray-400'}`}
                       style={{
-                        width: `${totalSubscriptionsForPie > 0 ? (count / totalSubscriptionsForPie) * 100 : 0}%`,
+                        width: `${totalSubscriptionsForPie > 0 ? (Number(count) / totalSubscriptionsForPie) * 100 : 0}%`,
                       }}
                     />
                   </div>
