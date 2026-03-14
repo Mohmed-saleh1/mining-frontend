@@ -402,7 +402,7 @@ export interface CreateMiningMachineData {
   sortOrder?: number;
 }
 
-export interface UpdateMiningMachineData extends Partial<CreateMiningMachineData> {}
+export type UpdateMiningMachineData = Partial<CreateMiningMachineData>;
 
 // Public Mining Machines API (no auth required)
 export const miningMachinesPublicApi = {
@@ -740,6 +740,14 @@ export interface BookingAnalytics {
   activeBookings: number;
   bookingsByStatus: Record<BookingStatus, number>;
   revenueByMonth: Array<{ month: string; revenue: number }>;
+  subscriptionMetrics: {
+    totalSubscriptions: number;
+    activeSubscriptions: number;
+    totalSubscriptionValue: number;
+    monthlyEarnings: number;
+    subscriptionsByStatus: Record<string, number>;
+    avgDailyEarnings: number;
+  };
 }
 
 export interface BookingStatistics {

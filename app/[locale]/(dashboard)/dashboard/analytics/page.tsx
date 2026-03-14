@@ -130,7 +130,7 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Key Metrics Grid */}
+      {/* Key Metrics Grid - Subscription Focused */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="glass rounded-xl p-6 card-hover">
           <div className="flex items-center gap-4">
@@ -140,9 +140,9 @@ export default function AnalyticsPage() {
               </svg>
             </div>
             <div>
-              <p className="text-xs text-foreground-muted mb-1">{t('totalInvestment')}</p>
+              <p className="text-xs text-foreground-muted mb-1">Monthly Earnings</p>
               <p className="text-2xl font-bold text-foreground">
-                ${Number(analytics?.totalInvestment || 0).toFixed(2)}
+                ${Number(analytics?.subscriptionMetrics?.monthlyEarnings || 0).toFixed(2)}
               </p>
             </div>
           </div>
@@ -156,9 +156,9 @@ export default function AnalyticsPage() {
               </svg>
             </div>
             <div>
-              <p className="text-xs text-foreground-muted mb-1">{t('totalRevenue')}</p>
+              <p className="text-xs text-foreground-muted mb-1">Daily Earnings</p>
               <p className="text-2xl font-bold text-foreground">
-                ${Number(analytics?.totalRevenue || 0).toFixed(2)}
+                ${Number(analytics?.subscriptionMetrics?.avgDailyEarnings || 0).toFixed(2)}
               </p>
             </div>
           </div>
@@ -168,12 +168,12 @@ export default function AnalyticsPage() {
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-blue-400/10 flex items-center justify-center">
               <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
             </div>
             <div>
-              <p className="text-xs text-foreground-muted mb-1">{t('totalBookings')}</p>
-              <p className="text-2xl font-bold text-foreground">{analytics?.totalBookings || 0}</p>
+              <p className="text-xs text-foreground-muted mb-1">Active Subscriptions</p>
+              <p className="text-2xl font-bold text-foreground">{analytics?.subscriptionMetrics?.activeSubscriptions || 0}</p>
             </div>
           </div>
         </div>
@@ -182,12 +182,14 @@ export default function AnalyticsPage() {
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-purple-400/10 flex items-center justify-center">
               <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
             <div>
-              <p className="text-xs text-foreground-muted mb-1">{t('activeBookings')}</p>
-              <p className="text-2xl font-bold text-foreground">{analytics?.activeBookings || 0}</p>
+              <p className="text-xs text-foreground-muted mb-1">Total Investment</p>
+              <p className="text-2xl font-bold text-foreground">
+                ${Number(analytics?.subscriptionMetrics?.totalSubscriptionValue || 0).toFixed(2)}
+              </p>
             </div>
           </div>
         </div>
@@ -249,10 +251,10 @@ export default function AnalyticsPage() {
           )}
         </div>
 
-        {/* Bookings by Status - Pie Chart */}
+        {/* Subscriptions by Status - Pie Chart */}
         <div className="glass rounded-xl p-6">
-          <h2 className="text-lg font-bold text-foreground mb-6">{t('bookingsByStatus')}</h2>
-          {totalBookingsForPie > 0 ? (
+          <h2 className="text-lg font-bold text-foreground mb-6">Subscriptions by Status</h2>
+          {totalSubscriptionsForPie > 0 ? (
             <div className="space-y-6">
               {/* Pie Chart Visualization */}
               <div className="relative w-48 h-48 mx-auto">
@@ -262,7 +264,7 @@ export default function AnalyticsPage() {
                     const radius = 45;
                     const circumference = 2 * Math.PI * radius;
                     
-                    return bookingPercentages.map((item) => {
+                    return subscriptionPercentages.map((item) => {
                       const percentage = item.percentage / 100;
                       const strokeDasharray = circumference;
                       const strokeDashoffset = circumference - (percentage * circumference);
@@ -276,7 +278,7 @@ export default function AnalyticsPage() {
                           cy="50"
                           r={radius}
                           fill="none"
-                          stroke={statusColors[item.status]}
+                          stroke={subscriptionStatusStrokeColors[item.status] || '#6B7280'}
                           strokeWidth="10"
                           strokeDasharray={strokeDasharray}
                           strokeDashoffset={strokeDashoffset}
@@ -289,19 +291,19 @@ export default function AnalyticsPage() {
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-foreground">{totalBookingsForPie}</p>
-                    <p className="text-xs text-foreground-muted">{t('total')}</p>
+                    <p className="text-2xl font-bold text-foreground">{totalSubscriptionsForPie}</p>
+                    <p className="text-xs text-foreground-muted">Total</p>
                   </div>
                 </div>
               </div>
 
               {/* Legend */}
               <div className="space-y-2">
-                {bookingPercentages.map((item) => (
+                {subscriptionPercentages.map((item) => (
                   <div key={item.status} className="flex items-center justify-between p-2 rounded-lg hover:bg-background-secondary/50 transition-colors">
                     <div className="flex items-center gap-3">
-                      <div className={`w-4 h-4 rounded-full ${statusColors[item.status]}`} />
-                      <span className="text-sm text-foreground">{statusLabels[item.status]}</span>
+                      <div className={`w-4 h-4 rounded-full ${subscriptionStatusColors[item.status] || 'bg-gray-400'}`} />
+                      <span className="text-sm text-foreground">{subscriptionStatusLabels[item.status] || item.status}</span>
                     </div>
                     <div className="text-right">
                       <span className="text-sm font-semibold text-foreground">{item.count}</span>
@@ -316,9 +318,10 @@ export default function AnalyticsPage() {
           ) : (
             <div className="text-center py-12">
               <svg className="w-16 h-16 mx-auto mb-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
-              <p className="text-foreground-muted text-sm">{t('noBookingsData')}</p>
+              <p className="text-foreground-muted text-sm">No subscription data available</p>
+              <p className="text-foreground-muted text-xs mt-1">Start a subscription to see analytics</p>
             </div>
           )}
         </div>
@@ -326,22 +329,22 @@ export default function AnalyticsPage() {
 
       {/* Detailed Statistics */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Status Breakdown Table */}
+        {/* Subscription Status Breakdown */}
         <div className="glass rounded-xl p-6">
-          <h2 className="text-lg font-bold text-foreground mb-4">{t('statusBreakdown')}</h2>
+          <h2 className="text-lg font-bold text-foreground mb-4">Subscription Status Breakdown</h2>
           <div className="space-y-3">
-            {Object.entries(bookingsByStatus).map(([status, count]) => (
+            {Object.entries(subscriptionsByStatus).map(([status, count]) => (
               <div key={status} className="flex items-center justify-between p-3 rounded-lg bg-background-secondary/30">
                 <div className="flex items-center gap-3">
-                  <div className={`w-3 h-3 rounded-full ${statusColors[status as BookingStatus]}`} />
-                  <span className="text-sm text-foreground">{statusLabels[status as BookingStatus]}</span>
+                  <div className={`w-3 h-3 rounded-full ${subscriptionStatusColors[status] || 'bg-gray-400'}`} />
+                  <span className="text-sm text-foreground">{subscriptionStatusLabels[status] || status}</span>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="w-24 bg-background-secondary rounded-full h-2">
                     <div
-                      className={`h-2 rounded-full ${statusColors[status as BookingStatus]}`}
+                      className={`h-2 rounded-full ${subscriptionStatusColors[status] || 'bg-gray-400'}`}
                       style={{
-                        width: `${totalBookingsForPie > 0 ? (count / totalBookingsForPie) * 100 : 0}%`,
+                        width: `${totalSubscriptionsForPie > 0 ? (count / totalSubscriptionsForPie) * 100 : 0}%`,
                       }}
                     />
                   </div>
@@ -352,41 +355,45 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        {/* Revenue Summary */}
+        {/* Earnings Summary */}
         <div className="glass rounded-xl p-6">
-          <h2 className="text-lg font-bold text-foreground mb-4">{t('revenueSummary')}</h2>
+          <h2 className="text-lg font-bold text-foreground mb-4">Earnings Summary</h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 rounded-lg bg-background-secondary/30">
-              <span className="text-sm text-foreground-muted">{t('totalInvestment')}</span>
+              <span className="text-sm text-foreground-muted">Total Investment</span>
               <span className="text-lg font-bold text-foreground">
-                ${Number(analytics?.totalInvestment || 0).toFixed(2)}
+                ${Number(analytics?.subscriptionMetrics?.totalSubscriptionValue || 0).toFixed(2)}
               </span>
             </div>
             <div className="flex items-center justify-between p-4 rounded-lg bg-background-secondary/30">
-              <span className="text-sm text-foreground-muted">{t('totalRevenue')}</span>
+              <span className="text-sm text-foreground-muted">Monthly Earnings</span>
               <span className="text-lg font-bold text-green">
-                ${Number(analytics?.totalRevenue || 0).toFixed(2)}
+                ${Number(analytics?.subscriptionMetrics?.monthlyEarnings || 0).toFixed(2)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between p-4 rounded-lg bg-background-secondary/30">
+              <span className="text-sm text-foreground-muted">Daily Earnings</span>
+              <span className="text-lg font-bold text-gold">
+                ${Number(analytics?.subscriptionMetrics?.avgDailyEarnings || 0).toFixed(2)}
               </span>
             </div>
             <div className="flex items-center justify-between p-4 rounded-lg bg-gold/10 border border-gold/20">
-              <span className="text-sm font-medium text-foreground">{t('roi')}</span>
+              <span className="text-sm font-medium text-foreground">Monthly ROI</span>
               <span className="text-lg font-bold text-gold">
-                {(analytics?.totalInvestment || 0) > 0
-                  ? (((analytics?.totalRevenue || 0) / (analytics?.totalInvestment || 1)) * 100).toFixed(1)
+                {(analytics?.subscriptionMetrics?.totalSubscriptionValue || 0) > 0
+                  ? (((analytics?.subscriptionMetrics?.monthlyEarnings || 0) / (analytics?.subscriptionMetrics?.totalSubscriptionValue || 1)) * 100).toFixed(1)
                   : '0.0'}%
               </span>
             </div>
-            {revenueByMonth.length > 0 && (
+            {(analytics?.subscriptionMetrics?.activeSubscriptions || 0) > 0 && (
               <div className="pt-4 border-t border-border">
-                <p className="text-xs text-foreground-muted mb-2">{t('bestPerformingMonth')}</p>
+                <p className="text-xs text-foreground-muted mb-2">Active Mining Power</p>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-foreground">
-                    {revenueByMonth.reduce((max, item) => 
-                      item.revenue > max.revenue ? item : max
-                    ).month}
+                    {analytics?.subscriptionMetrics?.activeSubscriptions} Active Subscription{(analytics?.subscriptionMetrics?.activeSubscriptions || 0) !== 1 ? 's' : ''}
                   </span>
                   <span className="text-sm font-semibold text-gold">
-                    ${Math.max(...revenueByMonth.map(r => r.revenue)).toFixed(2)}
+                    Earning ${Number(analytics?.subscriptionMetrics?.avgDailyEarnings || 0).toFixed(2)}/day
                   </span>
                 </div>
               </div>
@@ -395,36 +402,60 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Additional Insights */}
-      {(analytics?.totalBookings || 0) > 0 && (
+      {/* Key Mining Insights */}
+      {(analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0 && (
         <div className="glass rounded-xl p-6">
-          <h2 className="text-lg font-bold text-foreground mb-4">{t('keyInsights')}</h2>
+          <h2 className="text-lg font-bold text-foreground mb-4">Key Mining Insights</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 rounded-lg bg-background-secondary/30">
-              <p className="text-xs text-foreground-muted mb-1">{t('approvalRate')}</p>
+              <p className="text-xs text-foreground-muted mb-1">Active Rate</p>
               <p className="text-2xl font-bold text-foreground">
-                {(analytics?.totalBookings || 0) > 0
-                  ? (((analytics?.activeBookings || 0) / (analytics?.totalBookings || 1)) * 100).toFixed(1)
+                {(analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0
+                  ? (((analytics?.subscriptionMetrics?.activeSubscriptions || 0) / (analytics?.subscriptionMetrics?.totalSubscriptions || 1)) * 100).toFixed(1)
                   : '0.0'}%
               </p>
             </div>
             <div className="p-4 rounded-lg bg-background-secondary/30">
-              <p className="text-xs text-foreground-muted mb-1">{t('avgBookingValue')}</p>
+              <p className="text-xs text-foreground-muted mb-1">Avg Investment</p>
               <p className="text-2xl font-bold text-foreground">
-                ${(analytics?.totalBookings || 0) > 0
-                  ? ((analytics?.totalInvestment || 0) / (analytics?.totalBookings || 1)).toFixed(2)
+                ${(analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0
+                  ? ((analytics?.subscriptionMetrics?.totalSubscriptionValue || 0) / (analytics?.subscriptionMetrics?.totalSubscriptions || 1)).toFixed(2)
                   : '0.00'}
               </p>
             </div>
             <div className="p-4 rounded-lg bg-background-secondary/30">
-              <p className="text-xs text-foreground-muted mb-1">{t('avgRevenuePerBooking')}</p>
+              <p className="text-xs text-foreground-muted mb-1">Payback Period</p>
               <p className="text-2xl font-bold text-foreground">
-                ${(analytics?.activeBookings || 0) > 0
-                  ? ((analytics?.totalRevenue || 0) / (analytics?.activeBookings || 1)).toFixed(2)
-                  : '0.00'}
+                {(analytics?.subscriptionMetrics?.avgDailyEarnings || 0) > 0 && (analytics?.subscriptionMetrics?.totalSubscriptionValue || 0) > 0
+                  ? Math.ceil((analytics?.subscriptionMetrics?.totalSubscriptionValue || 0) / (analytics?.subscriptionMetrics?.avgDailyEarnings || 1))
+                  : '∞'} days
               </p>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Getting Started Section for Users with No Subscriptions */}
+      {(analytics?.subscriptionMetrics?.totalSubscriptions || 0) === 0 && (
+        <div className="glass rounded-xl p-8 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gold/10 flex items-center justify-center">
+            <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-foreground mb-2">Start Your Mining Journey</h3>
+          <p className="text-foreground-muted mb-6 max-w-md mx-auto">
+            You don't have any active mining subscriptions yet. Start mining cryptocurrency to see real earnings data and analytics.
+          </p>
+          <Link
+            href="/dashboard/machines"
+            className="btn-primary px-6 py-3 rounded-lg font-medium inline-flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            Browse Mining Machines
+          </Link>
         </div>
       )}
     </div>
