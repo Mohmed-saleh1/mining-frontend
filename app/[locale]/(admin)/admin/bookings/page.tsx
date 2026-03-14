@@ -110,12 +110,21 @@ export default function AdminBookingsPage() {
     }
   };
 
+  const unwrapBooking = (response: { data: unknown }): Booking | null => {
+    const raw = response.data as Booking | { data?: Booking };
+    const booking =
+      raw && typeof raw === 'object' && 'data' in raw && raw.data && typeof raw.data === 'object' && 'id' in raw.data
+        ? (raw.data as Booking)
+        : (raw as Booking);
+    return booking?.id ? booking : null;
+  };
+
   const openBookingDetails = async (booking: Booking) => {
     try {
       const response = await bookingsAdminApi.getOne(booking.id);
-      const bookingData = response.data;
-      
-      if (bookingData && bookingData.id) {
+      const bookingData = unwrapBooking(response);
+
+      if (bookingData) {
         setSelectedBooking(bookingData);
         setShowDetailsModal(true);
         // Mark messages as read
@@ -139,7 +148,8 @@ export default function AdminBookingsPage() {
         selectedBooking.id,
         paymentAddress.trim()
       );
-      setSelectedBooking(response.data);
+      const updated = unwrapBooking(response);
+      if (updated) setSelectedBooking(updated);
       setPaymentAddress("");
       await loadBookings();
       await loadStatistics();
@@ -159,7 +169,8 @@ export default function AdminBookingsPage() {
         selectedBooking.id,
         adminNotes || undefined
       );
-      setSelectedBooking(response.data);
+      const updated = unwrapBooking(response);
+      if (updated) setSelectedBooking(updated);
       setAdminNotes("");
       await loadBookings();
       await loadStatistics();
@@ -180,7 +191,8 @@ export default function AdminBookingsPage() {
         selectedBooking.id,
         adminNotes || undefined
       );
-      setSelectedBooking(response.data);
+      const updated = unwrapBooking(response);
+      if (updated) setSelectedBooking(updated);
       setAdminNotes("");
       await loadBookings();
       await loadStatistics();
@@ -199,7 +211,8 @@ export default function AdminBookingsPage() {
     try {
       await bookingsAdminApi.sendMessage(selectedBooking.id, newMessage.trim());
       const response = await bookingsAdminApi.getOne(selectedBooking.id);
-      setSelectedBooking(response.data);
+      const updated = unwrapBooking(response);
+      if (updated) setSelectedBooking(updated);
       setNewMessage("");
     } catch (error) {
       console.error("Failed to send message:", error);
