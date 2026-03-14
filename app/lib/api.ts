@@ -95,6 +95,22 @@ async function request<T>(
     });
 
     let data;
+    const contentType = response.headers.get('content-type');
+    const hasJsonBody = contentType?.includes('application/json');
+    const isEmpty = response.status === 204 || response.status === 205;
+
+    if (isEmpty || !hasJsonBody) {
+      if (!response.ok) {
+        throw new ApiError(
+          response.statusText || `HTTP ${response.status}`,
+          response.status,
+          'HTTP_ERROR',
+          undefined
+        );
+      }
+      return { success: true, message: '', data: undefined, timestamp: new Date().toISOString() } as ApiResponse<T>;
+    }
+
     try {
       data = await response.json();
     } catch (jsonError) {
