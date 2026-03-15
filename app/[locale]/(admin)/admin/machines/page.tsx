@@ -41,6 +41,7 @@ const initialFormData: FormData = {
   isActive: true,
   isFeatured: false,
   sortOrder: 0,
+  withdrawalFrequency: "monthly" as const,
 };
 
 export default function MachinesPage() {
@@ -113,6 +114,7 @@ export default function MachinesPage() {
           isActive: machine.isActive,
           isFeatured: machine.isFeatured,
           sortOrder: machine.sortOrder,
+          withdrawalFrequency: machine.withdrawalFrequency || "monthly",
         });
         setImageFile(null);
         setImagePreview(machine.image || null);
@@ -641,6 +643,29 @@ export default function MachinesPage() {
                     />
                     <p className="text-xs text-foreground-muted mt-1">
                       {t('form.dailyRevenueNote')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Withdrawal Frequency */}
+              <div>
+                <h3 className="text-sm font-semibold text-gold mb-4">{t('form.withdrawal')}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.withdrawalFrequency')}</label>
+                    <select
+                      name="withdrawalFrequency"
+                      value={formData.withdrawalFrequency || "monthly"}
+                      onChange={handleInputChange}
+                      className="w-full input-gold px-4 py-3 rounded-xl text-sm"
+                    >
+                      <option value="daily">{t('form.withdrawalDaily')}</option>
+                      <option value="weekly">{t('form.withdrawalWeekly')}</option>
+                      <option value="monthly">{t('form.withdrawalMonthly')}</option>
+                    </select>
+                    <p className="text-xs text-foreground-muted mt-1">
+                      {t('form.withdrawalNote')}
                     </p>
                   </div>
                 </div>

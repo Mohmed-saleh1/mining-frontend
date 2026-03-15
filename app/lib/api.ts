@@ -371,6 +371,7 @@ export interface MiningMachine {
   isActive: boolean;
   isFeatured: boolean;
   sortOrder: number;
+  withdrawalFrequency?: 'daily' | 'weekly' | 'monthly';
   createdAt: string;
   updatedAt: string;
 }
@@ -400,6 +401,7 @@ export interface CreateMiningMachineData {
   isActive?: boolean;
   isFeatured?: boolean;
   sortOrder?: number;
+  withdrawalFrequency?: 'daily' | 'weekly' | 'monthly';
 }
 
 export type UpdateMiningMachineData = Partial<CreateMiningMachineData>;
