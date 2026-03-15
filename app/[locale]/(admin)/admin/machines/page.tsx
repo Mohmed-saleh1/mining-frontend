@@ -103,8 +103,6 @@ export default function MachinesPage() {
           algorithm: machine.algorithm || "",
           miningCoin: machine.miningCoin || "",
           efficiency: machine.efficiency || 0,
-          pricePerDay: machine.pricePerDay,
-          pricePerWeek: machine.pricePerWeek,
           pricePerMonth: machine.pricePerMonth,
           profitPerHour: machine.profitPerHour,
           profitPerDay: machine.profitPerDay,
@@ -166,12 +164,27 @@ export default function MachinesPage() {
     setError(null);
     setIsSaving(true);
 
+    // Derive daily and weekly rental from monthly (30 days/month, 4.33 weeks/month)
+    const pricePerMonth = formData.pricePerMonth || 0;
+    const pricePerDay = pricePerMonth / 30;
+    const pricePerWeek = pricePerMonth / 4.33;
+    // Derive profitPerHour, profitPerWeek, profitPerMonth from daily revenue
+    const profitPerDayVal = formData.profitPerDay || 0;
+    const dataToSend = {
+      ...formData,
+      pricePerDay,
+      pricePerWeek,
+      profitPerHour: profitPerDayVal / 24,
+      profitPerWeek: profitPerDayVal * 7,
+      profitPerMonth: profitPerDayVal * 30,
+    };
+
     try {
       if (editingMachine) {
-        await miningMachinesApi.update(editingMachine.id, formData as UpdateMiningMachineData, imageFile || undefined);
+        await miningMachinesApi.update(editingMachine.id, dataToSend as UpdateMiningMachineData, imageFile || undefined);
         setSuccess(t('success.machineUpdated'));
       } else {
-        await miningMachinesApi.create(formData, imageFile || undefined);
+        await miningMachinesApi.create(dataToSend as CreateMiningMachineData, imageFile || undefined);
         setSuccess(t('success.machineCreated'));
       }
       
@@ -286,8 +299,8 @@ export default function MachinesPage() {
               <tr className="border-b border-border">
                 <th className="text-left px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">{t('table.name')}</th>
                 <th className="text-left px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">Specs</th>
-                <th className="text-left px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">{t('table.pricePerDay')}</th>
-                <th className="text-left px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">Profit/Day</th>
+                <th className="text-left px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">{t('table.rentalMonthly')}</th>
+                <th className="text-left px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">{t('table.revenueGross')}</th>
                 <th className="text-center px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">{t('table.status')}</th>
                 <th className="text-right px-6 py-4 text-xs font-semibold text-foreground-muted uppercase tracking-wider">{t('table.actions')}</th>
               </tr>
@@ -340,11 +353,13 @@ export default function MachinesPage() {
                       <p className="text-xs text-foreground-muted">{machine.powerConsumption}W • {machine.algorithm}</p>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="text-sm text-foreground">${machine.pricePerDay}/day</p>
-                      <p className="text-xs text-foreground-muted">${machine.pricePerMonth}/month</p>
+                      <p className="text-sm text-foreground font-medium">${Math.round(Number(machine.pricePerMonth))}/{t('suffixMo')}</p>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="text-sm text-green font-medium">${machine.profitPerDay}</p>
+                      <p className="text-sm text-green font-medium">
+                        ${Math.round(Number(machine.profitPerDay) + (Number(machine.pricePerMonth) || 0) / 30)}/{t('suffixDay')}
+                      </p>
+                      <p className="text-xs text-foreground-muted">Rev + rental</p>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center gap-2">
@@ -584,34 +599,10 @@ export default function MachinesPage() {
                 </div>
               </div>
 
-              {/* Pricing */}
+              {/* Pricing - Monthly rental only (daily/weekly derived automatically) */}
               <div>
                 <h3 className="text-sm font-semibold text-gold mb-4">{t('form.pricing')}</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm text-foreground-muted mb-2">{t('form.pricePerDay')} <span className="text-gold">*</span></label>
-                    <input
-                      type="number"
-                      name="pricePerDay"
-                      value={formData.pricePerDay}
-                      onChange={handleInputChange}
-                      required
-                      step="0.01"
-                      className="w-full input-gold px-4 py-3 rounded-xl text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-foreground-muted mb-2">{t('form.pricePerWeek')} <span className="text-gold">*</span></label>
-                    <input
-                      type="number"
-                      name="pricePerWeek"
-                      value={formData.pricePerWeek}
-                      onChange={handleInputChange}
-                      required
-                      step="0.01"
-                      className="w-full input-gold px-4 py-3 rounded-xl text-sm"
-                    />
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm text-foreground-muted mb-2">{t('form.pricePerMonth')} <span className="text-gold">*</span></label>
                     <input
@@ -621,63 +612,36 @@ export default function MachinesPage() {
                       onChange={handleInputChange}
                       required
                       step="0.01"
+                      min="0"
                       className="w-full input-gold px-4 py-3 rounded-xl text-sm"
                     />
+                    <p className="text-xs text-foreground-muted mt-1">
+                      Daily and weekly rental rates are calculated automatically from monthly price.
+                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Profit */}
+              {/* Daily Revenue - displayed value to user = daily revenue + (rental/30) */}
               <div>
-                <h3 className="text-sm font-semibold text-gold mb-4">{t('form.profitability')}</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <h3 className="text-sm font-semibold text-gold mb-4">{t('form.revenue')}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-foreground-muted mb-2">{t('form.profitPerHour')} <span className="text-gold">*</span></label>
-                    <input
-                      type="number"
-                      name="profitPerHour"
-                      value={formData.profitPerHour}
-                      onChange={handleInputChange}
-                      required
-                      step="0.0001"
-                      className="w-full input-gold px-4 py-3 rounded-xl text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-foreground-muted mb-2">{t('form.profitPerDay')} <span className="text-gold">*</span></label>
+                    <label className="block text-sm text-foreground-muted mb-2">{t('form.dailyRevenue')} <span className="text-gold">*</span></label>
                     <input
                       type="number"
                       name="profitPerDay"
                       value={formData.profitPerDay}
                       onChange={handleInputChange}
                       required
-                      step="0.0001"
+                      step="0.01"
+                      min="0"
                       className="w-full input-gold px-4 py-3 rounded-xl text-sm"
+                      placeholder="10"
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-foreground-muted mb-2">{t('form.profitPerWeek')} <span className="text-gold">*</span></label>
-                    <input
-                      type="number"
-                      name="profitPerWeek"
-                      value={formData.profitPerWeek}
-                      onChange={handleInputChange}
-                      required
-                      step="0.0001"
-                      className="w-full input-gold px-4 py-3 rounded-xl text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-foreground-muted mb-2">{t('form.profitPerMonth')} <span className="text-gold">*</span></label>
-                    <input
-                      type="number"
-                      name="profitPerMonth"
-                      value={formData.profitPerMonth}
-                      onChange={handleInputChange}
-                      required
-                      step="0.0001"
-                      className="w-full input-gold px-4 py-3 rounded-xl text-sm"
-                    />
+                    <p className="text-xs text-foreground-muted mt-1">
+                      {t('form.dailyRevenueNote')}
+                    </p>
                   </div>
                 </div>
               </div>

@@ -361,7 +361,7 @@ export default function AdminBookingsPage() {
                       </p>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="font-bold text-gold">${Number(booking.totalPrice).toFixed(2)}</p>
+                      <p className="font-bold text-gold">${Math.round(Number(booking.totalPrice))}</p>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig[booking.status].bg} ${statusConfig[booking.status].color}`}>
@@ -469,7 +469,7 @@ export default function AdminBookingsPage() {
                 </div>
                 <div>
                   <p className="text-sm text-foreground-muted">{t('table.totalPrice')}</p>
-                  <p className="font-bold text-gold">${selectedBooking.totalPrice ? Number(selectedBooking.totalPrice).toFixed(2) : '0.00'}</p>
+                  <p className="font-bold text-gold">${selectedBooking.totalPrice ? Math.round(Number(selectedBooking.totalPrice)) : '0'}</p>
                 </div>
                 <div>
                   <p className="text-sm text-foreground-muted">{t('table.status')}</p>

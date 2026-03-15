@@ -242,7 +242,7 @@ export default function UserBookingsPage() {
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            Refresh
+            {t('refresh')}
           </button>
           <button
             onClick={() => setShowCreateModal(true)}
@@ -304,7 +304,12 @@ export default function UserBookingsPage() {
                   <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig[booking.status].bg} ${statusConfig[booking.status].color}`}>
                     {statusConfig[booking.status].label}
                   </span>
-                  <p className="text-lg font-bold text-gold mt-2">${Number(booking.totalPrice).toFixed(2)}</p>
+                  <p className="text-lg font-bold text-gold mt-2">${Math.round(Number(booking.totalPrice))}</p>
+                  {booking.machine && (booking.machine.profitPerDay != null || booking.machine.pricePerMonth != null) && (
+                    <p className="text-xs text-green mt-1">
+                      ~${Math.round(((Number(booking.machine.profitPerDay) || 0) + (Number(booking.machine.pricePerMonth) || 0) / 30) * (booking.quantity || 1))}/{t('suffixDay')}
+                    </p>
+                  )}
                 </div>
               </div>
               {booking.messages && booking.messages.filter(m => m.isFromAdmin && !m.isRead).length > 0 && (
@@ -413,7 +418,7 @@ export default function UserBookingsPage() {
                 <div className="p-4 rounded-xl bg-gold/5 border border-gold/20">
                   <div className="flex justify-between items-center">
                     <span className="text-foreground-muted">{t('estimatedTotal')}</span>
-                    <span className="text-2xl font-bold text-gold">${calculatedPrice.toFixed(2)}</span>
+                    <span className="text-2xl font-bold text-gold">${Math.round(calculatedPrice)}</span>
                   </div>
                 </div>
               )}
@@ -462,7 +467,7 @@ export default function UserBookingsPage() {
                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${selectedBooking.status ? statusConfig[selectedBooking.status]?.bg || 'bg-gray-500/20' : 'bg-gray-500/20'} ${selectedBooking.status ? statusConfig[selectedBooking.status]?.color || 'text-gray-500' : 'text-gray-500'}`}>
                   {selectedBooking.status ? statusConfig[selectedBooking.status]?.label || 'Unknown' : 'Unknown'}
                 </span>
-                <span className="text-xl font-bold text-gold">${selectedBooking.totalPrice ? Number(selectedBooking.totalPrice).toFixed(2) : '0.00'}</span>
+                <span className="text-xl font-bold text-gold">${selectedBooking.totalPrice ? Math.round(Number(selectedBooking.totalPrice)) : '0'}</span>
               </div>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
@@ -474,6 +479,49 @@ export default function UserBookingsPage() {
                   <span className="ml-2 text-foreground">{selectedBooking.quantity ?? 'N/A'} {t('units')}</span>
                 </div>
               </div>
+
+              {/* Expected Revenue - based on machine profitPerDay + rental */}
+              {selectedBooking.machine && (selectedBooking.machine.profitPerDay != null || selectedBooking.machine.pricePerMonth != null) && (
+                <div className="mt-4 p-4 rounded-xl bg-green/5 border border-green/20">
+                  <h4 className="text-sm font-semibold text-foreground mb-3">{t('revenue')}</h4>
+                  {(() => {
+                    const dailyRev = Number(selectedBooking.machine.profitPerDay) || 0;
+                    const pricePerMonth = Number(selectedBooking.machine.pricePerMonth) || 0;
+                    const dailyDisplay = dailyRev + pricePerMonth / 30;
+                    const qty = selectedBooking.quantity || 1;
+                    const dailyTotal = Math.round(dailyDisplay * qty);
+                    const weeklyTotal = Math.round(dailyTotal * 7);
+                    const monthlyTotal = Math.round(dailyTotal * 30);
+                    const daysInPeriod = {
+                      hour: 1 / 24,
+                      day: 1,
+                      week: 7,
+                      month: 30,
+                    }[selectedBooking.rentalDuration] || 1;
+                    const periodTotal = Math.round(dailyTotal * daysInPeriod);
+                    return (
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-foreground-muted">{t('dailyRevenue')}</span>
+                          <span className="font-semibold text-green">${dailyTotal}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-foreground-muted">{t('weeklyRevenue')}</span>
+                          <span className="font-semibold text-green">${weeklyTotal}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-foreground-muted">{t('monthlyRevenue')}</span>
+                          <span className="font-semibold text-green">${monthlyTotal}</span>
+                        </div>
+                        <div className="col-span-2 flex justify-between pt-2 border-t border-green/20">
+                          <span className="text-foreground-muted">{t('periodRevenue')}</span>
+                          <span className="font-bold text-green">${periodTotal}</span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
 
               {/* Payment Address Display */}
               {selectedBooking.paymentAddress && selectedBooking.status === "awaiting_payment" && (

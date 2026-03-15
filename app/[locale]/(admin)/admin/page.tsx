@@ -199,7 +199,7 @@ export default function AdminDashboardPage() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{machine.name}</p>
                     <p className="text-xs text-foreground-muted">
-                      {machine.hashRate} {machine.hashRateUnit} • ${machine.pricePerDay}/day
+                      {machine.hashRate} {machine.hashRateUnit} • ${Math.round(Number(machine.pricePerDay))}/{t('suffixDay')}
                     </p>
                   </div>
                   <div className={`w-2 h-2 rounded-full ${machine.isActive ? "bg-green" : "bg-foreground-muted"}`} />

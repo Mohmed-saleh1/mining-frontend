@@ -56,7 +56,7 @@ export default function DashboardPage() {
   const stats = analytics ? [
     { 
       label: t('stats.totalInvestment'), 
-      value: `$${safeNumber(analytics.totalInvestment).toFixed(2)}`, 
+      value: `$${Math.round(safeNumber(analytics.totalInvestment))}`, 
       icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", 
       color: "gold" 
     },
@@ -68,7 +68,7 @@ export default function DashboardPage() {
     },
     { 
       label: t('stats.totalRevenue'), 
-      value: `$${safeNumber(analytics.totalRevenue).toFixed(2)}`, 
+      value: `$${Math.round(safeNumber(analytics.totalRevenue))}`, 
       icon: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6", 
       color: "green" 
     },
@@ -217,7 +217,7 @@ export default function DashboardPage() {
                           {item.month.split(' ')[0]}
                         </span>
                         <div className="absolute bottom-full mb-2 hidden group-hover:block bg-background-secondary border border-border rounded-lg px-2 py-1 text-xs text-foreground z-10 whitespace-nowrap">
-                          {item.month}: ${item.revenue.toFixed(2)}
+                          {item.month}: ${Math.round(item.revenue)}
                         </div>
                       </div>
                     );
@@ -226,7 +226,7 @@ export default function DashboardPage() {
                 <div className="pt-4 border-t border-border">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-foreground-muted">{t('analytics.totalRevenue')}</span>
-                    <span className="font-bold text-gold">${Number(analytics?.totalRevenue || 0).toFixed(2)}</span>
+                    <span className="font-bold text-gold">${Math.round(Number(analytics?.totalRevenue || 0))}</span>
                   </div>
                 </div>
               </div>

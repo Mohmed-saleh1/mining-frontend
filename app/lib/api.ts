@@ -687,6 +687,8 @@ export interface BookingMachine {
   name: string;
   image?: string;
   miningCoin: string;
+  profitPerDay?: number;
+  pricePerMonth?: number;
 }
 
 export interface BookingMessage {
@@ -740,6 +742,12 @@ export interface BookingAnalytics {
   activeBookings: number;
   bookingsByStatus: Record<BookingStatus, number>;
   revenueByMonth: Array<{ month: string; revenue: number }>;
+  revenueBreakdown?: {
+    today: number;
+    lastWeek: number;
+    lastMonth: number;
+    incoming: number;
+  };
   subscriptionMetrics: {
     totalSubscriptions: number;
     activeSubscriptions: number;

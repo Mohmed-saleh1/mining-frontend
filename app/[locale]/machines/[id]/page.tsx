@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { miningMachinesPublicApi, subscriptionsApi, bookingsApi, MiningMachine, PlanDuration, PaymentMethod, RentalDuration, ApiError } from "@/app/lib/api";
+import { miningMachinesPublicApi, subscriptionsApi, bookingsApi, MiningMachine, PaymentMethod, RentalDuration, ApiError } from "@/app/lib/api";
 import { useAuth } from "@/app/lib/auth-context";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
@@ -22,8 +22,7 @@ export default function MachineDetailsPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSubscribing, setIsSubscribing] = useState(false);
 
-  // Subscription form state
-  const [selectedDuration, setSelectedDuration] = useState<PlanDuration>('day');
+  // Subscription form state - month only
   const [durationNumber, setDurationNumber] = useState<number>(1);
   const [quantity, setQuantity] = useState<number>(1);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -50,18 +49,8 @@ export default function MachineDetailsPage() {
     }
   }, [params.id]);
 
-  // Calculate total price
-  const getUnitPrice = (): number => {
-    if (!machine) return 0;
-    switch (selectedDuration) {
-      case 'day': return Number(machine.pricePerDay) || 0;
-      case 'week': return Number(machine.pricePerWeek) || 0;
-      case 'month': return Number(machine.pricePerMonth) || 0;
-      default: return 0;
-    }
-  };
-
-  const unitPrice = getUnitPrice();
+  // Calculate total price (monthly only)
+  const unitPrice = machine ? Number(machine.pricePerMonth) || 0 : 0;
   const totalPrice = unitPrice * durationNumber * quantity;
 
   const availableUnits = machine ? machine.totalUnits - machine.rentedUnits : 0;
@@ -89,7 +78,7 @@ export default function MachineDetailsPage() {
     try {
       const response = await subscriptionsApi.create({
         machineId: machine.id,
-        duration: selectedDuration,
+        duration: 'month',
         number: durationNumber,
         quantity,
         paymentMethod,
@@ -125,16 +114,12 @@ export default function MachineDetailsPage() {
     setShowPaymentModal(false);
 
     try {
-      // Map PlanDuration to RentalDuration (year -> month, others stay the same)
-      const rentalDuration: RentalDuration = selectedDuration === 'year' ? 'month' : selectedDuration as RentalDuration;
-      const actualDurationNumber = selectedDuration === 'year' ? durationNumber * 12 : durationNumber;
-      
-      // Create a booking request instead of subscription
+      // Create a booking request (monthly subscription only)
       const response = await bookingsApi.create({
         machineId: machine.id,
-        rentalDuration,
+        rentalDuration: 'month' as RentalDuration,
         quantity,
-        userNotes: `Machine subscription request: ${actualDurationNumber} ${rentalDuration}(s) for ${machine.name}. Total: $${totalPrice.toFixed(2)}`,
+        userNotes: `Machine subscription request: ${durationNumber} month(s) for ${machine.name}. Total: $${Math.round(totalPrice)}`,
       });
       
       // Show success message and redirect to bookings page
@@ -160,13 +145,6 @@ export default function MachineDetailsPage() {
     } finally {
       setIsSubscribing(false);
     }
-  };
-
-  const durationLabels: Record<PlanDuration, string> = {
-    day: 'Day',
-    week: 'Week',
-    month: 'Month',
-    year: 'Year',
   };
 
   return (
@@ -286,24 +264,43 @@ export default function MachineDetailsPage() {
                     </div>
                   </div>
 
-                  {/* Estimated Profits */}
+                  {/* Revenue Details - revenue + rental (e.g. daily 10 + 100 = 110) */}
                   <div className="glass rounded-2xl p-8">
                     <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
                       <svg className="w-5 h-5 text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                       </svg>
-                      {t('estimatedProfits')}
+                      {t('revenueDetails')}
                     </h2>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="p-3 rounded-lg bg-green/10">
-                        <p className="text-xs text-foreground-muted">{t('dailyProfit')}</p>
-                        <p className="text-lg font-bold text-green">${machine.profitPerDay}</p>
-                      </div>
-                      <div className="p-3 rounded-lg bg-green/10">
-                        <p className="text-xs text-foreground-muted">{t('monthlyProfit')}</p>
-                        <p className="text-lg font-bold text-green">${machine.profitPerMonth}</p>
-                      </div>
-                    </div>
+                    {(() => {
+                      const dailyRev = Number(machine.profitPerDay) || 0;
+                      const dailyDisplay = dailyRev + (Number(machine.pricePerMonth) || 0) / 30;
+                      const weeklyDisplay = dailyDisplay * 7;
+                      const monthlyDisplay = dailyDisplay * 30;
+                      return (
+                        <div className="grid grid-cols-2 gap-3 mb-4">
+                          <div className="p-3 rounded-lg bg-green/10">
+                            <p className="text-xs text-foreground-muted">{t('dailyRevenueGross')}</p>
+                            <p className="text-lg font-bold text-green">${Math.round(dailyDisplay)}</p>
+                          </div>
+                          <div className="p-3 rounded-lg bg-green/10">
+                            <p className="text-xs text-foreground-muted">{t('weeklyRevenueGross')}</p>
+                            <p className="text-lg font-bold text-green">${Math.round(weeklyDisplay)}</p>
+                          </div>
+                          <div className="p-3 rounded-lg bg-green/10">
+                            <p className="text-xs text-foreground-muted">{t('monthlyRevenueGross')}</p>
+                            <p className="text-lg font-bold text-green">${Math.round(monthlyDisplay)}</p>
+                          </div>
+                          <div className="p-3 rounded-lg bg-gold/10 col-span-2">
+                            <p className="text-xs text-foreground-muted">{t('monthlyRental')}</p>
+                            <p className="text-lg font-bold text-gold">${Math.round(Number(machine.pricePerMonth))}/{t('suffixMo')}</p>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                    <p className="text-xs text-foreground-muted">
+                      {t('revenueWithRentalNote')}
+                    </p>
                   </div>
 
                   {/* Availability */}
@@ -347,43 +344,22 @@ export default function MachineDetailsPage() {
                     <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    Subscribe to This Machine
+                    {t('orderSummary.subscribeToMachine')}
                   </h2>
 
                   <div className="grid md:grid-cols-2 gap-8">
                     {/* Left: Configuration */}
                     <div className="space-y-6">
-                      {/* Duration Type Selection */}
-                      <div>
-                        <label className="block text-sm font-semibold text-foreground mb-3">
-                          Duration Type
-                        </label>
-                        <div className="grid grid-cols-3 gap-3">
-                          {(['day', 'week', 'month'] as PlanDuration[]).map((dur) => {
-                            const price = dur === 'day' ? machine.pricePerDay : dur === 'week' ? machine.pricePerWeek : machine.pricePerMonth;
-                            return (
-                              <button
-                                key={dur}
-                                onClick={() => { setSelectedDuration(dur); setDurationNumber(1); }}
-                                className={`p-4 rounded-xl border-2 transition-all text-center ${
-                                  selectedDuration === dur
-                                    ? 'border-gold bg-gold/10'
-                                    : 'border-border hover:border-gold/40'
-                                }`}
-                              >
-                                <p className="font-bold text-foreground capitalize">{durationLabels[dur]}</p>
-                                <p className="text-gold font-semibold text-lg">${price}</p>
-                                <p className="text-xs text-foreground-muted">per {dur}</p>
-                              </button>
-                            );
-                          })}
-                        </div>
+                      {/* Monthly subscription - fixed */}
+                      <div className="p-4 rounded-xl border-2 border-gold/30 bg-gold/5">
+                        <p className="font-bold text-foreground">{t('orderSummary.monthlySubscription')}</p>
+                        <p className="text-gold font-semibold text-lg">${Math.round(Number(machine.pricePerMonth))}/{t('suffixMonth')}</p>
                       </div>
 
-                      {/* Number of Duration Units */}
+                      {/* Number of Months */}
                       <div>
                         <label className="block text-sm font-semibold text-foreground mb-3">
-                          Number of {durationLabels[selectedDuration]}s
+                          {t('orderSummary.numberOfMonths')}
                         </label>
                         <div className="flex items-center gap-4">
                           <button
@@ -412,7 +388,7 @@ export default function MachineDetailsPage() {
                       {availableUnits > 1 && (
                         <div>
                           <label className="block text-sm font-semibold text-foreground mb-3">
-                            Number of Units
+                            {t('orderSummary.numberOfUnits')}
                           </label>
                           <div className="flex items-center gap-4">
                             <button
@@ -437,7 +413,7 @@ export default function MachineDetailsPage() {
                             </button>
                           </div>
                           <p className="text-xs text-foreground-muted mt-2">
-                            {availableUnits} units available
+                            {t('orderSummary.unitsAvailable', { count: availableUnits })}
                           </p>
                         </div>
                       )}
@@ -446,33 +422,33 @@ export default function MachineDetailsPage() {
                     {/* Right: Price Summary */}
                     <div className="flex flex-col justify-between">
                       <div className="glass rounded-xl p-6 border border-gold/20 space-y-4">
-                        <h3 className="text-lg font-bold text-foreground">Order Summary</h3>
+                        <h3 className="text-lg font-bold text-foreground">{t('orderSummary.title')}</h3>
                         
                         <div className="space-y-3 text-sm">
                           <div className="flex justify-between">
-                            <span className="text-foreground-muted">Machine</span>
+                            <span className="text-foreground-muted">{t('orderSummary.machine')}</span>
                             <span className="text-foreground font-medium">{machine.name}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-foreground-muted">Duration</span>
+                            <span className="text-foreground-muted">{t('orderSummary.duration')}</span>
                             <span className="text-foreground font-medium">
-                              {durationNumber} {durationNumber === 1 ? durationLabels[selectedDuration] : durationLabels[selectedDuration] + 's'}
+                              {durationNumber} {durationNumber === 1 ? t('orderSummary.month') : t('orderSummary.months')}
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-foreground-muted">Price per {durationLabels[selectedDuration]}</span>
-                            <span className="text-foreground font-medium">${unitPrice.toFixed(2)}</span>
+                            <span className="text-foreground-muted">{t('orderSummary.pricePerMonth')}</span>
+                            <span className="text-foreground font-medium">${Math.round(unitPrice)}</span>
                           </div>
                           {quantity > 1 && (
                             <div className="flex justify-between">
-                              <span className="text-foreground-muted">Units</span>
+                              <span className="text-foreground-muted">{t('orderSummary.units')}</span>
                               <span className="text-foreground font-medium">{quantity}</span>
                             </div>
                           )}
                           <div className="border-t border-border pt-3">
                             <div className="flex justify-between items-center">
-                              <span className="text-foreground font-bold text-lg">Total</span>
-                              <span className="text-gold font-bold text-3xl">${totalPrice.toFixed(2)}</span>
+                              <span className="text-foreground font-bold text-lg">{t('orderSummary.total')}</span>
+                              <span className="text-gold font-bold text-3xl">${Math.round(totalPrice)}</span>
                             </div>
                           </div>
                         </div>
@@ -513,14 +489,14 @@ export default function MachineDetailsPage() {
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                               </svg>
-                              Processing...
+                              {t('orderSummary.processing')}
                             </>
                           ) : (
                             <>
                               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                               </svg>
-                              Subscribe Now — ${totalPrice.toFixed(2)}
+                              {t('orderSummary.subscribeNow')} — ${Math.round(totalPrice)}
                             </>
                           )}
                         </button>
@@ -559,7 +535,7 @@ export default function MachineDetailsPage() {
               {/* Modal Header */}
               <div className="p-6 border-b border-border">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-foreground">Choose Payment Method</h2>
+                  <h2 className="text-xl font-bold text-foreground">{t('orderSummary.choosePaymentMethod')}</h2>
                   <button
                     onClick={() => setShowPaymentModal(false)}
                     className="p-2 hover:bg-gold/10 rounded-lg transition-colors"
@@ -575,24 +551,24 @@ export default function MachineDetailsPage() {
               <div className="px-6 pt-4">
                 <div className="bg-background-secondary/50 rounded-xl p-4 mb-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-foreground-muted">Machine</span>
+                    <span className="text-sm text-foreground-muted">{t('orderSummary.machine')}</span>
                     <span className="font-semibold text-foreground">{machine.name}</span>
                   </div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-foreground-muted">Duration</span>
+                    <span className="text-sm text-foreground-muted">{t('orderSummary.duration')}</span>
                     <span className="font-medium text-foreground">
-                      {durationNumber} {durationNumber === 1 ? durationLabels[selectedDuration] : durationLabels[selectedDuration] + 's'}
+                      {durationNumber} {durationNumber === 1 ? t('orderSummary.month') : t('orderSummary.months')}
                     </span>
                   </div>
                   {quantity > 1 && (
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-foreground-muted">Units</span>
+                      <span className="text-sm text-foreground-muted">{t('orderSummary.units')}</span>
                       <span className="font-medium text-foreground">{quantity}</span>
                     </div>
                   )}
                   <div className="flex items-center justify-between pt-2 border-t border-border">
-                    <span className="text-sm text-foreground-muted">Total Amount</span>
-                    <span className="text-xl font-bold text-gold">${totalPrice.toFixed(2)}</span>
+                    <span className="text-sm text-foreground-muted">{t('orderSummary.totalAmount')}</span>
+                    <span className="text-xl font-bold text-gold">${Math.round(totalPrice)}</span>
                   </div>
                 </div>
               </div>

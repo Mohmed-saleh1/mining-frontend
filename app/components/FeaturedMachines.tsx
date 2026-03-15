@@ -142,11 +142,11 @@ export default function FeaturedMachines() {
                 <div className="border-t border-border pt-4 mb-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs text-foreground-muted">{t('dailyRate')}</span>
-                    <span className="text-lg font-bold text-gold">${machine.pricePerDay}</span>
+                    <span className="text-lg font-bold text-gold">${Math.round(Number(machine.pricePerDay))}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-foreground-muted">{t('estDailyProfit')}</span>
-                    <span className="text-sm font-semibold text-green">${machine.profitPerDay}</span>
+                    <span className="text-sm font-semibold text-green">${Math.round(Number(machine.profitPerDay) + (Number(machine.pricePerMonth) || 0) / 30)}</span>
                   </div>
                 </div>
 

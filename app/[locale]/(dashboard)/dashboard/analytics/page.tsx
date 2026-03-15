@@ -124,10 +124,10 @@ export default function AnalyticsPage() {
   };
 
   const subscriptionStatusLabels: Record<string, string> = {
-    pending: "Pending",
-    active: "Active",
-    expired: "Expired",
-    cancelled: "Cancelled",
+    pending: t('subscriptionStatus.pending'),
+    active: t('subscriptionStatus.active'),
+    expired: t('subscriptionStatus.expired'),
+    cancelled: t('subscriptionStatus.cancelled'),
   };
 
   // Calculate max revenue for chart scaling
@@ -167,6 +167,75 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
+      {/* Revenue Breakdown */}
+      {analytics?.revenueBreakdown && (
+        <div>
+          <h2 className="text-lg font-semibold text-foreground mb-4">{t('revenueBreakdown')}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="glass rounded-xl p-6 card-hover">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-xs text-foreground-muted mb-1">{t('revenueToday')}</p>
+                  <p className="text-2xl font-bold text-foreground">
+                    ${Math.round(analytics.revenueBreakdown.today)}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="glass rounded-xl p-6 card-hover">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-blue-400/10 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-xs text-foreground-muted mb-1">{t('revenueLastWeek')}</p>
+                  <p className="text-2xl font-bold text-foreground">
+                    ${Math.round(analytics.revenueBreakdown.lastWeek)}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="glass rounded-xl p-6 card-hover">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-purple-400/10 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-xs text-foreground-muted mb-1">{t('revenueLastMonth')}</p>
+                  <p className="text-2xl font-bold text-foreground">
+                    ${Math.round(analytics.revenueBreakdown.lastMonth)}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="glass rounded-xl p-6 card-hover">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-green/10 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-xs text-foreground-muted mb-1">{t('revenueIncoming')}</p>
+                  <p className="text-2xl font-bold text-foreground">
+                    ${Math.round(analytics.revenueBreakdown.incoming)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Key Metrics Grid - Hybrid Approach */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Show subscription metrics if user has subscriptions, otherwise show booking metrics */}
@@ -180,9 +249,9 @@ export default function AnalyticsPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-foreground-muted mb-1">Monthly Earnings</p>
+                  <p className="text-xs text-foreground-muted mb-1">{t('monthlyEarnings')}</p>
                   <p className="text-2xl font-bold text-foreground">
-                    ${Number(analytics?.subscriptionMetrics?.monthlyEarnings || 0).toFixed(2)}
+                    ${Math.round(Number(analytics?.subscriptionMetrics?.monthlyEarnings || 0))}
                   </p>
                 </div>
               </div>
@@ -196,9 +265,9 @@ export default function AnalyticsPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-foreground-muted mb-1">Daily Earnings</p>
+                  <p className="text-xs text-foreground-muted mb-1">{t('dailyEarnings')}</p>
                   <p className="text-2xl font-bold text-foreground">
-                    ${Number(analytics?.subscriptionMetrics?.avgDailyEarnings || 0).toFixed(2)}
+                    ${Math.round(Number(analytics?.subscriptionMetrics?.avgDailyEarnings || 0))}
                   </p>
                 </div>
               </div>
@@ -212,7 +281,7 @@ export default function AnalyticsPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-foreground-muted mb-1">Active Subscriptions</p>
+                  <p className="text-xs text-foreground-muted mb-1">{t('activeSubscriptions')}</p>
                   <p className="text-2xl font-bold text-foreground">{analytics?.subscriptionMetrics?.activeSubscriptions || 0}</p>
                 </div>
               </div>
@@ -226,9 +295,9 @@ export default function AnalyticsPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-foreground-muted mb-1">Total Investment</p>
+                  <p className="text-xs text-foreground-muted mb-1">{t('totalInvestment')}</p>
                   <p className="text-2xl font-bold text-foreground">
-                    ${Number(analytics?.subscriptionMetrics?.totalSubscriptionValue || 0).toFixed(2)}
+                    ${Math.round(Number(analytics?.subscriptionMetrics?.totalSubscriptionValue || 0))}
                   </p>
                 </div>
               </div>
@@ -245,9 +314,9 @@ export default function AnalyticsPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-foreground-muted mb-1">Total Investment</p>
+                  <p className="text-xs text-foreground-muted mb-1">{t('totalInvestment')}</p>
                   <p className="text-2xl font-bold text-foreground">
-                    ${Number(analytics?.totalInvestment || 0).toFixed(2)}
+                    ${Math.round(Number(analytics?.totalInvestment || 0))}
                   </p>
                 </div>
               </div>
@@ -261,9 +330,9 @@ export default function AnalyticsPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-foreground-muted mb-1">Total Revenue</p>
+                  <p className="text-xs text-foreground-muted mb-1">{t('totalRevenue')}</p>
                   <p className="text-2xl font-bold text-foreground">
-                    ${Number(analytics?.totalRevenue || 0).toFixed(2)}
+                    ${Math.round(Number(analytics?.totalRevenue || 0))}
                   </p>
                 </div>
               </div>
@@ -277,7 +346,7 @@ export default function AnalyticsPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-foreground-muted mb-1">Total Bookings</p>
+                  <p className="text-xs text-foreground-muted mb-1">{t('totalBookings')}</p>
                   <p className="text-2xl font-bold text-foreground">{analytics?.totalBookings || 0}</p>
                 </div>
               </div>
@@ -291,7 +360,7 @@ export default function AnalyticsPage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-foreground-muted mb-1">Active Bookings</p>
+                  <p className="text-xs text-foreground-muted mb-1">{t('activeBookings')}</p>
                   <p className="text-2xl font-bold text-foreground">{analytics?.activeBookings || 0}</p>
                 </div>
               </div>
@@ -320,7 +389,7 @@ export default function AnalyticsPage() {
                       </div>
                       <div className="text-center">
                         <p className="text-xs font-semibold text-foreground">
-                          ${item.revenue.toFixed(0)}
+                          ${Math.round(item.revenue)}
                         </p>
                         <p className="text-xs text-foreground-muted mt-1">
                           {item.month.split(' ')[0]}
@@ -328,7 +397,7 @@ export default function AnalyticsPage() {
                       </div>
                       <div className="absolute bottom-full mb-2 hidden group-hover:block bg-background-secondary border border-border rounded-lg px-3 py-2 text-xs text-foreground z-10 whitespace-nowrap shadow-lg">
                         <p className="font-semibold">{item.month}</p>
-                        <p className="text-gold">${item.revenue.toFixed(2)}</p>
+                        <p className="text-gold">${Math.round(item.revenue)}</p>
                       </div>
                     </div>
                   );
@@ -339,7 +408,7 @@ export default function AnalyticsPage() {
                   <span className="text-sm text-foreground-muted">{t('averageMonthlyRevenue')}</span>
                   <span className="text-sm font-bold text-foreground">
                     ${revenueByMonth.length > 0
-                      ? (revenueByMonth.reduce((sum, item) => sum + item.revenue, 0) / revenueByMonth.length).toFixed(2)
+                      ? Math.round(revenueByMonth.reduce((sum, item) => sum + item.revenue, 0) / revenueByMonth.length)
                       : '0.00'}
                   </span>
                 </div>
@@ -359,7 +428,7 @@ export default function AnalyticsPage() {
         {/* Status Distribution - Pie Chart */}
         <div className="glass rounded-xl p-6">
           <h2 className="text-lg font-bold text-foreground mb-6">
-            {(analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0 ? 'Subscriptions by Status' : 'Bookings by Status'}
+            {(analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0 ? t('subscriptionsByStatus') : t('bookingsByStatus')}
           </h2>
           {((analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0 ? totalSubscriptionsForPie : totalBookingsForPie) > 0 ? (
             <div className="space-y-6">
@@ -406,7 +475,7 @@ export default function AnalyticsPage() {
                     <p className="text-2xl font-bold text-foreground">
                       {(analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0 ? totalSubscriptionsForPie : totalBookingsForPie}
                     </p>
-                    <p className="text-xs text-foreground-muted">Total</p>
+                    <p className="text-xs text-foreground-muted">{t('total')}</p>
                   </div>
                 </div>
               </div>
@@ -442,8 +511,8 @@ export default function AnalyticsPage() {
               <svg className="w-16 h-16 mx-auto mb-4 text-foreground-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
-              <p className="text-foreground-muted text-sm">No subscription data available</p>
-              <p className="text-foreground-muted text-xs mt-1">Start a subscription to see analytics</p>
+              <p className="text-foreground-muted text-sm">{t('noSubscriptionData')}</p>
+              <p className="text-foreground-muted text-xs mt-1">{t('startSubscriptionPrompt')}</p>
             </div>
           )}
         </div>
@@ -454,7 +523,7 @@ export default function AnalyticsPage() {
         {/* Status Breakdown */}
         <div className="glass rounded-xl p-6">
           <h2 className="text-lg font-bold text-foreground mb-4">
-            {(analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0 ? 'Subscription Status Breakdown' : 'Booking Status Breakdown'}
+            {(analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0 ? t('subscriptionStatusBreakdown') : t('bookingStatusBreakdown')}
           </h2>
           <div className="space-y-3">
             {(analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0 ? (
@@ -506,32 +575,32 @@ export default function AnalyticsPage() {
         {/* Financial Summary */}
         <div className="glass rounded-xl p-6">
           <h2 className="text-lg font-bold text-foreground mb-4">
-            {(analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0 ? 'Earnings Summary' : 'Revenue Summary'}
+            {(analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0 ? t('earningsSummary') : t('revenueSummary')}
           </h2>
           <div className="space-y-4">
             {(analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0 ? (
               // Subscription earnings
               <>
                 <div className="flex items-center justify-between p-4 rounded-lg bg-background-secondary/30">
-                  <span className="text-sm text-foreground-muted">Total Investment</span>
+                  <span className="text-sm text-foreground-muted">{t('totalInvestment')}</span>
                   <span className="text-lg font-bold text-foreground">
-                    ${Number(analytics?.subscriptionMetrics?.totalSubscriptionValue || 0).toFixed(2)}
+                    ${Math.round(Number(analytics?.subscriptionMetrics?.totalSubscriptionValue || 0))}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-4 rounded-lg bg-background-secondary/30">
-                  <span className="text-sm text-foreground-muted">Monthly Earnings</span>
+                  <span className="text-sm text-foreground-muted">{t('monthlyEarnings')}</span>
                   <span className="text-lg font-bold text-green">
-                    ${Number(analytics?.subscriptionMetrics?.monthlyEarnings || 0).toFixed(2)}
+                    ${Math.round(Number(analytics?.subscriptionMetrics?.monthlyEarnings || 0))}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-4 rounded-lg bg-background-secondary/30">
-                  <span className="text-sm text-foreground-muted">Daily Earnings</span>
+                  <span className="text-sm text-foreground-muted">{t('dailyEarnings')}</span>
                   <span className="text-lg font-bold text-gold">
-                    ${Number(analytics?.subscriptionMetrics?.avgDailyEarnings || 0).toFixed(2)}
+                    ${Math.round(Number(analytics?.subscriptionMetrics?.avgDailyEarnings || 0))}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-4 rounded-lg bg-gold/10 border border-gold/20">
-                  <span className="text-sm font-medium text-foreground">Monthly ROI</span>
+                  <span className="text-sm font-medium text-foreground">{t('monthlyRoi')}</span>
                   <span className="text-lg font-bold text-gold">
                     {(analytics?.subscriptionMetrics?.totalSubscriptionValue || 0) > 0
                       ? (((analytics?.subscriptionMetrics?.monthlyEarnings || 0) / (analytics?.subscriptionMetrics?.totalSubscriptionValue || 1)) * 100).toFixed(1)
@@ -540,13 +609,13 @@ export default function AnalyticsPage() {
                 </div>
                 {(analytics?.subscriptionMetrics?.activeSubscriptions || 0) > 0 && (
                   <div className="pt-4 border-t border-border">
-                    <p className="text-xs text-foreground-muted mb-2">Active Mining Power</p>
+                    <p className="text-xs text-foreground-muted mb-2">{t('activeMiningPower')}</p>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-foreground">
-                        {analytics?.subscriptionMetrics?.activeSubscriptions} Active Subscription{(analytics?.subscriptionMetrics?.activeSubscriptions || 0) !== 1 ? 's' : ''}
+                        {analytics?.subscriptionMetrics?.activeSubscriptions} {(analytics?.subscriptionMetrics?.activeSubscriptions || 0) !== 1 ? t('activeSubscriptionsCount') : t('activeSubscription')}
                       </span>
                       <span className="text-sm font-semibold text-gold">
-                        Earning ${Number(analytics?.subscriptionMetrics?.avgDailyEarnings || 0).toFixed(2)}/day
+                        Earning ${Math.round(Number(analytics?.subscriptionMetrics?.avgDailyEarnings || 0))}/${t('suffixDay')}
                       </span>
                     </div>
                   </div>
@@ -556,19 +625,19 @@ export default function AnalyticsPage() {
               // Booking revenue
               <>
                 <div className="flex items-center justify-between p-4 rounded-lg bg-background-secondary/30">
-                  <span className="text-sm text-foreground-muted">Total Investment</span>
+                  <span className="text-sm text-foreground-muted">{t('totalInvestment')}</span>
                   <span className="text-lg font-bold text-foreground">
-                    ${Number(analytics?.totalInvestment || 0).toFixed(2)}
+                    ${Math.round(Number(analytics?.totalInvestment || 0))}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-4 rounded-lg bg-background-secondary/30">
-                  <span className="text-sm text-foreground-muted">Total Revenue</span>
+                  <span className="text-sm text-foreground-muted">{t('totalRevenue')}</span>
                   <span className="text-lg font-bold text-green">
-                    ${Number(analytics?.totalRevenue || 0).toFixed(2)}
+                    ${Math.round(Number(analytics?.totalRevenue || 0))}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-4 rounded-lg bg-gold/10 border border-gold/20">
-                  <span className="text-sm font-medium text-foreground">ROI</span>
+                  <span className="text-sm font-medium text-foreground">{t('roi')}</span>
                   <span className="text-lg font-bold text-gold">
                     {(analytics?.totalInvestment || 0) > 0
                       ? (((analytics?.totalRevenue || 0) / (analytics?.totalInvestment || 1)) * 100).toFixed(1)
@@ -577,7 +646,7 @@ export default function AnalyticsPage() {
                 </div>
                 {revenueByMonth.length > 0 && (
                   <div className="pt-4 border-t border-border">
-                    <p className="text-xs text-foreground-muted mb-2">Best Performing Month</p>
+                    <p className="text-xs text-foreground-muted mb-2">{t('bestPerformingMonth')}</p>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-foreground">
                         {revenueByMonth.reduce((max, item) => 
@@ -585,7 +654,7 @@ export default function AnalyticsPage() {
                         ).month}
                       </span>
                       <span className="text-sm font-semibold text-gold">
-                        ${Math.max(...revenueByMonth.map(r => r.revenue)).toFixed(2)}
+                        ${Math.round(Math.max(...revenueByMonth.map(r => r.revenue)))}
                       </span>
                     </div>
                   </div>
@@ -600,14 +669,14 @@ export default function AnalyticsPage() {
       {((analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0 || (analytics?.totalBookings || 0) > 0) && (
         <div className="glass rounded-xl p-6">
           <h2 className="text-lg font-bold text-foreground mb-4">
-            {(analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0 ? 'Key Mining Insights' : 'Key Booking Insights'}
+            {(analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0 ? t('keyMiningInsights') : t('keyBookingInsights')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {(analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0 ? (
               // Subscription insights
               <>
                 <div className="p-4 rounded-lg bg-background-secondary/30">
-                  <p className="text-xs text-foreground-muted mb-1">Active Rate</p>
+                  <p className="text-xs text-foreground-muted mb-1">{t('activeRate')}</p>
                   <p className="text-2xl font-bold text-foreground">
                     {(analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0
                       ? (((analytics?.subscriptionMetrics?.activeSubscriptions || 0) / (analytics?.subscriptionMetrics?.totalSubscriptions || 1)) * 100).toFixed(1)
@@ -615,19 +684,19 @@ export default function AnalyticsPage() {
                   </p>
                 </div>
                 <div className="p-4 rounded-lg bg-background-secondary/30">
-                  <p className="text-xs text-foreground-muted mb-1">Avg Investment</p>
+                  <p className="text-xs text-foreground-muted mb-1">{t('avgInvestment')}</p>
                   <p className="text-2xl font-bold text-foreground">
                     ${(analytics?.subscriptionMetrics?.totalSubscriptions || 0) > 0
-                      ? ((analytics?.subscriptionMetrics?.totalSubscriptionValue || 0) / (analytics?.subscriptionMetrics?.totalSubscriptions || 1)).toFixed(2)
-                      : '0.00'}
+                      ? Math.round((analytics?.subscriptionMetrics?.totalSubscriptionValue || 0) / (analytics?.subscriptionMetrics?.totalSubscriptions || 1))
+                      : '0'}
                   </p>
                 </div>
                 <div className="p-4 rounded-lg bg-background-secondary/30">
-                  <p className="text-xs text-foreground-muted mb-1">Payback Period</p>
+                  <p className="text-xs text-foreground-muted mb-1">{t('paybackPeriod')}</p>
                   <p className="text-2xl font-bold text-foreground">
                     {(analytics?.subscriptionMetrics?.avgDailyEarnings || 0) > 0 && (analytics?.subscriptionMetrics?.totalSubscriptionValue || 0) > 0
                       ? Math.ceil((analytics?.subscriptionMetrics?.totalSubscriptionValue || 0) / (analytics?.subscriptionMetrics?.avgDailyEarnings || 1))
-                      : '∞'} days
+                      : '∞'} {t('days')}
                   </p>
                 </div>
               </>
@@ -635,7 +704,7 @@ export default function AnalyticsPage() {
               // Booking insights
               <>
                 <div className="p-4 rounded-lg bg-background-secondary/30">
-                  <p className="text-xs text-foreground-muted mb-1">Approval Rate</p>
+                  <p className="text-xs text-foreground-muted mb-1">{t('approvalRate')}</p>
                   <p className="text-2xl font-bold text-foreground">
                     {(analytics?.totalBookings || 0) > 0
                       ? (((analytics?.activeBookings || 0) / (analytics?.totalBookings || 1)) * 100).toFixed(1)
@@ -643,19 +712,19 @@ export default function AnalyticsPage() {
                   </p>
                 </div>
                 <div className="p-4 rounded-lg bg-background-secondary/30">
-                  <p className="text-xs text-foreground-muted mb-1">Avg Booking Value</p>
+                  <p className="text-xs text-foreground-muted mb-1">{t('avgBookingValue')}</p>
                   <p className="text-2xl font-bold text-foreground">
                     ${(analytics?.totalBookings || 0) > 0
-                      ? ((analytics?.totalInvestment || 0) / (analytics?.totalBookings || 1)).toFixed(2)
-                      : '0.00'}
+                      ? Math.round((analytics?.totalInvestment || 0) / (analytics?.totalBookings || 1))
+                      : '0'}
                   </p>
                 </div>
                 <div className="p-4 rounded-lg bg-background-secondary/30">
-                  <p className="text-xs text-foreground-muted mb-1">Avg Revenue per Booking</p>
+                  <p className="text-xs text-foreground-muted mb-1">{t('avgRevenuePerBooking')}</p>
                   <p className="text-2xl font-bold text-foreground">
                     ${(analytics?.activeBookings || 0) > 0
-                      ? ((analytics?.totalRevenue || 0) / (analytics?.activeBookings || 1)).toFixed(2)
-                      : '0.00'}
+                      ? Math.round((analytics?.totalRevenue || 0) / (analytics?.activeBookings || 1))
+                      : '0'}
                   </p>
                 </div>
               </>
@@ -672,18 +741,18 @@ export default function AnalyticsPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <h3 className="text-xl font-bold text-foreground mb-2">Start Your Mining Journey</h3>
+          <h3 className="text-xl font-bold text-foreground mb-2">{t('startMiningJourney')}</h3>
           <p className="text-foreground-muted mb-6 max-w-md mx-auto">
-            You don&apos;t have any active mining subscriptions yet. Start mining cryptocurrency to see real earnings data and analytics.
+            {t('noSubscriptionsYet')}
           </p>
           <Link
-            href="/dashboard/machines"
+            href="/machines"
             className="btn-primary px-6 py-3 rounded-lg font-medium inline-flex items-center gap-2"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
-            Browse Mining Machines
+            {t('browseMiningMachines')}
           </Link>
         </div>
       )}
