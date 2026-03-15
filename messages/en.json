@@ -358,6 +358,7 @@
       "signingIn": "Signing In...",
       "noAccount": "Don't have an account?",
       "createAccount": "Create Account",
+      "signInWithGoogle": "Sign in with Google",
       "backToHome": "Back to Home",
       "securityBadge": "256-bit SSL Encrypted • Secure Login",
       "errors": {
@@ -378,7 +379,8 @@
       "signUp": "Sign Up",
       "signingUp": "Signing Up...",
       "haveAccount": "Already have an account?",
-      "signIn": "Sign In"
+      "signIn": "Sign In",
+      "signUpWithGoogle": "Sign up with Google"
     },
     "forgotPassword": {
       "title": "Forgot Password",

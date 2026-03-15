@@ -358,6 +358,7 @@
       "signingIn": "جاري تسجيل الدخول...",
       "noAccount": "ليس لديك حساب؟",
       "createAccount": "إنشاء حساب",
+      "signInWithGoogle": "تسجيل الدخول بـ Google",
       "backToHome": "العودة إلى الرئيسية",
       "securityBadge": "مشفّر SSL 256 بت • تسجيل دخول آمن",
       "errors": {
@@ -378,7 +379,8 @@
       "signUp": "إنشاء حساب",
       "signingUp": "جاري إنشاء الحساب...",
       "haveAccount": "لديك حساب بالفعل؟",
-      "signIn": "تسجيل الدخول"
+      "signIn": "تسجيل الدخول",
+      "signUpWithGoogle": "إنشاء حساب بـ Google"
     },
     "forgotPassword": {
       "title": "نسيت كلمة المرور",
