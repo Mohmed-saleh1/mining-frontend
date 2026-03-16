@@ -104,6 +104,8 @@ export default function MachinesPage() {
           algorithm: machine.algorithm || "",
           miningCoin: machine.miningCoin || "",
           efficiency: machine.efficiency || 0,
+          pricePerDay: machine.pricePerDay ?? machine.pricePerMonth / 30,
+          pricePerWeek: machine.pricePerWeek ?? machine.pricePerMonth / 4.33,
           pricePerMonth: machine.pricePerMonth,
           profitPerHour: machine.profitPerHour,
           profitPerDay: machine.profitPerDay,
