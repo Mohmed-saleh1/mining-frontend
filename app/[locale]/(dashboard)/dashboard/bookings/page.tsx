@@ -603,19 +603,19 @@ export default function UserBookingsPage() {
 
               {/* Message Input */}
               <form onSubmit={handleSendMessage} className="p-4 border-t border-border">
-                <div className="flex gap-3">
+                <div className="flex gap-3 items-center">
                   <input
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     placeholder={t('typeMessage')}
-                    className="flex-1 input-gold px-4 py-3 rounded-xl bg-background-secondary/50"
+                    className="flex-1 min-w-0 input-gold px-4 py-3 rounded-xl bg-background-secondary/50"
                     disabled={isSending}
                   />
                   <button
                     type="submit"
                     disabled={isSending || !newMessage.trim()}
-                    className="btn-gold px-6 py-3 rounded-xl disabled:opacity-50"
+                    className="shrink-0 btn-gold px-6 py-3 rounded-xl disabled:opacity-50"
                   >
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
