@@ -415,9 +415,11 @@ export default function AdminBookingsPage() {
       {/* Booking Details Modal */}
       {showDetailsModal && selectedBooking && selectedBooking.id && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="glass rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+          <div className="glass rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
+            {/* Scrollable: Header + Booking Info */}
+            <div className="flex-1 min-h-0 overflow-y-auto">
             {/* Header */}
-            <div className="p-6 border-b border-border">
+            <div className="p-6 border-b border-border shrink-0">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-bold text-foreground">
@@ -545,15 +547,16 @@ export default function AdminBookingsPage() {
                 </div>
               )}
             </div>
+            </div>
 
-            {/* Chat Section */}
-            <div className="flex-1 overflow-hidden flex flex-col min-h-[300px]">
+            {/* Chat Section - always visible at bottom */}
+            <div className="shrink-0 flex flex-col min-h-[220px] border-t border-border">
               <div className="px-6 py-3 border-b border-border">
                 <h3 className="font-semibold text-foreground">{t('details.chatWithUser')}</h3>
               </div>
               
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-4">
                 {selectedBooking.messages?.map((message) => (
                   <div
                     key={message.id}
