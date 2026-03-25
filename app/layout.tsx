@@ -24,8 +24,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const defaultDirection = defaultLocale === "ar" ? "rtl" : "ltr";
+
   return (
-    <html lang={defaultLocale} dir="ltr" suppressHydrationWarning>
+    <html lang={defaultLocale} dir={defaultDirection} suppressHydrationWarning>
       <body className={`${orbitron.variable} ${inter.variable} antialiased`}>
         {children}
       </body>
