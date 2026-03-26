@@ -122,10 +122,17 @@ export default function BookingDetailsPage() {
   const loadBooking = async () => {
     try {
       const response = await bookingsApi.getMyBooking(id);
-      setBooking(response.data);
-      try {
-        await bookingsApi.markMessagesRead(id);
-      } catch {}
+      const raw = response.data as any;
+      const bookingData: Booking =
+        raw && typeof raw === "object" && "data" in raw && raw.data?.id
+          ? raw.data
+          : raw;
+      if (bookingData?.id) {
+        setBooking(bookingData);
+        try {
+          await bookingsApi.markMessagesRead(id);
+        } catch {}
+      }
     } catch (error) {
       console.error("Failed to load booking:", error);
     } finally {
