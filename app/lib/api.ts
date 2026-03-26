@@ -675,7 +675,7 @@ export const walletsApi = {
 // Booking Types
 export type BookingStatus = 'pending' | 'awaiting_payment' | 'payment_sent' | 'approved' | 'rejected' | 'cancelled';
 export type RentalDuration = 'hour' | 'day' | 'week' | 'month';
-export type MessageType = 'text' | 'payment_address' | 'system';
+export type MessageType = 'text' | 'payment_address' | 'image' | 'system';
 
 export interface BookingUser {
   id: string;
@@ -699,6 +699,9 @@ export interface BookingMessage {
   senderId: string;
   sender: BookingUser;
   content: string;
+  cryptoName?: string;
+  networkType?: string;
+  imageUrl?: string;
   messageType: MessageType;
   isRead: boolean;
   isFromAdmin: boolean;
@@ -725,6 +728,18 @@ export interface Booking {
   approvedById?: string;
   approvedBy?: BookingUser;
   messages: BookingMessage[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BookingReceivingAddress {
+  id: string;
+  cryptoName?: string;
+  networkType: string;
+  address: string;
+  qrImageUrl?: string;
+  isActive: boolean;
+  createdById: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -806,6 +821,18 @@ export const bookingsApi = {
       body: JSON.stringify({ content }),
     }),
 
+  sendImageMessage: (bookingId: string, image: File, content?: string) => {
+    const formData = new FormData();
+    formData.append('image', image);
+    if (content?.trim()) {
+      formData.append('content', content.trim());
+    }
+    return requestWithFile<BookingMessage>(
+      `/bookings/my-bookings/${bookingId}/messages/image`,
+      formData
+    );
+  },
+
   getMessages: (bookingId: string) =>
     request<BookingMessage[]>(`/bookings/my-bookings/${bookingId}/messages`),
 
@@ -817,6 +844,9 @@ export const bookingsApi = {
   getUnreadCount: () => request<{ count: number }>('/bookings/unread-count'),
 
   getAnalytics: () => request<BookingAnalytics>('/bookings/my-bookings/analytics'),
+
+  getReceivingAddresses: () =>
+    request<BookingReceivingAddress[]>('/bookings/receiving-addresses'),
 };
 
 // Admin Bookings API
@@ -863,6 +893,18 @@ export const bookingsAdminApi = {
       body: JSON.stringify({ content }),
     }),
 
+  sendImageMessage: (bookingId: string, image: File, content?: string) => {
+    const formData = new FormData();
+    formData.append('image', image);
+    if (content?.trim()) {
+      formData.append('content', content.trim());
+    }
+    return requestWithFile<BookingMessage>(
+      `/bookings/admin/${bookingId}/messages/image`,
+      formData
+    );
+  },
+
   getMessages: (bookingId: string) =>
     request<BookingMessage[]>(`/bookings/admin/${bookingId}/messages`),
 
@@ -872,6 +914,59 @@ export const bookingsAdminApi = {
     }),
 
   getUnreadCount: () => request<{ count: number }>('/bookings/admin/unread-count'),
+
+  getReceivingAddresses: () =>
+    request<BookingReceivingAddress[]>(
+      '/bookings/admin/settings/receiving-addresses'
+    ),
+
+  createReceivingAddress: (data: {
+    cryptoName: string;
+    networkType: string;
+    address: string;
+    isActive?: boolean;
+  }) =>
+    request<BookingReceivingAddress>(
+      '/bookings/admin/settings/receiving-addresses',
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }
+    ),
+
+  updateReceivingAddress: (
+    id: string,
+    data: {
+      cryptoName?: string;
+      networkType?: string;
+      address?: string;
+      isActive?: boolean;
+    }
+  ) =>
+    request<BookingReceivingAddress>(
+      `/bookings/admin/settings/receiving-addresses/${id}`,
+      {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }
+    ),
+
+  deleteReceivingAddress: (id: string) =>
+    request<null>(`/bookings/admin/settings/receiving-addresses/${id}/delete`, {
+      method: 'PUT',
+    }),
+
+  getReceivingAddressesForQr: () =>
+    request<BookingReceivingAddress[]>('/bookings/admin/receiving-addresses/qr'),
+
+  uploadReceivingAddressQr: (id: string, image: File) => {
+    const formData = new FormData();
+    formData.append('image', image);
+    return requestWithFile<BookingReceivingAddress>(
+      `/bookings/admin/receiving-addresses/${id}/qr`,
+      formData
+    );
+  },
 };
 
 // Legal Documents Types

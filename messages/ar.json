@@ -1431,6 +1431,7 @@
     "sidebar": {
       "loading": "جاري التحميل...",
       "dashboard": "لوحة التحكم",
+      "receivingAddresses": "عناوين الاستلام",
       "users": "المستخدمون",
       "reports": "التقارير",
       "managerPanel": "لوحة تحكم المدير",
@@ -1581,6 +1582,22 @@
         "newRegistrations": "التسجيلات الجديدة",
         "pendingVerifications": "التحققات المعلقة"
       }
+    },
+    "receivingAddresses": {
+      "title": "عناوين الاستلام",
+      "subtitle": "إدارة عناوين الاستلام العامة لجميع الحجوزات",
+      "cryptoPlaceholder": "اسم العملة (USDT, BTC...)",
+      "networkPlaceholder": "نوع الشبكة (TRC20, ERC20...)",
+      "addressPlaceholder": "عنوان الاستلام",
+      "qrPlaceholder": "صورة QR باينانس (اختياري)",
+      "addButton": "إضافة عنوان استلام",
+      "saving": "جاري الحفظ...",
+      "loading": "جاري تحميل عناوين الاستلام...",
+      "empty": "لا توجد عناوين استلام مضافة بعد.",
+      "enable": "تفعيل",
+      "disable": "تعطيل",
+      "delete": "حذف",
+      "deleteConfirm": "هل تريد حذف عنوان الاستلام هذا؟"
     }
   }
 }

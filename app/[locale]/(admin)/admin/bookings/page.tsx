@@ -7,6 +7,7 @@ import ClientOnly from "@/app/components/ClientOnly";
 import {
   bookingsAdminApi,
   Booking,
+  BookingReceivingAddress,
   BookingStatus,
   RentalDuration,
   BookingStatistics,
@@ -30,6 +31,9 @@ export default function AdminBookingsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [newMessage, setNewMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [qrAddresses, setQrAddresses] = useState<BookingReceivingAddress[]>([]);
+  const [selectedQrFiles, setSelectedQrFiles] = useState<Record<string, File | null>>({});
+  const [uploadingQrId, setUploadingQrId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const statusConfig: Record<BookingStatus, { label: string; color: string; bg: string }> = {
@@ -60,6 +64,7 @@ export default function AdminBookingsPage() {
   useEffect(() => {
     loadBookings();
     loadStatistics();
+    loadQrAddresses();
   }, [statusFilter, currentPage]);
 
   useEffect(() => {
@@ -110,6 +115,18 @@ export default function AdminBookingsPage() {
     }
   };
 
+  const loadQrAddresses = async () => {
+    try {
+      const response = await bookingsAdminApi.getReceivingAddressesForQr();
+      const actualData = (response.data as any)?.data || response.data;
+      setQrAddresses(Array.isArray(actualData) ? actualData : []);
+    } catch (error) {
+      console.error("Failed to load receiving addresses for QR:", error);
+      setQrAddresses([]);
+    }
+  };
+
+
   const unwrapBooking = (response: { data: unknown }): Booking | null => {
     const raw = response.data as Booking | { data?: Booking };
     const booking =
@@ -159,6 +176,7 @@ export default function AdminBookingsPage() {
       setIsSendingAddress(false);
     }
   };
+
 
   const handleApprove = async () => {
     if (!selectedBooking || !selectedBooking.id) return;
@@ -221,6 +239,27 @@ export default function AdminBookingsPage() {
     }
   };
 
+  const handleQrFileChange = (addressId: string, file: File | null) => {
+    setSelectedQrFiles((prev) => ({ ...prev, [addressId]: file }));
+  };
+
+  const handleUploadQr = async (addressId: string) => {
+    const file = selectedQrFiles[addressId];
+    if (!file) return;
+
+    setUploadingQrId(addressId);
+    try {
+      await bookingsAdminApi.uploadReceivingAddressQr(addressId, file);
+      setSelectedQrFiles((prev) => ({ ...prev, [addressId]: null }));
+      await loadQrAddresses();
+      await loadBookings();
+    } catch (error) {
+      console.error("Failed to upload QR image:", error);
+    } finally {
+      setUploadingQrId(null);
+    }
+  };
+
   const statCards = statistics
     ? [
         { label: t('statistics.total'), value: statistics.total, color: "text-foreground" },
@@ -274,6 +313,58 @@ export default function AdminBookingsPage() {
           ))}
         </div>
       )}
+
+      <div className="glass rounded-2xl p-5 border border-border space-y-4">
+        <div>
+          <h3 className="text-lg font-semibold text-foreground">Binance QR For Receiving Addresses</h3>
+          <p className="text-sm text-foreground-muted mt-1">
+            Upload a QR image for each global receiving address. Users will see it when selecting the address.
+          </p>
+        </div>
+
+        {qrAddresses.length === 0 ? (
+          <p className="text-sm text-foreground-muted">No receiving addresses found.</p>
+        ) : (
+          <div className="space-y-3">
+            {qrAddresses.map((item) => (
+              <div key={item.id} className="rounded-xl border border-border bg-background-secondary/40 p-3">
+                <p className="text-sm font-medium text-foreground">
+                  {item.cryptoName ? `${item.cryptoName} - ` : ""}{item.networkType}
+                </p>
+                <p className="text-xs text-foreground-muted break-all mt-1">{item.address}</p>
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  {item.qrImageUrl ? (
+                    <a href={item.qrImageUrl} target="_blank" rel="noreferrer">
+                      <img
+                        src={item.qrImageUrl}
+                        alt="Address QR"
+                        className="h-20 w-20 rounded-md border border-border object-cover"
+                      />
+                    </a>
+                  ) : (
+                    <span className="text-xs text-foreground-muted">No QR uploaded</span>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) =>
+                      handleQrFileChange(item.id, e.target.files?.[0] || null)
+                    }
+                    className="text-xs text-foreground-muted"
+                  />
+                  <button
+                    onClick={() => handleUploadQr(item.id)}
+                    disabled={!selectedQrFiles[item.id] || uploadingQrId === item.id}
+                    className="px-3 py-2 rounded-lg text-xs border border-gold/40 text-gold hover:bg-gold/10 disabled:opacity-50"
+                  >
+                    {uploadingQrId === item.id ? "Uploading..." : "Upload QR"}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
@@ -575,8 +666,26 @@ export default function AdminBookingsPage() {
                     >
                       {message.messageType === "payment_address" ? (
                         <div>
-                          <p className="text-xs text-blue-400 mb-1">{t('details.paymentAddress')}</p>
+                          <p className="text-xs text-blue-400 mb-1">
+                            {message.networkType
+                              ? `${t('details.paymentAddress')} - ${message.cryptoName ? `${message.cryptoName} / ` : ''}${message.networkType}`
+                              : t('details.paymentAddress')}
+                          </p>
                           <p className="font-mono text-sm break-all">{message.content}</p>
+                        </div>
+                      ) : message.messageType === "image" && message.imageUrl ? (
+                        <div>
+                          <p className="text-xs text-foreground-muted mb-2">Payment Screenshot</p>
+                          <a href={message.imageUrl} target="_blank" rel="noreferrer">
+                            <img
+                              src={message.imageUrl}
+                              alt="Payment screenshot"
+                              className="rounded-lg max-h-56 w-auto border border-border"
+                            />
+                          </a>
+                          {message.content && (
+                            <p className="text-sm mt-2">{message.content}</p>
+                          )}
                         </div>
                       ) : (
                         <p className="text-sm">{message.content}</p>

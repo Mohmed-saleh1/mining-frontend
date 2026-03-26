@@ -10,6 +10,7 @@ import {
   RentalDuration,
   MiningMachine,
   BookingMessage,
+  BookingReceivingAddress,
 } from "@/app/lib/api";
 import { useTranslations } from "next-intl";
 
@@ -29,6 +30,10 @@ export default function UserBookingsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [newMessage, setNewMessage] = useState("");
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedPaymentAddressMessageId, setSelectedPaymentAddressMessageId] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [receivingAddresses, setReceivingAddresses] = useState<BookingReceivingAddress[]>([]);
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -64,6 +69,7 @@ export default function UserBookingsPage() {
   useEffect(() => {
     loadBookings();
     loadMachines();
+    loadReceivingAddresses();
   }, []);
 
   // Add effect to reload bookings when component becomes visible
@@ -83,6 +89,26 @@ export default function UserBookingsPage() {
       scrollToBottom();
     }
   }, [selectedBooking?.messages, showDetailsModal]);
+
+  useEffect(() => {
+    if (!selectedBooking || selectedBooking.status !== "awaiting_payment") {
+      setSelectedPaymentAddressMessageId(null);
+      return;
+    }
+
+    const paymentAddressMessages =
+      selectedBooking.messages?.filter((m) => m.messageType === "payment_address") || [];
+    if (paymentAddressMessages.length === 0) {
+      setSelectedPaymentAddressMessageId(null);
+      return;
+    }
+
+    setSelectedPaymentAddressMessageId((prev) =>
+      prev && paymentAddressMessages.some((m) => m.id === prev)
+        ? prev
+        : paymentAddressMessages[0].id
+    );
+  }, [selectedBooking]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -115,6 +141,17 @@ export default function UserBookingsPage() {
     } catch (error) {
       console.error("Failed to load machines:", error);
       setMachines([]);
+    }
+  };
+
+  const loadReceivingAddresses = async () => {
+    try {
+      const response = await bookingsApi.getReceivingAddresses();
+      const actualData = (response.data as any)?.data || response.data;
+      setReceivingAddresses(Array.isArray(actualData) ? actualData : []);
+    } catch (error) {
+      console.error("Failed to load receiving addresses:", error);
+      setReceivingAddresses([]);
     }
   };
 
@@ -188,8 +225,26 @@ export default function UserBookingsPage() {
     }
   };
 
+  const handleUploadScreenshot = async () => {
+    if (!selectedBooking || !selectedBooking.id || !selectedImage) return;
+
+    setIsUploadingImage(true);
+    try {
+      await bookingsApi.sendImageMessage(selectedBooking.id, selectedImage, "Payment proof screenshot");
+      const response = await bookingsApi.getMyBooking(selectedBooking.id);
+      setSelectedBooking(response.data);
+      setSelectedImage(null);
+    } catch (error) {
+      console.error("Failed to upload screenshot:", error);
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
   const openBookingDetails = async (booking: Booking) => {
     setSelectedBooking(booking);
+    setSelectedImage(null);
+    setSelectedPaymentAddressMessageId(null);
     setShowDetailsModal(true);
     // Mark messages as read
     try {
@@ -423,6 +478,22 @@ export default function UserBookingsPage() {
                 </div>
               )}
 
+              {receivingAddresses.length > 0 && (
+                <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30">
+                  <p className="text-sm font-medium text-blue-400 mb-2">Receiving addresses that will appear after booking:</p>
+                  <div className="space-y-2">
+                    {receivingAddresses.map((item) => (
+                      <div key={item.id} className="bg-background-secondary/50 rounded-lg p-3">
+                        <p className="text-xs text-blue-300 mb-1">
+                          {item.cryptoName ? `${item.cryptoName} - ` : ""}{item.networkType}
+                        </p>
+                        <p className="font-mono text-xs break-all text-foreground">{item.address}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <button
                 type="submit"
                 disabled={isCreating || !createForm.machineId}
@@ -526,12 +597,59 @@ export default function UserBookingsPage() {
               )}
 
               {/* Payment Address Display */}
-              {selectedBooking.paymentAddress && selectedBooking.status === "awaiting_payment" && (
+              {selectedBooking.status === "awaiting_payment" && (
                 <div className="mt-4 p-4 rounded-xl bg-blue-500/10 border border-blue-500/30">
                   <p className="text-sm text-blue-400 font-medium mb-2">{t('paymentAddress')}</p>
-                  <p className="text-foreground font-mono text-sm break-all bg-background-secondary/50 p-3 rounded-lg">
-                    {selectedBooking.paymentAddress}
-                  </p>
+                  {(() => {
+                    const paymentAddressMessages =
+                      selectedBooking.messages?.filter(
+                        (m) => m.messageType === "payment_address",
+                      ) || [];
+                    const selectedMessage = paymentAddressMessages.find(
+                      (m) => m.id === selectedPaymentAddressMessageId,
+                    );
+
+                    return (
+                      <div className="space-y-3">
+                        <div className="grid gap-2">
+                          {paymentAddressMessages.map((message) => (
+                            <button
+                              key={message.id}
+                              type="button"
+                              onClick={() => setSelectedPaymentAddressMessageId(message.id)}
+                              className={`text-left p-3 rounded-lg border ${
+                                selectedPaymentAddressMessageId === message.id
+                                  ? "border-gold bg-gold/10"
+                                  : "border-border bg-background-secondary/50"
+                              }`}
+                            >
+                              <p className="text-xs text-blue-300 mb-1">
+                                {message.cryptoName
+                                  ? `${message.cryptoName} - ${message.networkType || "Network"}`
+                                  : message.networkType || "Network"}
+                              </p>
+                              <p className="font-mono text-sm break-all text-foreground">
+                                {message.content}
+                              </p>
+                            </button>
+                          ))}
+                        </div>
+
+                        {selectedMessage?.imageUrl && (
+                          <div className="rounded-lg border border-blue-500/30 bg-background-secondary/40 p-3">
+                            <p className="text-xs text-blue-300 mb-2">Binance QR</p>
+                            <a href={selectedMessage.imageUrl} target="_blank" rel="noreferrer">
+                              <img
+                                src={selectedMessage.imageUrl}
+                                alt="Selected payment QR"
+                                className="max-h-52 rounded-lg border border-border"
+                              />
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                   <div className="mt-4 space-y-3">
                     <input
                       type="text"
@@ -589,8 +707,26 @@ export default function UserBookingsPage() {
                     >
                       {message.messageType === "payment_address" ? (
                         <div>
-                          <p className="text-xs text-blue-400 mb-1">{t('paymentAddressLabel')}</p>
+                          <p className="text-xs text-blue-400 mb-1">
+                            {message.networkType
+                              ? `${t('paymentAddressLabel')} - ${message.cryptoName ? `${message.cryptoName} / ` : ''}${message.networkType}`
+                              : t('paymentAddressLabel')}
+                          </p>
                           <p className="font-mono text-sm break-all">{message.content}</p>
+                        </div>
+                      ) : message.messageType === "image" && message.imageUrl ? (
+                        <div>
+                          <p className="text-xs text-foreground-muted mb-2">Payment Screenshot</p>
+                          <a href={message.imageUrl} target="_blank" rel="noreferrer">
+                            <img
+                              src={message.imageUrl}
+                              alt="Payment screenshot"
+                              className="rounded-lg max-h-56 w-auto border border-border"
+                            />
+                          </a>
+                          {message.content && (
+                            <p className="text-sm mt-2">{message.content}</p>
+                          )}
                         </div>
                       ) : (
                         <p className="text-sm">{message.content}</p>
@@ -623,6 +759,23 @@ export default function UserBookingsPage() {
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                     </svg>
+                  </button>
+                </div>
+                <div className="mt-3 flex items-center gap-3">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setSelectedImage(e.target.files?.[0] || null)}
+                    className="text-xs text-foreground-muted"
+                    disabled={isUploadingImage}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleUploadScreenshot}
+                    disabled={!selectedImage || isUploadingImage}
+                    className="btn-outline px-4 py-2 rounded-lg text-xs disabled:opacity-50"
+                  >
+                    {isUploadingImage ? "Uploading..." : "Upload screenshot"}
                   </button>
                 </div>
               </form>

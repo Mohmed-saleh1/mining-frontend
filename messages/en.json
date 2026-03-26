@@ -1432,6 +1432,7 @@
     "sidebar": {
       "loading": "Loading...",
       "dashboard": "Dashboard",
+      "receivingAddresses": "Receiving Addresses",
       "users": "Users",
       "reports": "Reports",
       "managerPanel": "Manager Panel",
@@ -1582,6 +1583,22 @@
         "newRegistrations": "New Registrations",
         "pendingVerifications": "Pending Verifications"
       }
+    },
+    "receivingAddresses": {
+      "title": "Receiving Addresses",
+      "subtitle": "Manage global receiving addresses for all bookings",
+      "cryptoPlaceholder": "Crypto name (USDT, BTC...)",
+      "networkPlaceholder": "Network type (TRC20, ERC20...)",
+      "addressPlaceholder": "Receiving address",
+      "qrPlaceholder": "Binance QR image (optional)",
+      "addButton": "Add Receiving Address",
+      "saving": "Saving...",
+      "loading": "Loading receiving addresses...",
+      "empty": "No receiving addresses added yet.",
+      "enable": "Enable",
+      "disable": "Disable",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this receiving address?"
     }
   }
 }
