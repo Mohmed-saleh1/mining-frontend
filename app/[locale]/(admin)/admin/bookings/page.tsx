@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/lib/auth-context";
 import { useTranslations } from "next-intl";
 import ClientOnly from "@/app/components/ClientOnly";
@@ -13,28 +14,23 @@ import {
   BookingStatistics,
 } from "@/app/lib/api";
 
-// Disable static generation for admin pages
 export const dynamic = 'force-dynamic';
 
 export default function AdminBookingsPage() {
   const t = useTranslations('admin.bookings');
   const tStatus = useTranslations('dashboard.status');
   const tMachines = useTranslations('machines.details.bookingModal.durations');
-  const { user } = useAuth(); // Ensure user is authenticated
+  const { user } = useAuth();
+  const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [statistics, setStatistics] = useState<BookingStatistics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [statusFilter, setStatusFilter] = useState<BookingStatus | "all">("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [newMessage, setNewMessage] = useState("");
-  const [isSending, setIsSending] = useState(false);
   const [qrAddresses, setQrAddresses] = useState<BookingReceivingAddress[]>([]);
   const [selectedQrFiles, setSelectedQrFiles] = useState<Record<string, File | null>>({});
   const [uploadingQrId, setUploadingQrId] = useState<string | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const statusConfig: Record<BookingStatus, { label: string; color: string; bg: string }> = {
     pending: { label: tStatus('pending'), color: "text-yellow-400", bg: "bg-yellow-400/10" },
@@ -52,30 +48,11 @@ export default function AdminBookingsPage() {
     month: tMachines('month'),
   };
 
-  // Payment address form
-  const [paymentAddress, setPaymentAddress] = useState("");
-  const [isSendingAddress, setIsSendingAddress] = useState(false);
-
-  // Action states
-  const [isApproving, setIsApproving] = useState(false);
-  const [isRejecting, setIsRejecting] = useState(false);
-  const [adminNotes, setAdminNotes] = useState("");
-
   useEffect(() => {
     loadBookings();
     loadStatistics();
     loadQrAddresses();
   }, [statusFilter, currentPage]);
-
-  useEffect(() => {
-    if (selectedBooking && showDetailsModal) {
-      scrollToBottom();
-    }
-  }, [selectedBooking?.messages, showDetailsModal]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
 
   const loadBookings = async () => {
     setIsLoading(true);
@@ -85,20 +62,12 @@ export default function AdminBookingsPage() {
         limit: 10,
         status: statusFilter === "all" ? undefined : statusFilter,
       });
-      // Admin API returns paginated response: response.data.data.data contains the bookings array
       const paginatedData = (response.data as any)?.data;
       const bookingsArray = paginatedData?.data;
-      
-      if (Array.isArray(bookingsArray)) {
-        setBookings(bookingsArray);
-      } else {
-        setBookings([]);
-      }
-      
+      setBookings(Array.isArray(bookingsArray) ? bookingsArray : []);
       setTotalPages(paginatedData?.totalPages || 1);
     } catch (error) {
       console.error("Failed to load admin bookings:", error);
-      console.error("Error details:", error);
       setBookings([]);
       setTotalPages(1);
     } finally {
@@ -126,119 +95,6 @@ export default function AdminBookingsPage() {
     }
   };
 
-
-  const unwrapBooking = (response: { data: unknown }): Booking | null => {
-    const raw = response.data as Booking | { data?: Booking };
-    const booking =
-      raw && typeof raw === 'object' && 'data' in raw && raw.data && typeof raw.data === 'object' && 'id' in raw.data
-        ? (raw.data as Booking)
-        : (raw as Booking);
-    return booking?.id ? booking : null;
-  };
-
-  const openBookingDetails = async (booking: Booking) => {
-    try {
-      const response = await bookingsAdminApi.getOne(booking.id);
-      const bookingData = unwrapBooking(response);
-
-      if (bookingData) {
-        setSelectedBooking(bookingData);
-        setShowDetailsModal(true);
-        // Mark messages as read
-        await bookingsAdminApi.markMessagesRead(booking.id);
-      } else {
-        console.error("Invalid booking data received:", response);
-        alert("Failed to load booking details. Please try again.");
-      }
-    } catch (error) {
-      console.error("Failed to load booking details:", error);
-      alert("Failed to load booking details. Please try again.");
-    }
-  };
-
-  const handleSendPaymentAddress = async () => {
-    if (!selectedBooking || !selectedBooking.id || !paymentAddress.trim()) return;
-
-    setIsSendingAddress(true);
-    try {
-      const response = await bookingsAdminApi.sendPaymentAddress(
-        selectedBooking.id,
-        paymentAddress.trim()
-      );
-      const updated = unwrapBooking(response);
-      if (updated) setSelectedBooking(updated);
-      setPaymentAddress("");
-      await loadBookings();
-      await loadStatistics();
-    } catch (error) {
-      console.error("Failed to send payment address:", error);
-    } finally {
-      setIsSendingAddress(false);
-    }
-  };
-
-
-  const handleApprove = async () => {
-    if (!selectedBooking || !selectedBooking.id) return;
-
-    setIsApproving(true);
-    try {
-      const response = await bookingsAdminApi.approve(
-        selectedBooking.id,
-        adminNotes || undefined
-      );
-      const updated = unwrapBooking(response);
-      if (updated) setSelectedBooking(updated);
-      setAdminNotes("");
-      await loadBookings();
-      await loadStatistics();
-    } catch (error) {
-      console.error("Failed to approve booking:", error);
-    } finally {
-      setIsApproving(false);
-    }
-  };
-
-  const handleReject = async () => {
-    if (!selectedBooking || !selectedBooking.id) return;
-    if (!confirm(t('details.rejectConfirm'))) return;
-
-    setIsRejecting(true);
-    try {
-      const response = await bookingsAdminApi.reject(
-        selectedBooking.id,
-        adminNotes || undefined
-      );
-      const updated = unwrapBooking(response);
-      if (updated) setSelectedBooking(updated);
-      setAdminNotes("");
-      await loadBookings();
-      await loadStatistics();
-    } catch (error) {
-      console.error("Failed to reject booking:", error);
-    } finally {
-      setIsRejecting(false);
-    }
-  };
-
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedBooking || !selectedBooking.id || !newMessage.trim()) return;
-
-    setIsSending(true);
-    try {
-      await bookingsAdminApi.sendMessage(selectedBooking.id, newMessage.trim());
-      const response = await bookingsAdminApi.getOne(selectedBooking.id);
-      const updated = unwrapBooking(response);
-      if (updated) setSelectedBooking(updated);
-      setNewMessage("");
-    } catch (error) {
-      console.error("Failed to send message:", error);
-    } finally {
-      setIsSending(false);
-    }
-  };
-
   const handleQrFileChange = (addressId: string, file: File | null) => {
     setSelectedQrFiles((prev) => ({ ...prev, [addressId]: file }));
   };
@@ -252,7 +108,6 @@ export default function AdminBookingsPage() {
       await bookingsAdminApi.uploadReceivingAddressQr(addressId, file);
       setSelectedQrFiles((prev) => ({ ...prev, [addressId]: null }));
       await loadQrAddresses();
-      await loadBookings();
     } catch (error) {
       console.error("Failed to upload QR image:", error);
     } finally {
@@ -272,7 +127,7 @@ export default function AdminBookingsPage() {
     : [];
 
   return (
-    <ClientOnly 
+    <ClientOnly
       fallback={
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
@@ -282,451 +137,234 @@ export default function AdminBookingsPage() {
         </div>
       }
     >
-      <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
-          <p className="text-foreground-muted mt-1">
-            {t('subtitle')}
-          </p>
-        </div>
-        <button
-          onClick={loadBookings}
-          className="btn-outline px-4 py-3 rounded-xl font-semibold flex items-center gap-2"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          Refresh
-        </button>
-      </div>
-
-      {/* Statistics Cards */}
-      {statistics && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {statCards.map((stat) => (
-            <div key={stat.label} className="glass rounded-xl p-4 border border-border">
-              <p className="text-foreground-muted text-sm">{stat.label}</p>
-              <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="glass rounded-2xl p-5 border border-border space-y-4">
-        <div>
-          <h3 className="text-lg font-semibold text-foreground">Binance QR For Receiving Addresses</h3>
-          <p className="text-sm text-foreground-muted mt-1">
-            Upload a QR image for each global receiving address. Users will see it when selecting the address.
-          </p>
+      <div className="p-4 sm:p-6 space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+            <p className="text-foreground-muted mt-1">{t('subtitle')}</p>
+          </div>
+          <button
+            onClick={loadBookings}
+            className="btn-outline px-4 py-3 rounded-xl font-semibold flex items-center gap-2 self-start sm:self-auto"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Refresh
+          </button>
         </div>
 
-        {qrAddresses.length === 0 ? (
-          <p className="text-sm text-foreground-muted">No receiving addresses found.</p>
-        ) : (
-          <div className="space-y-3">
-            {qrAddresses.map((item) => (
-              <div key={item.id} className="rounded-xl border border-border bg-background-secondary/40 p-3">
-                <p className="text-sm font-medium text-foreground">
-                  {item.cryptoName ? `${item.cryptoName} - ` : ""}{item.networkType}
-                </p>
-                <p className="text-xs text-foreground-muted break-all mt-1">{item.address}</p>
-                <div className="mt-3 flex flex-wrap items-center gap-3">
-                  {item.qrImageUrl ? (
-                    <a href={item.qrImageUrl} target="_blank" rel="noreferrer">
-                      <img
-                        src={item.qrImageUrl}
-                        alt="Address QR"
-                        className="h-20 w-20 rounded-md border border-border object-cover"
-                      />
-                    </a>
-                  ) : (
-                    <span className="text-xs text-foreground-muted">No QR uploaded</span>
-                  )}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) =>
-                      handleQrFileChange(item.id, e.target.files?.[0] || null)
-                    }
-                    className="text-xs text-foreground-muted"
-                  />
-                  <button
-                    onClick={() => handleUploadQr(item.id)}
-                    disabled={!selectedQrFiles[item.id] || uploadingQrId === item.id}
-                    className="px-3 py-2 rounded-lg text-xs border border-gold/40 text-gold hover:bg-gold/10 disabled:opacity-50"
-                  >
-                    {uploadingQrId === item.id ? "Uploading..." : "Upload QR"}
-                  </button>
-                </div>
+        {/* Statistics Cards */}
+        {statistics && (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {statCards.map((stat) => (
+              <div key={stat.label} className="glass rounded-xl p-4 border border-border">
+                <p className="text-foreground-muted text-sm">{stat.label}</p>
+                <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
               </div>
             ))}
           </div>
         )}
-      </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2">
-        <button
-          onClick={() => { setStatusFilter("all"); setCurrentPage(1); }}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            statusFilter === "all"
-              ? "bg-gold text-background"
-              : "bg-background-secondary text-foreground-muted hover:text-foreground"
-          }`}
-        >
-          {t('filters.all')}
-        </button>
-        {(Object.keys(statusConfig) as BookingStatus[]).map((status) => (
+        {/* QR Section */}
+        <div className="glass rounded-2xl p-5 border border-border space-y-4">
+          <div>
+            <h3 className="text-lg font-semibold text-foreground">Binance QR For Receiving Addresses</h3>
+            <p className="text-sm text-foreground-muted mt-1">
+              Upload a QR image for each global receiving address. Users will see it when selecting the address.
+            </p>
+          </div>
+          {qrAddresses.length === 0 ? (
+            <p className="text-sm text-foreground-muted">No receiving addresses found.</p>
+          ) : (
+            <div className="space-y-3">
+              {qrAddresses.map((item) => (
+                <div key={item.id} className="rounded-xl border border-border bg-background-secondary/40 p-3">
+                  <p className="text-sm font-medium text-foreground">
+                    {item.cryptoName ? `${item.cryptoName} - ` : ""}{item.networkType}
+                  </p>
+                  <p className="text-xs text-foreground-muted break-all mt-1">{item.address}</p>
+                  <div className="mt-3 flex flex-wrap items-center gap-3">
+                    {item.qrImageUrl ? (
+                      <a href={item.qrImageUrl} target="_blank" rel="noreferrer">
+                        <img
+                          src={item.qrImageUrl}
+                          alt="Address QR"
+                          className="h-20 w-20 rounded-md border border-border object-cover"
+                        />
+                      </a>
+                    ) : (
+                      <span className="text-xs text-foreground-muted">No QR uploaded</span>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleQrFileChange(item.id, e.target.files?.[0] || null)}
+                      className="text-xs text-foreground-muted"
+                    />
+                    <button
+                      onClick={() => handleUploadQr(item.id)}
+                      disabled={!selectedQrFiles[item.id] || uploadingQrId === item.id}
+                      className="px-3 py-2 rounded-lg text-xs border border-gold/40 text-gold hover:bg-gold/10 disabled:opacity-50"
+                    >
+                      {uploadingQrId === item.id ? "Uploading..." : "Upload QR"}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap gap-2">
           <button
-            key={status}
-            onClick={() => { setStatusFilter(status); setCurrentPage(1); }}
+            onClick={() => { setStatusFilter("all"); setCurrentPage(1); }}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              statusFilter === status
+              statusFilter === "all"
                 ? "bg-gold text-background"
                 : "bg-background-secondary text-foreground-muted hover:text-foreground"
             }`}
           >
-            {statusConfig[status].label}
+            {t('filters.all')}
           </button>
-        ))}
-      </div>
+          {(Object.keys(statusConfig) as BookingStatus[]).map((status) => (
+            <button
+              key={status}
+              onClick={() => { setStatusFilter(status); setCurrentPage(1); }}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                statusFilter === status
+                  ? "bg-gold text-background"
+                  : "bg-background-secondary text-foreground-muted hover:text-foreground"
+              }`}
+            >
+              {statusConfig[status].label}
+            </button>
+          ))}
+        </div>
 
-      {/* Bookings Table */}
-      <div className="glass rounded-2xl border border-border overflow-hidden">
-        {isLoading ? (
-          <div className="flex items-center justify-center p-12">
-            <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : bookings.length === 0 ? (
-          <div className="p-12 text-center">
-            <p className="text-foreground-muted">{t('details.noBookings')}</p>
-            <p className="text-foreground-muted text-sm mt-1">{t('details.noBookingsDescription')}</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-background-secondary/50">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    {t('table.user')}
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    {t('table.machine')}
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    {t('table.duration')}
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    {t('table.totalPrice')}
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    {t('table.status')}
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    {t('table.createdAt')}
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">
-                    {t('table.actions')}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
+        {/* Bookings Table (desktop) / Cards (mobile) */}
+        <div className="glass rounded-2xl border border-border overflow-hidden">
+          {isLoading ? (
+            <div className="flex items-center justify-center p-12">
+              <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : bookings.length === 0 ? (
+            <div className="p-12 text-center">
+              <p className="text-foreground-muted">{t('details.noBookings')}</p>
+              <p className="text-foreground-muted text-sm mt-1">{t('details.noBookingsDescription')}</p>
+            </div>
+          ) : (
+            <>
+              {/* Desktop table */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-background-secondary/50">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">{t('table.user')}</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">{t('table.machine')}</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">{t('table.duration')}</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">{t('table.totalPrice')}</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">{t('table.status')}</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">{t('table.createdAt')}</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-foreground-muted uppercase tracking-wider">{t('table.actions')}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {bookings.map((booking) => (
+                      <tr key={booking.id} className="hover:bg-gold/5 transition-colors">
+                        <td className="px-6 py-4">
+                          <div>
+                            <p className="font-medium text-foreground">{booking.user?.firstName} {booking.user?.lastName}</p>
+                            <p className="text-sm text-foreground-muted">{booking.user?.email}</p>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="font-medium text-foreground">{booking.machine?.name}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="text-sm text-foreground">{booking.quantity} {t('table.quantity')} • {durationLabels[booking.rentalDuration]}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="font-bold text-gold">${Math.round(Number(booking.totalPrice))}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig[booking.status].bg} ${statusConfig[booking.status].color}`}>
+                            {statusConfig[booking.status].label}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="text-sm text-foreground-muted">{new Date(booking.createdAt).toLocaleDateString()}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <button
+                            onClick={() => router.push(`/admin/bookings/${booking.id}`)}
+                            className="btn-outline px-4 py-2 rounded-lg text-sm"
+                          >
+                            {t('table.viewDetails')}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile cards */}
+              <div className="md:hidden divide-y divide-border">
                 {bookings.map((booking) => (
-                  <tr key={booking.id} className="hover:bg-gold/5 transition-colors">
-                    <td className="px-6 py-4">
-                      <div>
-                        <p className="font-medium text-foreground">
-                          {booking.user?.firstName} {booking.user?.lastName}
-                        </p>
-                        <p className="text-sm text-foreground-muted">{booking.user?.email}</p>
+                  <div
+                    key={booking.id}
+                    className="p-4 hover:bg-gold/5 transition-colors cursor-pointer"
+                    onClick={() => router.push(`/admin/bookings/${booking.id}`)}
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="min-w-0">
+                        <p className="font-medium text-foreground">{booking.user?.firstName} {booking.user?.lastName}</p>
+                        <p className="text-sm text-foreground-muted truncate">{booking.user?.email}</p>
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="font-medium text-foreground">{booking.machine?.name}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-sm text-foreground">
-                        {booking.quantity} {t('table.quantity')} • {durationLabels[booking.rentalDuration]}
-                      </p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="font-bold text-gold">${Math.round(Number(booking.totalPrice))}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusConfig[booking.status].bg} ${statusConfig[booking.status].color}`}>
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium shrink-0 ml-2 ${statusConfig[booking.status].bg} ${statusConfig[booking.status].color}`}>
                         {statusConfig[booking.status].label}
                       </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="text-sm text-foreground-muted">
-                        {new Date(booking.createdAt).toLocaleDateString()}
-                      </p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => openBookingDetails(booking)}
-                        className="btn-outline px-4 py-2 rounded-lg text-sm"
-                      >
-                        {t('table.viewDetails')}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 p-4 border-t border-border">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-              className="px-4 py-2 rounded-lg bg-background-secondary text-foreground-muted hover:text-foreground disabled:opacity-50 transition-colors"
-            >
-              {t('pagination.previous')}
-            </button>
-            <span className="text-foreground-muted">
-              {t('pagination.page', { current: currentPage, total: totalPages })}
-            </span>
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 rounded-lg bg-background-secondary text-foreground-muted hover:text-foreground disabled:opacity-50 transition-colors"
-            >
-              {t('pagination.next')}
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Booking Details Modal */}
-      {showDetailsModal && selectedBooking && selectedBooking.id && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="glass rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
-            {/* Scrollable: Header + Booking Info */}
-            <div className="flex-1 min-h-0 overflow-y-auto">
-            {/* Header */}
-            <div className="p-6 border-b border-border shrink-0">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-bold text-foreground">
-                    {t('details.title')}
-                  </h2>
-                  <p className="text-sm text-foreground-muted">
-                    {t('details.bookingNumber', { id: selectedBooking.id?.slice(0, 8) || 'N/A' })}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setShowDetailsModal(false)}
-                  className="p-2 hover:bg-gold/10 rounded-lg transition-colors"
-                >
-                  <svg className="w-5 h-5 text-foreground-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            {/* Booking Info */}
-            <div className="p-6 border-b border-border space-y-4">
-              <div className="grid grid-cols-2 gap-6">
-                {/* User Info */}
-                <div className="space-y-2">
-                  <h3 className="font-semibold text-foreground">{t('details.userInfo')}</h3>
-                  <p className="text-foreground">
-                    {selectedBooking.user?.firstName} {selectedBooking.user?.lastName}
-                  </p>
-                  <p className="text-sm text-foreground-muted">{selectedBooking.user?.email}</p>
-                </div>
-
-                {/* Machine Info */}
-                <div className="space-y-2">
-                  <h3 className="font-semibold text-foreground">{t('details.machineInfo')}</h3>
-                  <p className="text-foreground">{selectedBooking.machine?.name}</p>
-                  <p className="text-sm text-foreground-muted">{selectedBooking.machine?.miningCoin}</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-4 gap-4">
-                <div>
-                  <p className="text-sm text-foreground-muted">{t('table.duration')}</p>
-                  <p className="font-medium text-foreground">{selectedBooking.rentalDuration ? durationLabels[selectedBooking.rentalDuration] : 'N/A'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-foreground-muted">{t('table.quantity')}</p>
-                  <p className="font-medium text-foreground">{selectedBooking.quantity ?? 'N/A'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-foreground-muted">{t('table.totalPrice')}</p>
-                  <p className="font-bold text-gold">${selectedBooking.totalPrice ? Math.round(Number(selectedBooking.totalPrice)) : '0'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-foreground-muted">{t('table.status')}</p>
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${selectedBooking.status ? statusConfig[selectedBooking.status]?.bg || 'bg-gray-500/20' : 'bg-gray-500/20'} ${selectedBooking.status ? statusConfig[selectedBooking.status]?.color || 'text-gray-500' : 'text-gray-500'}`}>
-                    {selectedBooking.status ? statusConfig[selectedBooking.status]?.label || 'Unknown' : 'Unknown'}
-                  </span>
-                </div>
-              </div>
-
-              {/* User Notes */}
-              {selectedBooking.userNotes && (
-                <div className="p-4 rounded-xl bg-background-secondary/50">
-                  <p className="text-sm text-foreground-muted mb-1">{t('details.userNotes')}:</p>
-                  <p className="text-foreground">{selectedBooking.userNotes}</p>
-                </div>
-              )}
-
-              {/* Transaction Hash */}
-              {selectedBooking.transactionHash && (
-                <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/30">
-                  <p className="text-sm text-purple-400 mb-1">{t('details.transactionHash')}:</p>
-                  <p className="font-mono text-sm break-all">{selectedBooking.transactionHash}</p>
-                </div>
-              )}
-
-              {/* Actions based on status */}
-              {selectedBooking.status === "pending" && (
-                <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/30 space-y-3">
-                  <p className="text-sm text-yellow-400 font-medium">{t('details.sendPaymentAddress')}</p>
-                  <input
-                    type="text"
-                    placeholder={t('details.paymentAddressPlaceholder')}
-                    value={paymentAddress}
-                    onChange={(e) => setPaymentAddress(e.target.value)}
-                    className="input-gold w-full px-4 py-3 rounded-xl bg-background-secondary/50"
-                  />
-                  <button
-                    onClick={handleSendPaymentAddress}
-                    disabled={isSendingAddress || !paymentAddress.trim()}
-                    className="btn-gold w-full py-3 rounded-xl font-semibold disabled:opacity-50"
-                  >
-                    {isSendingAddress ? t('details.sendingAddress') : t('details.sendPaymentAddress')}
-                  </button>
-                </div>
-              )}
-
-              {selectedBooking.status === "payment_sent" && (
-                <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/30 space-y-3">
-                  <p className="text-sm text-green-400 font-medium">{t('details.paymentInfo')}</p>
-                  <textarea
-                    placeholder={t('details.notesPlaceholder')}
-                    value={adminNotes}
-                    onChange={(e) => setAdminNotes(e.target.value)}
-                    className="input-gold w-full px-4 py-3 rounded-xl bg-background-secondary/50 resize-none"
-                    rows={2}
-                  />
-                  <div className="flex gap-3">
-                    <button
-                      onClick={handleApprove}
-                      disabled={isApproving}
-                      className="flex-1 btn-gold py-3 rounded-xl font-semibold disabled:opacity-50"
-                    >
-                      {isApproving ? t('details.approving') : t('details.approve')}
-                    </button>
-                    <button
-                      onClick={handleReject}
-                      disabled={isRejecting}
-                      className="flex-1 py-3 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors font-semibold disabled:opacity-50"
-                    >
-                      {isRejecting ? t('details.rejecting') : t('details.reject')}
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-            </div>
-
-            {/* Chat Section - always visible at bottom */}
-            <div className="shrink-0 flex flex-col min-h-[220px] border-t border-border">
-              <div className="px-6 py-3 border-b border-border">
-                <h3 className="font-semibold text-foreground">{t('details.chatWithUser')}</h3>
-              </div>
-              
-              {/* Messages */}
-              <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-4">
-                {selectedBooking.messages?.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${message.isFromAdmin ? "justify-end" : "justify-start"}`}
-                  >
-                    <div
-                      className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                        message.messageType === "system"
-                          ? "bg-background-secondary/50 text-foreground-muted text-sm italic text-center w-full max-w-full"
-                          : message.messageType === "payment_address"
-                          ? "bg-blue-500/10 border border-blue-500/30"
-                          : message.isFromAdmin
-                          ? "bg-gold/20"
-                          : "bg-background-secondary"
-                      }`}
-                    >
-                      {message.messageType === "payment_address" ? (
-                        <div>
-                          <p className="text-xs text-blue-400 mb-1">
-                            {message.networkType
-                              ? `${t('details.paymentAddress')} - ${message.cryptoName ? `${message.cryptoName} / ` : ''}${message.networkType}`
-                              : t('details.paymentAddress')}
-                          </p>
-                          <p className="font-mono text-sm break-all">{message.content}</p>
-                        </div>
-                      ) : message.messageType === "image" && message.imageUrl ? (
-                        <div>
-                          <p className="text-xs text-foreground-muted mb-2">Payment Screenshot</p>
-                          <a href={message.imageUrl} target="_blank" rel="noreferrer">
-                            <img
-                              src={message.imageUrl}
-                              alt="Payment screenshot"
-                              className="rounded-lg max-h-56 w-auto border border-border"
-                            />
-                          </a>
-                          {message.content && (
-                            <p className="text-sm mt-2">{message.content}</p>
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-sm">{message.content}</p>
-                      )}
-                      <p className="text-xs text-foreground-muted mt-1">
-                        {new Date(message.createdAt).toLocaleString()}
-                      </p>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <div>
+                        <p className="text-foreground">{booking.machine?.name}</p>
+                        <p className="text-foreground-muted text-xs">{booking.quantity} {t('table.quantity')} • {durationLabels[booking.rentalDuration]}</p>
+                      </div>
+                      <p className="font-bold text-gold">${Math.round(Number(booking.totalPrice))}</p>
                     </div>
                   </div>
                 ))}
-                <div ref={messagesEndRef} />
               </div>
+            </>
+          )}
 
-              {/* Message Input */}
-              <form onSubmit={handleSendMessage} className="p-4 border-t border-border">
-                <div className="flex gap-3 items-center">
-                  <input
-                    type="text"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder={t('details.typeMessage')}
-                    className="flex-1 min-w-0 input-gold px-4 py-3 rounded-xl bg-background-secondary/50"
-                    disabled={isSending}
-                  />
-                  <button
-                    type="submit"
-                    disabled={isSending || !newMessage.trim()}
-                    className="shrink-0 btn-gold px-6 py-3 rounded-xl disabled:opacity-50"
-                  >
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                    </svg>
-                  </button>
-                </div>
-              </form>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 p-4 border-t border-border">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 rounded-lg bg-background-secondary text-foreground-muted hover:text-foreground disabled:opacity-50 transition-colors"
+              >
+                {t('pagination.previous')}
+              </button>
+              <span className="text-foreground-muted">
+                {t('pagination.page', { current: currentPage, total: totalPages })}
+              </span>
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 rounded-lg bg-background-secondary text-foreground-muted hover:text-foreground disabled:opacity-50 transition-colors"
+              >
+                {t('pagination.next')}
+              </button>
             </div>
-          </div>
+          )}
         </div>
-      )}
       </div>
     </ClientOnly>
   );
 }
-

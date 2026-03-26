@@ -903,7 +903,12 @@
       "periodRevenue": "لهذه المدة",
       "rentalCost": "تكلفة الإيجار",
       "refresh": "تحديث",
-      "suffixDay": "يوم"
+      "suffixDay": "يوم",
+      "backToBookings": "العودة إلى الحجوزات",
+      "noMessages": "لا توجد رسائل بعد",
+      "uploadScreenshot": "إرفاق صورة",
+      "uploading": "جاري الرفع...",
+      "send": "إرسال"
     },
     "wallet": {
       "title": "محفظتي",
@@ -1085,6 +1090,7 @@
         "total": "الإجمالي",
         "pending": "قيد الانتظار",
         "awaitingPayment": "في انتظار الدفع",
+        "paymentSent": "تم إرسال الدفع",
         "approved": "معتمد",
         "rejected": "مرفوض",
         "cancelled": "ملغى"
@@ -1132,7 +1138,8 @@
         "noBookings": "لم يتم العثور على حجوزات",
         "noBookingsDescription": "لا توجد حجوزات تطابق المرشحات الخاصة بك.",
         "userNotes": "ملاحظات المستخدم",
-        "transactionHash": "رمز المعاملة"
+        "transactionHash": "رمز المعاملة",
+        "backToBookings": "العودة إلى الحجوزات"
       },
       "pagination": {
         "previous": "السابق",

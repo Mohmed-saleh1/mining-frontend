@@ -903,7 +903,12 @@
       "periodRevenue": "For this rental period",
       "rentalCost": "Rental cost",
       "refresh": "Refresh",
-      "suffixDay": "day"
+      "suffixDay": "day",
+      "backToBookings": "Back to Bookings",
+      "noMessages": "No messages yet",
+      "uploadScreenshot": "Attach image",
+      "uploading": "Uploading...",
+      "send": "Send"
     },
     "wallet": {
       "title": "My {wallet}",
@@ -1133,7 +1138,8 @@
         "noBookings": "No bookings found",
         "noBookingsDescription": "There are no bookings matching your filters.",
         "userNotes": "User Notes",
-        "transactionHash": "Transaction Hash"
+        "transactionHash": "Transaction Hash",
+        "backToBookings": "Back to Bookings"
       },
       "pagination": {
         "previous": "Previous",
