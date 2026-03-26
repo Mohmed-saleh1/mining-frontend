@@ -918,6 +918,7 @@
       "cryptocurrencies": "cryptocurrencies",
       "refresh": "Refresh",
       "balance": "Balance",
+      "availableProfit": "Available Profit",
       "pending": "pending",
       "receiveAddress": "Receive Address",
       "addReceiveAddress": "Add Receive Address",
@@ -933,7 +934,28 @@
       "saveAddress": "Save Address",
       "saving": "Saving...",
       "failedToFetch": "Failed to fetch wallets",
-      "failedToUpdate": "Failed to update wallet address"
+      "failedToUpdate": "Failed to update wallet address",
+
+      "withdrawProfit": "Withdraw Profit",
+      "withdrawHint": "Create a withdrawal request and wait for admin payout.",
+      "withdrawFor": "Withdraw {symbol} profit",
+      "networkType": "Network Type",
+      "networkPlaceholder": "e.g., TRC20, ERC20, BTC",
+      "withdrawAmount": "Amount",
+      "withdrawAddress": "Withdraw Address",
+      "availableNow": "Available now",
+      "submitting": "Submitting...",
+      "submitWithdraw": "Submit Request",
+
+      "withdrawalsTitle": "Withdrawal Requests",
+      "withdrawalsSubtitle": "Track your profit withdrawals and payout proof.",
+      "withdrawalsEmpty": "No withdrawal requests yet.",
+      "viewScreenshot": "View screenshot",
+      "withdrawStatus": {
+        "pending": "Pending",
+        "sent": "Sent",
+        "rejected": "Rejected"
+      }
     },
     "profile": {
       "title": "Profile Settings",
@@ -1046,6 +1068,7 @@
       "dashboard": "Dashboard",
       "miningMachines": "Mining Machines",
       "bookings": "Bookings",
+      "withdrawals": "Withdrawals",
       "contactRequests": "Contact Requests",
       "users": "Users",
       "legalDocuments": "Legal Documents",
@@ -1054,6 +1077,31 @@
       "site": "Site",
       "logout": "Logout",
       "loading": "Loading..."
+    },
+    "withdrawals": {
+      "title": "Profit Withdrawals",
+      "subtitle": "Review profit withdrawal requests and send payout proof.",
+      "back": "Back",
+      "refresh": "Refresh",
+      "empty": "No withdrawal requests found.",
+      "amount": "Amount",
+      "address": "Address",
+      "viewScreenshot": "View screenshot",
+      "notesPlaceholder": "Optional note for the user...",
+      "sending": "Sending...",
+      "markSent": "Mark as sent",
+      "deductHint": "When you mark as sent, the amount will be deducted from the user's available profit balance.",
+      "filters": {
+        "pending": "Pending",
+        "sent": "Sent",
+        "rejected": "Rejected",
+        "all": "All"
+      },
+      "status": {
+        "pending": "Pending",
+        "sent": "Sent",
+        "rejected": "Rejected"
+      }
     },
     "dashboard": {
       "title": "Admin {dashboard}",

@@ -2,7 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/app/lib/auth-context";
-import { walletsApi, Wallet, CryptoType, ApiError } from "@/app/lib/api";
+import {
+  walletsApi,
+  Wallet,
+  CryptoType,
+  ApiError,
+  WalletWithdrawalRequest,
+} from "@/app/lib/api";
 import { useTranslations } from "next-intl";
 
 // Disable static generation for dashboard pages
@@ -81,6 +87,7 @@ export default function WalletPage() {
   const tCommon = useTranslations('common');
   const { user } = useAuth();
   const [wallets, setWallets] = useState<Wallet[]>([]);
+  const [withdrawals, setWithdrawals] = useState<WalletWithdrawalRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
@@ -88,6 +95,14 @@ export default function WalletPage() {
   const [newAddress, setNewAddress] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
+
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+  const [withdrawForm, setWithdrawForm] = useState({
+    networkType: "",
+    address: "",
+    amount: "",
+  });
+  const [isSubmittingWithdraw, setIsSubmittingWithdraw] = useState(false);
 
   const fetchWallets = useCallback(async () => {
     try {
@@ -106,8 +121,20 @@ export default function WalletPage() {
     }
   }, []);
 
+  const fetchWithdrawals = useCallback(async () => {
+    try {
+      const res = await walletsApi.getMyWithdrawals();
+      const data = (res.data as any)?.data || res.data;
+      setWithdrawals(Array.isArray(data) ? data : []);
+    } catch (err) {
+      // keep silent; wallet should still render
+      console.error("Failed to fetch withdrawals:", err);
+    }
+  }, []);
+
   useEffect(() => {
     fetchWallets();
+    fetchWithdrawals();
   }, [fetchWallets]);
 
   const handleCopyAddress = async (address: string) => {
@@ -131,6 +158,46 @@ export default function WalletPage() {
     setNewAddress("");
     setIsModalOpen(false);
     setIsUpdating(false);
+  };
+
+  const handleOpenWithdrawModal = (wallet: Wallet) => {
+    setSelectedWallet(wallet);
+    setWithdrawForm({
+      networkType: "",
+      address: wallet.walletAddress || "",
+      amount: "",
+    });
+    setIsWithdrawModalOpen(true);
+  };
+
+  const handleCloseWithdrawModal = () => {
+    setIsWithdrawModalOpen(false);
+    setWithdrawForm({ networkType: "", address: "", amount: "" });
+    setIsSubmittingWithdraw(false);
+  };
+
+  const handleSubmitWithdraw = async () => {
+    if (!selectedWallet) return;
+    const amount = Number(withdrawForm.amount);
+    if (!withdrawForm.networkType.trim() || !withdrawForm.address.trim() || !amount || amount <= 0) return;
+
+    try {
+      setIsSubmittingWithdraw(true);
+      await walletsApi.createWithdrawalRequest({
+        cryptoType: selectedWallet.cryptoType,
+        networkType: withdrawForm.networkType.trim(),
+        address: withdrawForm.address.trim(),
+        amount,
+      });
+      await fetchWithdrawals();
+      await fetchWallets();
+      handleCloseWithdrawModal();
+    } catch (err) {
+      if (err instanceof ApiError) setError(err.message);
+      else setError(t('failedToUpdate'));
+    } finally {
+      setIsSubmittingWithdraw(false);
+    }
   };
 
   const handleUpdateAddress = async () => {
@@ -272,7 +339,7 @@ export default function WalletPage() {
 
               {/* Balance */}
               <div className="mb-4">
-                <p className="text-xs text-foreground-muted mb-1">{t('balance')}</p>
+                <p className="text-xs text-foreground-muted mb-1">{t('availableProfit')}</p>
                 <p className="text-2xl font-bold text-foreground">
                   {formatBalance(wallet.balance)}
                   <span className="text-sm text-foreground-muted ml-1">{wallet.symbol}</span>
@@ -335,9 +402,78 @@ export default function WalletPage() {
                   </button>
                 )}
               </div>
+
+              {/* Withdraw */}
+              <div className="mt-4">
+                <button
+                  onClick={() => handleOpenWithdrawModal(wallet)}
+                  className="w-full btn-gold py-2.5 rounded-lg text-sm font-semibold"
+                >
+                  {t('withdrawProfit')}
+                </button>
+                <p className="text-[11px] text-foreground-muted mt-2">
+                  {t('withdrawHint')}
+                </p>
+              </div>
             </div>
           );
         })}
+      </div>
+
+      {/* Withdrawal Requests */}
+      <div className="mt-10 glass rounded-2xl p-6 border border-border">
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div>
+            <h3 className="text-lg font-semibold text-foreground">{t('withdrawalsTitle')}</h3>
+            <p className="text-sm text-foreground-muted">{t('withdrawalsSubtitle')}</p>
+          </div>
+          <button onClick={fetchWithdrawals} className="btn-outline px-4 py-2 rounded-lg text-sm">
+            {t('refresh')}
+          </button>
+        </div>
+
+        {withdrawals.length === 0 ? (
+          <p className="text-sm text-foreground-muted">{t('withdrawalsEmpty')}</p>
+        ) : (
+          <div className="space-y-3">
+            {withdrawals.map((w) => (
+              <div key={w.id} className="rounded-xl border border-border bg-background-secondary/40 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-sm font-medium text-foreground">
+                    {w.cryptoType} • {w.networkType}
+                  </p>
+                  <span
+                    className={`text-xs px-3 py-1 rounded-full border ${
+                      w.status === 'pending'
+                        ? 'border-yellow-500/40 text-yellow-400 bg-yellow-500/10'
+                        : w.status === 'sent'
+                          ? 'border-green/30 text-green bg-green/10'
+                          : 'border-red-500/40 text-red-400 bg-red-500/10'
+                    }`}
+                  >
+                    {t(`withdrawStatus.${w.status}`)}
+                  </span>
+                </div>
+                <p className="text-sm text-foreground mt-2">
+                  {t('withdrawAmount')}: <span className="font-semibold">{w.amount}</span>
+                </p>
+                <p className="text-xs text-foreground-muted break-all mt-2">
+                  {t('withdrawAddress')}: {w.address}
+                </p>
+                {w.screenshotUrl && (
+                  <div className="mt-3 flex items-center gap-3">
+                    <a href={w.screenshotUrl} target="_blank" rel="noreferrer" className="text-sm text-gold hover:underline">
+                      {t('viewScreenshot')}
+                    </a>
+                    <a href={w.screenshotUrl} target="_blank" rel="noreferrer">
+                      <img src={w.screenshotUrl} alt="Payout screenshot" className="h-12 w-12 rounded-lg border border-border object-cover" />
+                    </a>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Empty State */}
@@ -442,6 +578,87 @@ export default function WalletPage() {
                     {t('saveAddress')}
                   </>
                 )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Withdraw Profit Modal */}
+      {isWithdrawModalOpen && selectedWallet && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleCloseWithdrawModal} />
+          <div className="relative glass rounded-2xl w-full max-w-md p-6 animate-fade-in-up">
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h3 className="text-lg font-bold text-foreground">{t('withdrawProfit')}</h3>
+                <p className="text-xs text-foreground-muted">
+                  {t('withdrawFor', { symbol: selectedWallet.symbol })}
+                </p>
+              </div>
+              <button
+                onClick={handleCloseWithdrawModal}
+                className="p-2 rounded-lg hover:bg-background-secondary/50 text-foreground-muted hover:text-foreground transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">{t('networkType')}</label>
+                <input
+                  type="text"
+                  value={withdrawForm.networkType}
+                  onChange={(e) => setWithdrawForm((p) => ({ ...p, networkType: e.target.value }))}
+                  className="input-gold w-full px-4 py-3 rounded-lg text-sm"
+                  placeholder={t('networkPlaceholder')}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">{t('withdrawAddress')}</label>
+                <input
+                  type="text"
+                  value={withdrawForm.address}
+                  onChange={(e) => setWithdrawForm((p) => ({ ...p, address: e.target.value }))}
+                  className="input-gold w-full px-4 py-3 rounded-lg text-sm"
+                  placeholder={t('addressPlaceholder', { symbol: selectedWallet.symbol })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">{t('withdrawAmount')}</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.00000001"
+                  value={withdrawForm.amount}
+                  onChange={(e) => setWithdrawForm((p) => ({ ...p, amount: e.target.value }))}
+                  className="input-gold w-full px-4 py-3 rounded-lg text-sm"
+                  placeholder="0.00"
+                />
+                <p className="text-xs text-foreground-muted mt-2">
+                  {t('availableNow')}: {formatBalance(selectedWallet.balance)} {selectedWallet.symbol}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button onClick={handleCloseWithdrawModal} className="flex-1 btn-outline px-4 py-3 rounded-lg text-sm font-medium">
+                {tCommon('cancel')}
+              </button>
+              <button
+                onClick={handleSubmitWithdraw}
+                disabled={
+                  isSubmittingWithdraw ||
+                  !withdrawForm.networkType.trim() ||
+                  !withdrawForm.address.trim() ||
+                  !(Number(withdrawForm.amount) > 0)
+                }
+                className="flex-1 btn-gold px-4 py-3 rounded-lg text-sm font-medium disabled:opacity-50"
+              >
+                {isSubmittingWithdraw ? t('submitting') : t('submitWithdraw')}
               </button>
             </div>
           </div>

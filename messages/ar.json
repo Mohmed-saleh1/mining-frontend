@@ -918,6 +918,7 @@
       "cryptocurrencies": "عملات مشفرة",
       "refresh": "تحديث",
       "balance": "الرصيد",
+      "availableProfit": "الربح المتاح",
       "pending": "قيد الانتظار",
       "receiveAddress": "عنوان الاستلام",
       "addReceiveAddress": "إضافة عنوان الاستلام",
@@ -933,7 +934,28 @@
       "saveAddress": "حفظ العنوان",
       "saving": "جاري الحفظ...",
       "failedToFetch": "فشل جلب المحافظ",
-      "failedToUpdate": "فشل تحديث عنوان المحفظة"
+      "failedToUpdate": "فشل تحديث عنوان المحفظة",
+
+      "withdrawProfit": "سحب الأرباح",
+      "withdrawHint": "أنشئ طلب سحب وانتظر تحويل المسؤول.",
+      "withdrawFor": "سحب أرباح {symbol}",
+      "networkType": "نوع الشبكة",
+      "networkPlaceholder": "مثال: TRC20, ERC20, BTC",
+      "withdrawAmount": "المبلغ",
+      "withdrawAddress": "عنوان السحب",
+      "availableNow": "المتاح الآن",
+      "submitting": "جاري الإرسال...",
+      "submitWithdraw": "إرسال الطلب",
+
+      "withdrawalsTitle": "طلبات السحب",
+      "withdrawalsSubtitle": "تابع طلبات سحب الأرباح وإثبات التحويل.",
+      "withdrawalsEmpty": "لا توجد طلبات سحب بعد.",
+      "viewScreenshot": "عرض الصورة",
+      "withdrawStatus": {
+        "pending": "قيد الانتظار",
+        "sent": "تم الإرسال",
+        "rejected": "مرفوض"
+      }
     },
     "profile": {
       "title": "إعدادات الملف الشخصي",
@@ -1046,6 +1068,7 @@
       "dashboard": "لوحة التحكم",
       "miningMachines": "أجهزة التعدين",
       "bookings": "الحجوزات",
+      "withdrawals": "السحوبات",
       "contactRequests": "طلبات الاتصال",
       "users": "المستخدمون",
       "legalDocuments": "الوثائق القانونية",
@@ -1054,6 +1077,31 @@
       "site": "الموقع",
       "logout": "تسجيل الخروج",
       "loading": "جاري التحميل..."
+    },
+    "withdrawals": {
+      "title": "سحب الأرباح",
+      "subtitle": "مراجعة طلبات سحب الأرباح وإرسال إثبات التحويل.",
+      "back": "رجوع",
+      "refresh": "تحديث",
+      "empty": "لا توجد طلبات سحب.",
+      "amount": "المبلغ",
+      "address": "العنوان",
+      "viewScreenshot": "عرض الصورة",
+      "notesPlaceholder": "ملاحظة اختيارية للمستخدم...",
+      "sending": "جاري الإرسال...",
+      "markSent": "تأكيد الإرسال",
+      "deductHint": "عند تأكيد الإرسال سيتم خصم المبلغ من رصيد الربح المتاح للمستخدم.",
+      "filters": {
+        "pending": "قيد الانتظار",
+        "sent": "تم الإرسال",
+        "rejected": "مرفوض",
+        "all": "الكل"
+      },
+      "status": {
+        "pending": "قيد الانتظار",
+        "sent": "تم الإرسال",
+        "rejected": "مرفوض"
+      }
     },
     "dashboard": {
       "title": "لوحة تحكم {dashboard}",

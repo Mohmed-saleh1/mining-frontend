@@ -657,6 +657,29 @@ export interface UpdateWalletAddressData {
   walletAddress: string;
 }
 
+export type WalletWithdrawalStatus = 'pending' | 'sent' | 'rejected';
+
+export interface WalletWithdrawalRequest {
+  id: string;
+  cryptoType: CryptoType;
+  networkType: string;
+  address: string;
+  amount: number;
+  status: WalletWithdrawalStatus;
+  screenshotUrl?: string;
+  adminNotes?: string;
+  sentById?: string;
+  sentAt?: string;
+  createdAt: string;
+}
+
+export interface CreateWalletWithdrawalRequestData {
+  cryptoType: CryptoType;
+  networkType: string;
+  address: string;
+  amount: number;
+}
+
 // Wallets API (auth required)
 export const walletsApi = {
   getAll: () => request<AllWalletsResponse>('/wallets'),
@@ -670,6 +693,32 @@ export const walletsApi = {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
+
+  getMyWithdrawals: () =>
+    request<WalletWithdrawalRequest[]>('/wallets/withdrawals'),
+
+  createWithdrawalRequest: (data: CreateWalletWithdrawalRequestData) =>
+    request<WalletWithdrawalRequest>('/wallets/withdrawals', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+};
+
+export const walletsAdminApi = {
+  getWithdrawals: (status?: WalletWithdrawalStatus) =>
+    request<WalletWithdrawalRequest[]>(
+      status ? `/wallets/admin/withdrawals?status=${status}` : '/wallets/admin/withdrawals',
+    ),
+
+  markWithdrawalSent: (id: string, image: File, adminNotes?: string) => {
+    const formData = new FormData();
+    formData.append('image', image);
+    if (adminNotes?.trim()) formData.append('adminNotes', adminNotes.trim());
+    return requestWithFile<WalletWithdrawalRequest>(
+      `/wallets/admin/withdrawals/${id}/sent`,
+      formData,
+    );
+  },
 };
 
 // Booking Types
